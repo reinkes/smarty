@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathe-Aufgaben Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF6B9D;
+            --secondary: #FEC260;
+            --tertiary: #5DADE2;
+            --success: #82E0AA;
+            --bg-light: #FFF9F0;
+            --bg-card: #FFFFFF;
+            --text-dark: #2C3E50;
+            --shadow: 0 8px 32px rgba(255, 107, 157, 0.15);
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #FFF9F0 0%, #FFE5F1 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: var(--text-dark);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Playful background elements */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.08;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            width: 400px;
+            height: 400px;
+            background: var(--tertiary);
+            top: -100px;
+            right: -100px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        body::after {
+            width: 300px;
+            height: 300px;
+            background: var(--secondary);
+            bottom: -50px;
+            left: -50px;
+            animation: float 15s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(30px, -30px) rotate(5deg); }
+            50% { transform: translate(-20px, 20px) rotate(-3deg); }
+            75% { transform: translate(20px, 30px) rotate(2deg); }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 3px 3px 0px var(--secondary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            opacity: 0.8;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border: 3px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Decorative corner elements */
+        .card::before {
+            content: '✨';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 3px solid var(--tertiary);
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .number-input {
+            max-width: 200px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 1.25rem 2rem;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, var(--primary), #FF8CB4);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(255, 107, 157, 0.5);
+        }
+
+        .btn-generate:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-pdf {
+            background: linear-gradient(135deg, var(--tertiary), #7FC8F8);
+            color: white;
+            box-shadow: 0 4px 15px rgba(93, 173, 226, 0.4);
+        }
+
+        .btn-pdf:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(93, 173, 226, 0.5);
+        }
+
+        .btn-pdf:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .adaptive-settings {
+            background: linear-gradient(135deg, #E8F8F5 0%, #D5F4E6 100%);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px dashed var(--success);
+        }
+
+        .preview {
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .preview.active {
+            display: block;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px dashed var(--secondary);
+        }
+
+        .preview-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .task-count {
+            background: var(--success);
+            color: var(--text-dark);
+            padding: 0.5rem 1.25rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .task-item {
+            background: linear-gradient(135deg, #FFF9F0 0%, #FFFEF9 100%);
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            border: 2px solid var(--secondary);
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            animation: popIn 0.4s ease-out both;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: nowrap;
+        }
+
+        .task-item.correct {
+            background: linear-gradient(135deg, #D5F4E6 0%, #ABEBC6 100%);
+            border-color: #27AE60;
+        }
+
+        .task-item.incorrect {
+            background: linear-gradient(135deg, #FADBD8 0%, #F5B7B1 100%);
+            border-color: #E74C3C;
+        }
+
+        .task-item .equation {
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .task-item input {
+            width: 70px;
+            padding: 0.5rem;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-align: center;
+            border: 3px solid var(--tertiary);
+            border-radius: 12px;
+            font-family: 'Fredoka', sans-serif;
+            flex-shrink: 0;
+        }
+
+        .task-item.correct input {
+            border-color: #27AE60;
+            background: white;
+        }
+
+        .task-item.incorrect input {
+            border-color: #E74C3C;
+            background: white;
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .task-item:hover {
+            transform: translateY(-5px) rotate(2deg);
+            box-shadow: 0 8px 20px rgba(254, 194, 96, 0.3);
+        }
+
+        .task-item:nth-child(even):hover {
+            transform: translateY(-5px) rotate(-2deg);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .tasks-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .task-item {
+                font-size: 1.4rem;
+                padding: 1rem;
+            }
+
+            .task-item input {
+                width: 60px;
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+                text-shadow: 2px 2px 0px var(--secondary);
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .task-item {
+                font-size: 1.3rem;
+                padding: 0.8rem;
+                gap: 0.5rem;
+            }
+
+            .task-item input {
+                width: 55px;
+                font-size: 1.3rem;
+                padding: 0.4rem;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Celebration animations */
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.2) rotate(-10deg); }
+            50% { transform: scale(1.3) rotate(10deg); }
+            75% { transform: scale(1.2) rotate(-10deg); }
+        }
+
+        .celebrating {
+            animation: celebrate 0.6s ease-in-out;
+        }
+
+        /* Fireworks container */
+        .fireworks-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+        }
+
+        .fireworks-container.active {
+            display: block;
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: fireworkFly 1s ease-out forwards;
+        }
+
+        @keyframes fireworkFly {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-300px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: particleExplode 1s ease-out forwards;
+        }
+
+        @keyframes particleExplode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* Milestone celebration overlay */
+        .milestone-celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 3rem;
+            border-radius: 24px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            z-index: 10000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .milestone-celebration.show {
+            animation: milestoneShow 1.5s ease-out forwards;
+        }
+
+        @keyframes milestoneShow {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2) rotate(10deg);
+                opacity: 1;
+            }
+            70% {
+                transform: translate(-50%, -50%) scale(0.9) rotate(-5deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Mathe-Aufgaben</h1>
+            <p class="subtitle">Erstelle deine eigenen Rechenaufgaben zum Üben!</p>
+        </header>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="taskType">🎨 Aufgabentyp wählen:</label>
+                <select id="taskType" onchange="toggleAdaptiveSettings()">
+                    <option value="add10">Addition im Zahlenraum 10</option>
+                    <option value="add20">Addition im Zahlenraum 20</option>
+                    <option value="sub10">Subtraktion im Zahlenraum 10</option>
+                    <option value="adaptive">🎯 Adaptives Training (Addition)</option>
+                </select>
+            </div>
+
+            <div class="form-group adaptive-settings" id="adaptiveSettings" style="display: none;">
+                <label for="maxResult">🎯 Maximales Ergebnis:</label>
+                <input type="number" id="maxResult" class="number-input" value="15" min="5" max="50">
+                <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                    Das Training startet einfach und wird langsam schwerer!
+                </p>
+            </div>
+
+            <div class="form-group standard-settings" id="standardSettings">
+                <label for="taskCount">📊 Anzahl der Aufgaben:</label>
+                <input type="number" id="taskCount" class="number-input" value="20" min="1" max="100">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-generate" onclick="generateTasks()">
+                    ✨ Aufgaben erstellen
+                </button>
+                <button class="btn-pdf" id="pdfBtn" onclick="generatePDF()" disabled>
+                    📄 Als PDF speichern
+                </button>
+            </div>
+        </div>
+
+        <div class="card preview" id="preview">
+            <div class="preview-header">
+                <h2 class="preview-title" id="previewTitle">Vorschau</h2>
+                <span class="task-count" id="taskCountDisplay">0 Aufgaben</span>
+            </div>
+            <div class="tasks-grid" id="tasksContainer"></div>
+        </div>
+    </div>
+
+    <!-- Fireworks container -->
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    
+    <!-- Milestone celebration -->
+    <div class="milestone-celebration" id="milestoneCelebration"></div>
+
+    <script>
+        let currentTasks = [];
+        let currentType = '';
+        let completedTasks = 0;
+        
+        // Adaptive mode variables
+        let adaptiveMode = false;
+        let adaptiveLevel = 5; // Start with max result of 5
+        let adaptiveMaxResult = 15;
+        let adaptiveCorrectStreak = 0;
+        let adaptiveIncorrectCount = 0;
+        let adaptiveTasksShown = 0;
+        
+        function toggleAdaptiveSettings() {
+            const taskType = document.getElementById('taskType').value;
+            const adaptiveSettings = document.getElementById('adaptiveSettings');
+            const standardSettings = document.getElementById('standardSettings');
+            const pdfBtn = document.getElementById('pdfBtn');
+            
+            if (taskType === 'adaptive') {
+                adaptiveSettings.style.display = 'block';
+                standardSettings.style.display = 'none';
+                pdfBtn.style.display = 'none'; // Hide PDF button in adaptive mode
+            } else {
+                adaptiveSettings.style.display = 'none';
+                standardSettings.style.display = 'block';
+                pdfBtn.style.display = 'block';
+            }
+        }
+
+        function generateTasks() {
+            const taskType = document.getElementById('taskType').value;
+            
+            if (taskType === 'adaptive') {
+                startAdaptiveMode();
+                return;
+            }
+            
+            const taskCount = parseInt(document.getElementById('taskCount').value);
+            
+            if (taskCount < 1 || taskCount > 100) {
+                alert('Bitte wähle eine Anzahl zwischen 1 und 100.');
+                return;
+            }
+
+            adaptiveMode = false;
+            currentType = taskType;
+            currentTasks = [];
+            completedTasks = 0;
+            
+            let lastTask = null;
+            for (let i = 0; i < taskCount; i++) {
+                let task;
+                let attempts = 0;
+                // Only prevent consecutive duplicates
+                do {
+                    task = generateSingleTask(taskType);
+                    attempts++;
+                    if (attempts > 50) break; // Safety valve
+                } while (lastTask && task.key === lastTask.key);
+                
+                lastTask = task;
+                currentTasks.push(task);
+            }
+
+            displayTasks();
+            document.getElementById('pdfBtn').disabled = false;
+        }
+        
+        function startAdaptiveMode() {
+            adaptiveMode = true;
+            adaptiveMaxResult = parseInt(document.getElementById('maxResult').value);
+            adaptiveLevel = Math.min(5, adaptiveMaxResult); // Start at 5 or lower if max is lower
+            adaptiveCorrectStreak = 0;
+            adaptiveIncorrectCount = 0;
+            adaptiveTasksShown = 0;
+            completedTasks = 0;
+            currentType = 'adaptive';
+            
+            currentTasks = [];
+            // Generate initial 3 tasks
+            for (let i = 0; i < 3; i++) {
+                currentTasks.push(generateAdaptiveTask());
+            }
+            
+            displayAdaptiveTasks();
+        }
+        
+        function generateAdaptiveTask() {
+            let num1, num2, result;
+            
+            // Calculate current effective max (starts at adaptiveLevel, grows to 50% of maxResult)
+            const maxPossible = Math.min(
+                adaptiveLevel,
+                Math.floor(adaptiveMaxResult * 0.5) + 
+                Math.floor((adaptiveMaxResult * 0.5) * (adaptiveTasksShown / 50))
+            );
+            
+            const effectiveMax = Math.max(adaptiveLevel, maxPossible);
+            
+            do {
+                num1 = Math.floor(Math.random() * (effectiveMax + 1));
+                num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
+                result = num1 + num2;
+            } while ((num1 === 0 || num2 === 0) && Math.random() < 0.9); // Avoid +0
+            
+            return {
+                num1,
+                num2,
+                operator: '+',
+                result,
+                key: `${num1}+${num2}`,
+                level: effectiveMax
+            };
+        }
+        
+        function adjustAdaptiveLevel(correct) {
+            if (correct) {
+                adaptiveCorrectStreak++;
+                adaptiveIncorrectCount = 0;
+                
+                // Increase level after 3 correct in a row, but not too fast
+                if (adaptiveCorrectStreak >= 3 && adaptiveLevel < adaptiveMaxResult) {
+                    adaptiveLevel = Math.min(adaptiveLevel + 1, adaptiveMaxResult);
+                    adaptiveCorrectStreak = 0;
+                    showLevelUp();
+                }
+            } else {
+                adaptiveIncorrectCount++;
+                adaptiveCorrectStreak = 0;
+                
+                // Decrease level after 2 incorrect, but not below 5
+                if (adaptiveIncorrectCount >= 2 && adaptiveLevel > 5) {
+                    adaptiveLevel = Math.max(adaptiveLevel - 2, 5);
+                    adaptiveIncorrectCount = 0;
+                }
+            }
+        }
+        
+        function showLevelUp() {
+            const celebration = document.getElementById('milestoneCelebration');
+            celebration.textContent = `🚀 Level ${adaptiveLevel}! 🚀`;
+            celebration.classList.add('show');
+            
+            setTimeout(() => {
+                celebration.classList.remove('show');
+            }, 1500);
+        }
+        
+        function displayAdaptiveTasks() {
+            const container = document.getElementById('tasksContainer');
+            const preview = document.getElementById('preview');
+            
+            document.getElementById('previewTitle').textContent = `Adaptives Training (Level ${adaptiveLevel})`;
+            document.getElementById('taskCountDisplay').textContent = `${adaptiveTasksShown} gelöst`;
+            
+            container.innerHTML = '';
+            
+            currentTasks.forEach((task, index) => {
+                const taskDiv = document.createElement('div');
+                taskDiv.className = 'task-item';
+                taskDiv.style.animationDelay = `${index * 0.1}s`;
+                
+                const equation = document.createElement('span');
+                equation.className = 'equation';
+                equation.textContent = `${task.num1} ${task.operator} ${task.num2} =`;
+                
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.placeholder = '?';
+                input.dataset.result = task.result;
+                input.dataset.taskIndex = index;
+                input.setAttribute('aria-label', `Lösung für ${task.num1} ${task.operator} ${task.num2}`);
+                
+                input.addEventListener('input', function() {
+                    handleAdaptiveInput(this, taskDiv);
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const allInputs = container.querySelectorAll('input');
+                        const currentIndex = Array.from(allInputs).indexOf(this);
+                        if (currentIndex < allInputs.length - 1) {
+                            allInputs[currentIndex + 1].focus();
+                        }
+                    }
+                });
+                
+                taskDiv.appendChild(equation);
+                taskDiv.appendChild(input);
+                container.appendChild(taskDiv);
+            });
+            
+            preview.classList.add('active');
+            preview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            setTimeout(() => {
+                const firstInput = container.querySelector('input');
+                if (firstInput) {
+                    firstInput.focus();
+                }
+            }, 500);
+        }
+        
+        function handleAdaptiveInput(inputElement, taskDiv) {
+            const userAnswer = parseInt(inputElement.value);
+            const correctAnswer = parseInt(inputElement.dataset.result);
+            const taskIndex = parseInt(inputElement.dataset.taskIndex);
+            
+            taskDiv.classList.remove('correct', 'incorrect');
+            
+            if (inputElement.value === '') {
+                return;
+            }
+            
+            // Prevent double-processing
+            if (inputElement.disabled) {
+                return;
+            }
+            
+            clearTimeout(inputElement.validationTimeout);
+            
+            inputElement.validationTimeout = setTimeout(() => {
+                if (userAnswer === correctAnswer) {
+                    taskDiv.classList.add('correct');
+                    playSuccessSound();
+                    inputElement.disabled = true;
+                    
+                    adjustAdaptiveLevel(true);
+                    adaptiveTasksShown++;
+                    
+                    // Update counter
+                    document.getElementById('taskCountDisplay').textContent = `${adaptiveTasksShown} gelöst`;
+                    document.getElementById('previewTitle').textContent = `Adaptives Training (Level ${adaptiveLevel})`;
+                    
+                    // Slide out the completed task and add new one at bottom
+                    setTimeout(() => {
+                        slideOutAndReplaceTask(taskIndex);
+                        
+                        // Check for milestones
+                        if (adaptiveTasksShown % 10 === 0) {
+                            showMilestoneCelebration(adaptiveTasksShown);
+                        }
+                    }, 400);
+                } else {
+                    taskDiv.classList.add('incorrect');
+                    adjustAdaptiveLevel(false);
+                    document.getElementById('previewTitle').textContent = `Adaptives Training (Level ${adaptiveLevel})`;
+                }
+            }, 400);
+        }
+        
+        function slideOutAndReplaceTask(completedIndex) {
+            const container = document.getElementById('tasksContainer');
+            const allTaskDivs = Array.from(container.querySelectorAll('.task-item'));
+            const completedTaskDiv = allTaskDivs[completedIndex];
+            
+            // Slide out animation
+            completedTaskDiv.style.transition = 'all 0.5s ease-out';
+            completedTaskDiv.style.transform = 'translateY(-100px)';
+            completedTaskDiv.style.opacity = '0';
+            
+            setTimeout(() => {
+                // Remove the completed task from array and DOM
+                currentTasks.splice(completedIndex, 1);
+                completedTaskDiv.remove();
+                
+                // Generate new task from full range (can include easier tasks)
+                const newTask = generateAdaptiveTaskFromFullRange();
+                currentTasks.push(newTask);
+                
+                // Create new task element
+                const newTaskDiv = document.createElement('div');
+                newTaskDiv.className = 'task-item';
+                newTaskDiv.style.opacity = '0';
+                newTaskDiv.style.transform = 'translateY(50px)';
+                
+                const equation = document.createElement('span');
+                equation.className = 'equation';
+                equation.textContent = `${newTask.num1} ${newTask.operator} ${newTask.num2} =`;
+                
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.placeholder = '?';
+                input.dataset.result = newTask.result;
+                input.dataset.taskIndex = currentTasks.length - 1;
+                
+                input.addEventListener('input', function() {
+                    handleAdaptiveInput(this, newTaskDiv);
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const allInputs = container.querySelectorAll('input:not([disabled])');
+                        const currentIndex = Array.from(allInputs).indexOf(this);
+                        if (currentIndex < allInputs.length - 1) {
+                            allInputs[currentIndex + 1].focus();
+                        }
+                    }
+                });
+                
+                newTaskDiv.appendChild(equation);
+                newTaskDiv.appendChild(input);
+                
+                // Add to bottom
+                container.appendChild(newTaskDiv);
+                
+                // Update all task indices
+                const updatedTaskDivs = container.querySelectorAll('.task-item');
+                updatedTaskDivs.forEach((div, idx) => {
+                    const inp = div.querySelector('input');
+                    if (inp) {
+                        inp.dataset.taskIndex = idx;
+                    }
+                });
+                
+                // Slide in animation
+                setTimeout(() => {
+                    newTaskDiv.style.transition = 'all 0.5s ease-out';
+                    newTaskDiv.style.opacity = '1';
+                    newTaskDiv.style.transform = 'translateY(0)';
+                }, 50);
+            }, 500);
+        }
+        
+        function generateAdaptiveTaskFromFullRange() {
+            let num1, num2, result;
+            
+            // Can generate from easier levels too (random between 5 and current level)
+            const minLevel = 5;
+            const maxLevel = adaptiveLevel;
+            const taskLevel = Math.floor(Math.random() * (maxLevel - minLevel + 1)) + minLevel;
+            
+            // Calculate current effective max (starts at adaptiveLevel, grows to 50% of maxResult)
+            const maxPossible = Math.min(
+                taskLevel,
+                Math.floor(adaptiveMaxResult * 0.5) + 
+                Math.floor((adaptiveMaxResult * 0.5) * (adaptiveTasksShown / 50))
+            );
+            
+            const effectiveMax = Math.max(taskLevel, maxPossible);
+            
+            do {
+                num1 = Math.floor(Math.random() * (effectiveMax + 1));
+                num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
+                result = num1 + num2;
+            } while ((num1 === 0 || num2 === 0) && Math.random() < 0.9); // Avoid +0
+            
+            return {
+                num1,
+                num2,
+                operator: '+',
+                result,
+                key: `${num1}+${num2}`,
+                level: effectiveMax
+            };
+        }
+
+        function generateSingleTask(type) {
+            let num1, num2, operator, result, key;
+
+            switch(type) {
+                case 'add10':
+                    // Reduce +0 tasks by generating them less frequently
+                    do {
+                        num1 = Math.floor(Math.random() * 11); // 0-10
+                        num2 = Math.floor(Math.random() * (11 - num1)); // ensure sum <= 10
+                    } while ((num1 === 0 || num2 === 0) && Math.random() < 0.9); // 90% chance to reject +0
+                    
+                    operator = '+';
+                    result = num1 + num2;
+                    key = `${num1}+${num2}`;
+                    break;
+
+                case 'add20':
+                    num1 = Math.floor(Math.random() * 21); // 0-20
+                    num2 = Math.floor(Math.random() * (21 - num1)); // ensure sum <= 20
+                    operator = '+';
+                    result = num1 + num2;
+                    key = `${num1}+${num2}`;
+                    break;
+
+                case 'sub10':
+                    // Minuend should be <= 10
+                    // Reduce tasks with result 0 to only 10%
+                    do {
+                        num1 = Math.floor(Math.random() * 11); // 0-10 (Minuend)
+                        num2 = Math.floor(Math.random() * (num1 + 1)); // Subtrahend (0 to num1)
+                        result = num1 - num2;
+                    } while (result === 0 && Math.random() < 0.9); // 90% chance to reject result=0
+                    
+                    operator = '−';
+                    key = `${num1}-${num2}`;
+                    break;
+            }
+
+            return { num1, num2, operator, result, key };
+        }
+
+        function displayTasks() {
+            if (adaptiveMode) {
+                displayAdaptiveTasks();
+                return;
+            }
+            
+            const container = document.getElementById('tasksContainer');
+            const preview = document.getElementById('preview');
+            const typeNames = {
+                'add10': 'Addition Zahlenraum 10',
+                'add20': 'Addition Zahlenraum 20',
+                'sub10': 'Subtraktion Zahlenraum 10'
+            };
+
+            document.getElementById('previewTitle').textContent = typeNames[currentType];
+            document.getElementById('taskCountDisplay').textContent = `${currentTasks.length} Aufgaben`;
+
+            container.innerHTML = '';
+            currentTasks.forEach((task, index) => {
+                const taskDiv = document.createElement('div');
+                taskDiv.className = 'task-item';
+                taskDiv.style.animationDelay = `${index * 0.03}s`;
+                
+                const equation = document.createElement('span');
+                equation.className = 'equation';
+                equation.textContent = `${task.num1} ${task.operator} ${task.num2} =`;
+                
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.placeholder = '?';
+                input.dataset.result = task.result;
+                input.setAttribute('aria-label', `Lösung für ${task.num1} ${task.operator} ${task.num2}`);
+                
+                input.addEventListener('input', function() {
+                    const userAnswer = parseInt(this.value);
+                    const correctAnswer = parseInt(this.dataset.result);
+                    
+                    taskDiv.classList.remove('correct', 'incorrect');
+                    
+                    if (this.value === '') {
+                        return;
+                    }
+                    
+                    // Don't validate immediately if user is potentially typing a two-digit number
+                    // Wait a brief moment to see if they're still typing
+                    clearTimeout(this.validationTimeout);
+                    
+                    this.validationTimeout = setTimeout(() => {
+                        if (userAnswer === correctAnswer) {
+                            taskDiv.classList.add('correct');
+                            playSuccessSound();
+                            
+                            // Track completed tasks
+                            if (!this.dataset.completed) {
+                                this.dataset.completed = 'true';
+                                completedTasks++;
+                                
+                                // Check for milestone (every 10 tasks)
+                                if (completedTasks % 10 === 0 && completedTasks < currentTasks.length) {
+                                    showMilestoneCelebration(completedTasks);
+                                }
+                                
+                                // Check if all tasks completed
+                                if (completedTasks === currentTasks.length) {
+                                    setTimeout(() => {
+                                        launchFireworks();
+                                    }, 300);
+                                }
+                                
+                                // Auto-focus next input on correct answer
+                                setTimeout(() => {
+                                    const allInputs = container.querySelectorAll('input');
+                                    const currentIndex = Array.from(allInputs).indexOf(this);
+                                    if (currentIndex < allInputs.length - 1) {
+                                        allInputs[currentIndex + 1].focus();
+                                    }
+                                }, 300);
+                            }
+                        } else {
+                            taskDiv.classList.add('incorrect');
+                            // Reset completion status if answer changed to wrong
+                            if (this.dataset.completed) {
+                                this.dataset.completed = '';
+                                completedTasks = Math.max(0, completedTasks - 1);
+                            }
+                        }
+                    }, 400); // Wait 400ms before validating
+                });
+                
+                // Allow Enter key to move to next input
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const allInputs = container.querySelectorAll('input');
+                        const currentIndex = Array.from(allInputs).indexOf(this);
+                        if (currentIndex < allInputs.length - 1) {
+                            allInputs[currentIndex + 1].focus();
+                        }
+                    }
+                });
+                
+                taskDiv.appendChild(equation);
+                taskDiv.appendChild(input);
+                container.appendChild(taskDiv);
+            });
+
+            preview.classList.add('active');
+            preview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Focus on first input after a short delay
+            setTimeout(() => {
+                const firstInput = container.querySelector('input');
+                if (firstInput) {
+                    firstInput.focus();
+                }
+            }, 500);
+        }
+        
+        // Simple success sound using Web Audio API
+        function playSuccessSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (e) {
+                // Silently fail if audio context not supported
+            }
+        }
+
+        function showMilestoneCelebration(count) {
+            const celebration = document.getElementById('milestoneCelebration');
+            celebration.textContent = `🎉 ${count} Aufgaben geschafft! 🎉`;
+            celebration.classList.add('show');
+            
+            // Add celebration effect to task counter
+            const taskCounter = document.getElementById('taskCountDisplay');
+            taskCounter.classList.add('celebrating');
+            
+            setTimeout(() => {
+                celebration.classList.remove('show');
+                taskCounter.classList.remove('celebrating');
+            }, 1500);
+        }
+
+        function launchFireworks() {
+            const celebration = document.getElementById('milestoneCelebration');
+            celebration.textContent = `🎊 Alle Aufgaben richtig! Super! 🎊`;
+            celebration.classList.add('show');
+            
+            const container = document.getElementById('fireworksContainer');
+            container.classList.add('active');
+            
+            // Launch multiple fireworks
+            const colors = ['#FF6B9D', '#FEC260', '#5DADE2', '#82E0AA', '#BB8FCE', '#F1948A'];
+            let fireworkCount = 0;
+            const maxFireworks = 15;
+            
+            const fireworkInterval = setInterval(() => {
+                if (fireworkCount >= maxFireworks) {
+                    clearInterval(fireworkInterval);
+                    setTimeout(() => {
+                        container.classList.remove('active');
+                        container.innerHTML = '';
+                        celebration.classList.remove('show');
+                    }, 2000);
+                    return;
+                }
+                
+                createFirework(colors[Math.floor(Math.random() * colors.length)]);
+                fireworkCount++;
+            }, 200);
+        }
+
+        function createFirework(color) {
+            const container = document.getElementById('fireworksContainer');
+            const x = Math.random() * window.innerWidth;
+            const y = window.innerHeight;
+            
+            // Create initial firework
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.left = x + 'px';
+            firework.style.top = y + 'px';
+            firework.style.backgroundColor = color;
+            container.appendChild(firework);
+            
+            // Create explosion after delay
+            setTimeout(() => {
+                createExplosion(x, y - 300, color);
+                firework.remove();
+            }, 1000);
+        }
+
+        function createExplosion(x, y, color) {
+            const container = document.getElementById('fireworksContainer');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.backgroundColor = color;
+                
+                const angle = (Math.PI * 2 * i) / particleCount;
+                const velocity = 100 + Math.random() * 100;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.transform = `translate(var(--tx), var(--ty)) scale(0)`;
+                
+                container.appendChild(particle);
+                
+                setTimeout(() => particle.remove(), 1000);
+            }
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const typeNames = {
+                'add10': 'Addition Zahlenraum 10',
+                'add20': 'Addition Zahlenraum 20',
+                'sub10': 'Subtraktion Zahlenraum 10'
+            };
+
+            // Title
+            doc.setFontSize(20);
+            doc.setFont(undefined, 'bold');
+            doc.text('Mathe-Aufgaben', 105, 20, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'normal');
+            doc.text(typeNames[currentType], 105, 30, { align: 'center' });
+            doc.text('Datum: ' + new Date().toLocaleDateString('de-DE'), 105, 37, { align: 'center' });
+            
+            // Add name field
+            doc.setFontSize(11);
+            doc.text('Name: _________________________', 20, 45);
+
+            // Tasks
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            
+            let x = 20;
+            let y = 60;
+            const columnWidth = 63;
+            const rowHeight = 15;
+            const tasksPerRow = 3;
+
+            currentTasks.forEach((task, index) => {
+                // Use standard ASCII characters for operators
+                let operator = task.operator === '−' ? '-' : task.operator;
+                
+                const equation = task.num1 + ' ' + operator + ' ' + task.num2 + ' =';
+                const answer = '__________';
+                
+                // Draw equation
+                doc.text(equation, x, y);
+                // Draw answer line
+                doc.text(answer, x + 28, y);
+                
+                x += columnWidth;
+                if ((index + 1) % tasksPerRow === 0) {
+                    x = 20;
+                    y += rowHeight;
+                    
+                    // New page if needed
+                    if (y > 270) {
+                        doc.addPage();
+                        y = 20;
+                        
+                        // Add name field on new page
+                        doc.setFontSize(11);
+                        doc.setFont(undefined, 'normal');
+                        doc.text('Name: _________________________', 20, 15);
+                        y = 30;
+                        doc.setFontSize(14);
+                        doc.setFont(undefined, 'bold');
+                    }
+                }
+            });
+
+            // Save PDF
+            const fileName = 'Mathe_' + typeNames[currentType].replace(/ /g, '_') + '_' + new Date().toISOString().split('T')[0] + '.pdf';
+            doc.save(fileName);
+        }
+    </script>
+</body>
+</html>

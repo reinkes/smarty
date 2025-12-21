@@ -1,0 +1,179 @@
+# Systemanforderungen
+
+## Browser-Anforderungen
+
+### Minimal
+- Chrome 80+
+- Firefox 75+
+- Safari 13+
+- Edge 80+
+
+### Empfohlen
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+## JavaScript-Features
+
+Die Anwendungen nutzen folgende moderne JavaScript-Features:
+- ES6+ Syntax (Arrow Functions, Template Literals)
+- Web Audio API (für Sounds)
+- CSS Custom Properties (CSS Variables)
+- CSS Grid und Flexbox
+- CSS Animations und Transitions
+- DOM Manipulation (querySelector, addEventListener)
+- setTimeout/setInterval
+- Array Methods (map, filter, forEach)
+
+## Externe Abhängigkeiten
+
+### Mathe-Aufgaben
+- **jsPDF v2.5.1** (nur für PDF-Export)
+  - Quelle: https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
+  - Verwendung: PDF-Generierung
+  - Optional: App funktioniert auch ohne PDF-Export
+
+### Beide Apps
+- **Google Fonts**
+  - Fredoka (Display Font)
+  - Nunito (Body Font)
+  - Quelle: https://fonts.googleapis.com/css2
+  - Optional: Fallback auf System-Fonts möglich
+
+## Netzwerk
+
+### Online-Features
+- PDF-Export (lädt jsPDF)
+- Google Fonts (für optimale Darstellung)
+
+### Offline-Nutzung
+✅ Nach initialem Laden der Ressourcen vollständig offline nutzbar
+✅ Keine Server-Kommunikation
+✅ Keine Datenübertragung
+
+## Geräte-Kompatibilität
+
+### Desktop
+- Windows 10/11
+- macOS 10.14+
+- Linux (Ubuntu, Fedora, etc.)
+- Mindestauflösung: 1024x768
+
+### Mobile
+- iOS 13+
+- Android 8.0+
+- Mindestauflösung: 360x640
+
+### Tablet
+- iPad (alle Modellen ab 2018)
+- Android Tablets
+- Optimale Nutzung ab 7" Display
+
+## Performance-Anforderungen
+
+### Minimal
+- 2 GB RAM
+- Dual-Core Prozessor
+- Moderne GPU (für CSS-Animationen)
+
+### Empfohlen
+- 4 GB RAM
+- Quad-Core Prozessor
+- Dedizierte oder integrierte GPU
+
+## Barrierefreiheit
+
+### Unterstützte Features
+- Tastatur-Navigation (Tab, Enter)
+- Große, kontrastreiche Buttons
+- Klare visuelle Feedback-Mechanismen
+- ARIA-Labels für Screen Reader
+
+### Einschränkungen
+- Keine vollständige Screen-Reader-Optimierung
+- Farbcodierung als primäres Feedback-Medium
+- Animationen können deaktiviert werden über Browser-Einstellungen
+
+## Datenschutz & Sicherheit
+
+### Datenverarbeitung
+- ✅ Alle Daten bleiben im Browser
+- ✅ Keine Cookies
+- ✅ Kein localStorage (Standard-Version)
+- ✅ Keine Analytics/Tracking
+- ✅ Keine externe API-Calls (außer CDN-Ressourcen)
+
+### Content Security Policy
+Empfohlene CSP für Produktiv-Deployment:
+```
+Content-Security-Policy: 
+  default-src 'self'; 
+  script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; 
+  style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; 
+  font-src 'self' https://fonts.gstatic.com;
+  img-src 'self' data:;
+```
+
+## Entwicklungsumgebung
+
+### Minimal-Setup
+- Texteditor (VS Code, Sublime, Notepad++)
+- Webbrowser mit DevTools
+- Lokaler Webserver (optional)
+
+### Empfohlenes Setup
+- VS Code mit Extensions:
+  - Live Server
+  - ESLint
+  - Prettier
+- Chrome/Firefox DevTools
+- Git für Versionskontrolle
+
+### Testing
+- Manuelle Tests in verschiedenen Browsern
+- Browser DevTools Console
+- Responsive Design Mode
+- Accessibility Inspector
+
+## Zukünftige Erweiterungen (Optional)
+
+### Wenn localStorage gewünscht:
+- Statistik-Tracking
+- Fortschritt speichern
+- Persönliche Bestzeiten
+
+### Wenn Backend gewünscht:
+- Node.js 16+
+- Express.js
+- MongoDB oder PostgreSQL (für Multi-User)
+
+### Wenn KI-Bilder gewünscht:
+- Anthropic API Key
+- Claude API (für Bildgenerierung)
+- Bildoptimierung-Tools
+
+## Build-Tools (Optional)
+
+Aktuell: **Keine Build-Tools nötig!**
+
+Für erweiterte Entwicklung optional:
+- Webpack/Vite (Bundling)
+- Babel (ES6+ Transpiling für ältere Browser)
+- PostCSS (CSS-Preprocessing)
+- Terser (JavaScript Minification)
+
+## Deployment
+
+### Static Hosting (Empfohlen)
+- GitHub Pages ✅
+- Netlify ✅
+- Vercel ✅
+- AWS S3 + CloudFront ✅
+- Einfacher Apache/Nginx Server ✅
+
+### Requirements
+- Keine Server-seitige Logik nötig
+- Nur statische Datei-Auslieferung
+- HTTPS empfohlen (aber nicht zwingend)
+- CORS nicht relevant (keine API-Calls)
