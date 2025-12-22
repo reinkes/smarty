@@ -66,6 +66,18 @@
             overflow-x: hidden;
         }
 
+        /* Mobile viewport fix for keyboard */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+                padding-bottom: 60vh; /* Extra space for keyboard */
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+        }
+
         /* Playful background elements */
         body::before,
         body::after {
@@ -112,7 +124,14 @@
         header {
             text-align: center;
             margin-bottom: 3rem;
+            margin-top: 1rem;
             animation: slideDown 0.8s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                margin-top: 3rem; /* Extra space on mobile for back button */
+            }
         }
 
         @keyframes slideDown {
@@ -280,9 +299,9 @@
         }
 
         .btn-back {
-            position: absolute;
-            top: 2rem;
-            left: 2rem;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
             background: white;
             color: var(--primary);
             padding: 0.75rem 1.5rem;
@@ -295,6 +314,7 @@
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-flex;
+            z-index: 1000;
             align-items: center;
             gap: 0.5rem;
             box-shadow: 0 4px 15px rgba(255, 107, 157, 0.2);
@@ -400,6 +420,14 @@
             border-radius: 12px;
             font-family: 'Fredoka', sans-serif;
             flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .task-item input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.2);
+            transform: scale(1.05);
         }
 
         .task-item.correct input {
@@ -639,6 +667,14 @@
             </div>
 
             <div class="form-group">
+                <label for="taskType">🔢 Aufgabentyp:</label>
+                <select id="taskType" onchange="updateTaskTypeDisplay()">
+                    <option value="add">➕ Addition</option>
+                    <option value="sub">➖ Subtraktion</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <div class="checkbox-container" onclick="document.getElementById('adaptiveMode').click()">
                     <input type="checkbox" id="adaptiveMode" onclick="event.stopPropagation()">
                     <label for="adaptiveMode" class="checkbox-label">
@@ -685,7 +721,8 @@
         let currentTasks = [];
         let currentType = '';
         let completedTasks = 0;
-        
+        let currentOperator = 'add'; // 'add' or 'sub'
+
         // Adaptive mode variables
         let adaptiveMode = false;
         let adaptiveLevel = 5; // Start with max result of 5
@@ -709,6 +746,18 @@
             valueDisplay.textContent = `Level ${level} (${label}) ${emoji}`;
         }
 
+        function updateTaskTypeDisplay() {
+            const taskType = document.getElementById('taskType').value;
+            currentOperator = taskType;
+
+            // Update preview if tasks are already generated
+            const preview = document.getElementById('preview');
+            if (preview.classList.contains('active')) {
+                // Regenerate tasks with new operator
+                generateTasks();
+            }
+        }
+
         function getMathRangeFromLevel(level) {
             // Map level 1-10 to Zahlenraum
             // Level 1-3: ZR 10
@@ -724,6 +773,9 @@
                 const level = parseInt(document.getElementById('difficultySlider').value);
                 const isAdaptive = document.getElementById('adaptiveMode').checked;
                 const taskCount = InputValidator.validateTaskCount(document.getElementById('taskCount').value);
+
+                // Update current operator from dropdown
+                currentOperator = document.getElementById('taskType').value;
 
                 // Save level to progress tracker
                 ProgressTracker.updateLevel('math', level);
@@ -793,7 +845,7 @@
         }
         
         function generateAdaptiveTask() {
-            let num1, num2, result, key;
+            let num1, num2, result, key, operator;
             let attempts = 0;
             const maxAttempts = 100;
 
@@ -810,22 +862,32 @@
             const existingKeys = currentTasks.map(t => t.key);
 
             do {
-                num1 = Math.floor(Math.random() * (effectiveMax + 1));
-                num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
-                result = num1 + num2;
-                key = `${num1}+${num2}`;
+                if (currentOperator === 'add') {
+                    num1 = Math.floor(Math.random() * (effectiveMax + 1));
+                    num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
+                    result = num1 + num2;
+                    operator = '+';
+                    key = `${num1}+${num2}`;
+                } else {
+                    // Subtraktion
+                    num1 = Math.floor(Math.random() * (effectiveMax + 1));
+                    num2 = Math.floor(Math.random() * (num1 + 1));
+                    result = num1 - num2;
+                    operator = '−';
+                    key = `${num1}-${num2}`;
+                }
                 attempts++;
 
-                // Avoid +0 and duplicates
+                // Avoid +0/-0 and duplicates
             } while (
                 attempts < maxAttempts &&
-                (((num1 === 0 || num2 === 0) && Math.random() < 0.9) || existingKeys.includes(key))
+                (((num2 === 0) && Math.random() < 0.9) || existingKeys.includes(key))
             );
 
             return {
                 num1,
                 num2,
-                operator: '+',
+                operator,
                 result,
                 key,
                 level: effectiveMax
@@ -893,7 +955,16 @@
                 input.addEventListener('input', function() {
                     handleAdaptiveInput(this, taskDiv);
                 });
-                
+
+                input.addEventListener('focus', function() {
+                    // Mobile: Scroll to input when keyboard appears
+                    if (window.innerWidth <= 768) {
+                        setTimeout(() => {
+                            this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 300); // Delay for keyboard animation
+                    }
+                });
+
                 input.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -959,6 +1030,13 @@
                         const nextInput = container.querySelector('input:not([disabled])');
                         if (nextInput) {
                             nextInput.focus();
+
+                            // Mobile: Scroll to next input
+                            if (window.innerWidth <= 768) {
+                                setTimeout(() => {
+                                    nextInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }, 300);
+                            }
                         }
 
                         slideOutAndReplaceTask(taskIndex);
@@ -981,19 +1059,24 @@
             const allTaskDivs = Array.from(container.querySelectorAll('.task-item'));
             const completedTaskDiv = allTaskDivs[completedIndex];
 
-            // Gray out and prepare for removal
-            completedTaskDiv.style.transition = 'all 0.8s ease-out';
-            completedTaskDiv.style.opacity = '0.3';
+            // Apply gradual transparency to last 10 tasks
+            updateTaskOpacities();
+
+            // Gray out and prepare for removal (SLOWER animation - 1.5s instead of 0.8s)
+            completedTaskDiv.style.transition = 'all 1.5s ease-out';
+            completedTaskDiv.style.opacity = '0.2';
             completedTaskDiv.style.filter = 'grayscale(100%)';
 
-            // After graying out, scroll up smoothly
+            // After graying out, scroll up smoothly (SLOWER - 1200ms delay)
             setTimeout(() => {
-                completedTaskDiv.style.transform = 'translateY(-120px) scale(0.95)';
+                completedTaskDiv.style.transition = 'all 1.2s ease-out';
+                completedTaskDiv.style.transform = 'translateY(-150px) scale(0.9)';
                 completedTaskDiv.style.height = '0';
                 completedTaskDiv.style.margin = '0';
                 completedTaskDiv.style.padding = '0';
+                completedTaskDiv.style.overflow = 'hidden';
 
-                // Remove after animation
+                // Remove after animation (SLOWER - 1200ms)
                 setTimeout(() => {
                     // Remove the completed task from array and DOM
                     currentTasks.splice(completedIndex, 1);
@@ -1018,11 +1101,23 @@
                 input.placeholder = '?';
                 input.dataset.result = newTask.result;
                 input.dataset.taskIndex = currentTasks.length - 1;
+                input.inputMode = 'numeric';
+                input.pattern = '[0-9]*';
+                input.setAttribute('aria-label', `Lösung für ${newTask.num1} ${newTask.operator} ${newTask.num2}`);
                 
                 input.addEventListener('input', function() {
                     handleAdaptiveInput(this, newTaskDiv);
                 });
-                
+
+                input.addEventListener('focus', function() {
+                    // Mobile: Scroll to input when keyboard appears
+                    if (window.innerWidth <= 768) {
+                        setTimeout(() => {
+                            this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 300); // Delay for keyboard animation
+                    }
+                });
+
                 input.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -1054,13 +1149,48 @@
                         newTaskDiv.style.transition = 'all 0.5s ease-out';
                         newTaskDiv.style.opacity = '1';
                         newTaskDiv.style.transform = 'translateY(0)';
+
+                        // Update opacities after new task is added
+                        updateTaskOpacities();
                     }, 50);
-                }, 600);  // Wait for gray-out animation
-            }, 400);  // Wait for height collapse
+                }, 1200);  // Wait for gray-out animation (SLOWER)
+            }, 1200);  // Wait for height collapse (SLOWER)
+        }
+
+        // NEW: Gradual opacity for last 10 tasks
+        let opacityUpdateTimeout;
+        function updateTaskOpacities() {
+            // Debounce for performance
+            clearTimeout(opacityUpdateTimeout);
+            opacityUpdateTimeout = setTimeout(() => {
+                const container = document.getElementById('tasksContainer');
+                const allTaskDivs = Array.from(container.querySelectorAll('.task-item:not(.correct):not(.incorrect)'));
+
+                // Only apply if there are more than 10 tasks
+                if (allTaskDivs.length <= 10) return;
+
+                // Calculate how many tasks to fade out (older tasks at the beginning)
+                const tasksToFade = Math.min(10, allTaskDivs.length);
+
+                allTaskDivs.forEach((taskDiv, index) => {
+                    if (index < tasksToFade) {
+                        // Gradually fade from 0.3 (oldest) to 1.0 (newest)
+                        const opacity = 0.3 + (index / tasksToFade) * 0.7;
+                        taskDiv.style.transition = 'opacity 0.5s ease-out, filter 0.5s ease-out';
+                        taskDiv.style.opacity = opacity;
+                        taskDiv.style.filter = `grayscale(${100 - (index / tasksToFade) * 100}%)`;
+                    } else {
+                        // Reset to full visibility for newer tasks
+                        taskDiv.style.transition = 'opacity 0.5s ease-out, filter 0.5s ease-out';
+                        taskDiv.style.opacity = '1';
+                        taskDiv.style.filter = 'grayscale(0%)';
+                    }
+                });
+            }, 100); // 100ms debounce
         }
         
         function generateAdaptiveTaskFromFullRange() {
-            let num1, num2, result, key;
+            let num1, num2, result, key, operator;
             let attempts = 0;
             const maxAttempts = 100;
 
@@ -1082,22 +1212,32 @@
             const existingKeys = currentTasks.map(t => t.key);
 
             do {
-                num1 = Math.floor(Math.random() * (effectiveMax + 1));
-                num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
-                result = num1 + num2;
-                key = `${num1}+${num2}`;
+                if (currentOperator === 'add') {
+                    num1 = Math.floor(Math.random() * (effectiveMax + 1));
+                    num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
+                    result = num1 + num2;
+                    operator = '+';
+                    key = `${num1}+${num2}`;
+                } else {
+                    // Subtraktion
+                    num1 = Math.floor(Math.random() * (effectiveMax + 1));
+                    num2 = Math.floor(Math.random() * (num1 + 1));
+                    result = num1 - num2;
+                    operator = '−';
+                    key = `${num1}-${num2}`;
+                }
                 attempts++;
 
-                // Avoid +0 and duplicates
+                // Avoid +0/-0 and duplicates
             } while (
                 attempts < maxAttempts &&
-                (((num1 === 0 || num2 === 0) && Math.random() < 0.9) || existingKeys.includes(key))
+                (((num2 === 0) && Math.random() < 0.9) || existingKeys.includes(key))
             );
 
             return {
                 num1,
                 num2,
-                operator: '+',
+                operator,
                 result,
                 key,
                 level: effectiveMax
@@ -1108,32 +1248,26 @@
             let num1, num2, operator, result, key;
             const max = maxValue || (type === 'add10' || type === 'sub10' ? 10 : type === 'add20' ? 20 : 50);
 
-            switch(type) {
-                case 'add10':
-                case 'add20':
-                case 'add50':
-                    // Addition with dynamic max
-                    do {
-                        num1 = Math.floor(Math.random() * (max + 1));
-                        num2 = Math.floor(Math.random() * (max + 1 - num1));
-                    } while ((num1 === 0 || num2 === 0) && Math.random() < 0.9);
+            if (currentOperator === 'add') {
+                // Addition with dynamic max
+                do {
+                    num1 = Math.floor(Math.random() * (max + 1));
+                    num2 = Math.floor(Math.random() * (max + 1 - num1));
+                } while ((num1 === 0 || num2 === 0) && Math.random() < 0.9);
 
-                    operator = '+';
-                    result = num1 + num2;
-                    key = `${num1}+${num2}`;
-                    break;
+                operator = '+';
+                result = num1 + num2;
+                key = `${num1}+${num2}`;
+            } else {
+                // Subtraktion
+                do {
+                    num1 = Math.floor(Math.random() * (max + 1));
+                    num2 = Math.floor(Math.random() * (num1 + 1));
+                    result = num1 - num2;
+                } while (result === 0 && Math.random() < 0.9);
 
-                case 'sub10':
-                    // Subtraktion
-                    do {
-                        num1 = Math.floor(Math.random() * (max + 1));
-                        num2 = Math.floor(Math.random() * (num1 + 1));
-                        result = num1 - num2;
-                    } while (result === 0 && Math.random() < 0.9);
-
-                    operator = '−';
-                    key = `${num1}-${num2}`;
-                    break;
+                operator = '−';
+                key = `${num1}-${num2}`;
             }
 
             return { num1, num2, operator, result, key };
@@ -1453,6 +1587,9 @@
             const slider = document.getElementById('difficultySlider');
             slider.value = progress.level || 5;
             updateDifficultyLabel();
+
+            // Initialize operator from dropdown
+            currentOperator = document.getElementById('taskType').value;
         });
     </script>
 

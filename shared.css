@@ -290,9 +290,9 @@ button:disabled {
 }
 
 .btn-back {
-    position: absolute;
-    top: 2rem;
-    left: 2rem;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
     background: white;
     padding: 0.75rem 1.5rem;
     border: 2px solid;
@@ -307,6 +307,7 @@ button:disabled {
     align-items: center;
     gap: 0.5rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
 }
 
 .btn-back:hover {
@@ -495,10 +496,12 @@ input[type="range"]::-moz-range-thumb {
     }
 
     .btn-back {
-        top: 1rem;
-        left: 1rem;
         font-size: 0.9rem;
         padding: 0.5rem 1rem;
+    }
+
+    header {
+        margin-top: 3rem; /* Extra space on mobile for back button */
     }
 }
 
