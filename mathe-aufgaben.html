@@ -624,24 +624,34 @@
 
         <div class="card">
             <div class="form-group">
-                <label for="taskType">🎨 Aufgabentyp wählen:</label>
-                <select id="taskType" onchange="toggleAdaptiveSettings()">
-                    <option value="add10">Addition im Zahlenraum 10</option>
-                    <option value="add20">Addition im Zahlenraum 20</option>
-                    <option value="sub10">Subtraktion im Zahlenraum 10</option>
-                    <option value="adaptive">🎯 Adaptives Training (Addition)</option>
-                </select>
+                <label for="difficultySlider">
+                    🎯 Schwierigkeitsgrad:
+                    <span class="slider-value" id="difficultyValue">Level 5 (Mittel) 🤔</span>
+                </label>
+                <div class="slider-container">
+                    <input type="range" id="difficultySlider" min="1" max="10" value="5" step="1"
+                           oninput="updateDifficultyLabel()">
+                    <div class="slider-labels">
+                        <span>😊 Einfach</span>
+                        <span>🤔 Mittel</span>
+                        <span>🔥 Schwer</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group adaptive-settings" id="adaptiveSettings" style="display: none;">
-                <label for="maxResult">🎯 Maximales Ergebnis:</label>
-                <input type="number" id="maxResult" class="number-input" value="15" min="5" max="50">
+            <div class="form-group">
+                <div class="checkbox-container" onclick="document.getElementById('adaptiveMode').click()">
+                    <input type="checkbox" id="adaptiveMode" onclick="event.stopPropagation()">
+                    <label for="adaptiveMode" class="checkbox-label">
+                        🚀 Automatisch anpassen (adaptiv)
+                    </label>
+                </div>
                 <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
-                    Das Training startet einfach und wird langsam schwerer!
+                    Wenn aktiviert, passt sich die Schwierigkeit automatisch an deine Leistung an!
                 </p>
             </div>
 
-            <div class="form-group standard-settings" id="standardSettings">
+            <div class="form-group">
                 <label for="taskCount">📊 Anzahl der Aufgaben:</label>
                 <input type="number" id="taskCount" class="number-input" value="20" min="1" max="100">
             </div>
@@ -684,67 +694,49 @@
         let adaptiveIncorrectCount = 0;
         let adaptiveTasksShown = 0;
         
-        function toggleAdaptiveSettings() {
-            const taskType = document.getElementById('taskType').value;
-            const adaptiveSettings = document.getElementById('adaptiveSettings');
-            const standardSettings = document.getElementById('standardSettings');
-            const pdfBtn = document.getElementById('pdfBtn');
-            
-            if (taskType === 'adaptive') {
-                adaptiveSettings.style.display = 'block';
-                standardSettings.style.display = 'none';
-                pdfBtn.style.display = 'none'; // Hide PDF button in adaptive mode
-            } else {
-                adaptiveSettings.style.display = 'none';
-                standardSettings.style.display = 'block';
-                pdfBtn.style.display = 'block';
-            }
+        // ============================================
+        // NEW: Difficulty Slider & Adaptive Mode Logic
+        // ============================================
+
+        function updateDifficultyLabel() {
+            const slider = document.getElementById('difficultySlider');
+            const valueDisplay = document.getElementById('difficultyValue');
+            const level = parseInt(slider.value);
+
+            const label = getDifficultyLabel(level);
+            const emoji = getDifficultyEmoji(level);
+
+            valueDisplay.textContent = `Level ${level} (${label}) ${emoji}`;
         }
 
-        // Input Validation
-        function validateTaskType(type) {
-            const allowed = ['add10', 'add20', 'sub10', 'adaptive'];
-            if (!allowed.includes(type)) {
-                throw new Error('Ungültiger Aufgabentyp');
-            }
-            return type;
-        }
-
-        function validateTaskCount(count) {
-            const num = parseInt(count, 10);
-            if (!Number.isInteger(num) || isNaN(num)) {
-                throw new Error('Aufgabenanzahl muss eine Zahl sein');
-            }
-            if (num < 1 || num > 100) {
-                throw new Error('Aufgabenanzahl muss zwischen 1 und 100 liegen');
-            }
-            return num;
-        }
-
-        function validateMaxResult(value) {
-            const num = parseInt(value, 10);
-            if (!Number.isInteger(num) || isNaN(num)) {
-                throw new Error('Maximales Ergebnis muss eine Zahl sein');
-            }
-            if (num < 5 || num > 50) {
-                throw new Error('Maximales Ergebnis muss zwischen 5 und 50 liegen');
-            }
-            return num;
+        function getMathRangeFromLevel(level) {
+            // Map level 1-10 to Zahlenraum
+            // Level 1-3: ZR 10
+            // Level 4-6: ZR 20
+            // Level 7-10: ZR 50
+            if (level <= 3) return { max: 10, type: 'add10', label: 'Zahlenraum 10' };
+            if (level <= 6) return { max: 20, type: 'add20', label: 'Zahlenraum 20' };
+            return { max: 50, type: 'add50', label: 'Zahlenraum 50' };
         }
 
         function generateTasks() {
             try {
-                const taskType = validateTaskType(document.getElementById('taskType').value);
+                const level = parseInt(document.getElementById('difficultySlider').value);
+                const isAdaptive = document.getElementById('adaptiveMode').checked;
+                const taskCount = InputValidator.validateTaskCount(document.getElementById('taskCount').value);
 
-                if (taskType === 'adaptive') {
+                // Save level to progress tracker
+                ProgressTracker.updateLevel('math', level);
+
+                if (isAdaptive) {
                     startAdaptiveMode();
                     return;
                 }
 
-                const taskCount = validateTaskCount(document.getElementById('taskCount').value);
-
+                // Fixed mode - use level to determine range
+                const range = getMathRangeFromLevel(level);
                 adaptiveMode = false;
-                currentType = taskType;
+                currentType = range.type;
                 currentTasks = [];
                 completedTasks = 0;
 
@@ -752,11 +744,10 @@
                 for (let i = 0; i < taskCount; i++) {
                     let task;
                     let attempts = 0;
-                    // Only prevent consecutive duplicates
                     do {
-                        task = generateSingleTask(taskType);
+                        task = generateSingleTask(currentType, range.max);
                         attempts++;
-                        if (attempts > 50) break; // Safety valve
+                        if (attempts > 50) break;
                     } while (lastTask && task.key === lastTask.key);
 
                     lastTask = task;
@@ -773,14 +764,20 @@
 
         function startAdaptiveMode() {
             try {
+                const level = parseInt(document.getElementById('difficultySlider').value);
+                const range = getMathRangeFromLevel(level);
+
                 adaptiveMode = true;
-                adaptiveMaxResult = validateMaxResult(document.getElementById('maxResult').value);
-                adaptiveLevel = Math.min(5, adaptiveMaxResult); // Start at 5 or lower if max is lower
+                adaptiveMaxResult = range.max;
+                adaptiveLevel = Math.min(Math.floor(range.max / 2), range.max);
                 adaptiveCorrectStreak = 0;
                 adaptiveIncorrectCount = 0;
                 adaptiveTasksShown = 0;
                 completedTasks = 0;
                 currentType = 'adaptive';
+
+                // Save level
+                ProgressTracker.updateLevel('math', level);
 
                 currentTasks = [];
                 // Generate initial 3 tasks
@@ -789,6 +786,7 @@
                 }
 
                 displayAdaptiveTasks();
+                document.getElementById('pdfBtn').disabled = true; // No PDF in adaptive mode
             } catch (error) {
                 alert(error.message);
             }
@@ -1066,39 +1064,33 @@
             };
         }
 
-        function generateSingleTask(type) {
+        function generateSingleTask(type, maxValue = null) {
             let num1, num2, operator, result, key;
+            const max = maxValue || (type === 'add10' || type === 'sub10' ? 10 : type === 'add20' ? 20 : 50);
 
             switch(type) {
                 case 'add10':
-                    // Reduce +0 tasks by generating them less frequently
-                    do {
-                        num1 = Math.floor(Math.random() * 11); // 0-10
-                        num2 = Math.floor(Math.random() * (11 - num1)); // ensure sum <= 10
-                    } while ((num1 === 0 || num2 === 0) && Math.random() < 0.9); // 90% chance to reject +0
-                    
-                    operator = '+';
-                    result = num1 + num2;
-                    key = `${num1}+${num2}`;
-                    break;
-
                 case 'add20':
-                    num1 = Math.floor(Math.random() * 21); // 0-20
-                    num2 = Math.floor(Math.random() * (21 - num1)); // ensure sum <= 20
+                case 'add50':
+                    // Addition with dynamic max
+                    do {
+                        num1 = Math.floor(Math.random() * (max + 1));
+                        num2 = Math.floor(Math.random() * (max + 1 - num1));
+                    } while ((num1 === 0 || num2 === 0) && Math.random() < 0.9);
+
                     operator = '+';
                     result = num1 + num2;
                     key = `${num1}+${num2}`;
                     break;
 
                 case 'sub10':
-                    // Minuend should be <= 10
-                    // Reduce tasks with result 0 to only 10%
+                    // Subtraktion
                     do {
-                        num1 = Math.floor(Math.random() * 11); // 0-10 (Minuend)
-                        num2 = Math.floor(Math.random() * (num1 + 1)); // Subtrahend (0 to num1)
+                        num1 = Math.floor(Math.random() * (max + 1));
+                        num2 = Math.floor(Math.random() * (num1 + 1));
                         result = num1 - num2;
-                    } while (result === 0 && Math.random() < 0.9); // 90% chance to reject result=0
-                    
+                    } while (result === 0 && Math.random() < 0.9);
+
                     operator = '−';
                     key = `${num1}-${num2}`;
                     break;
@@ -1409,7 +1401,16 @@
             const fileName = 'Mathe_' + typeNames[currentType].replace(/ /g, '_') + '_' + new Date().toISOString().split('T')[0] + '.pdf';
             doc.save(fileName);
         }
+
+        // Load saved progress on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const progress = ProgressTracker.getProgress('math');
+            const slider = document.getElementById('difficultySlider');
+            slider.value = progress.level || 5;
+            updateDifficultyLabel();
+        });
     </script>
+    <script src="shared.js"></script>
 
     <footer style="text-align: center; padding: 2rem 1rem; margin-top: 3rem; border-top: 2px solid rgba(255,107,157,0.2); font-size: 0.9rem; opacity: 0.8;">
         <p style="margin-bottom: 0.75rem;">© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
