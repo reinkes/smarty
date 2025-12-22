@@ -5,7 +5,23 @@
       "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" remote -v)",
       "Bash(for file in nutzungsbedingungen.html datenschutz.html)",
       "Bash(do head -7 \"$file\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" checkout -b feature/unified-difficulty-system)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" add shared.css shared.js)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" add REFACTORING_PLAN.md IMPLEMENTATION_SUMMARY.md)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" status)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" commit -m \"$(cat <<''EOF''\nfeat: Add shared CSS/JS utilities for unified difficulty system\n\nThis commit introduces a modular architecture with shared resources:\n\n## New Files\n- shared.css: Common styles, animations, and theming for both apps\n- shared.js: Utilities for audio, celebrations, progress tracking, validation\n- REFACTORING_PLAN.md: Detailed plan for unified difficulty system\n- IMPLEMENTATION_SUMMARY.md: Implementation options and recommendations\n\n## Features\n### shared.css (450 lines)\n- CSS Variables for theming (math/german colors)\n- Reusable animations (fadeIn, bounceIn, celebrate, shake, etc.)\n- Slider styles for difficulty selection\n- Checkbox styles for adaptive mode\n- Responsive design breakpoints\n- Celebration and fireworks containers\n\n### shared.js (400 lines)\n- Audio feedback (playSuccessSound)\n- Visual celebrations (showMilestoneCelebration, launchFireworks)\n- Progress tracking (ProgressTracker with LocalStorage)\n  - Track level, accuracy, streaks, tasks completed\n  - Persistent progress across sessions\n- Input validation (InputValidator)\n  - Secure validation for all user inputs\n  - Range checks and type validation\n- Utility functions (getDifficultyLabel, getDifficultyEmoji)\n\n## Benefits\n- Reduces code duplication by 30-40%\n- Centralizes common functionality\n- Improves maintainability\n- Enables future features (progress dashboard, multi-user)\n- Consistent UX across both apps\n\n## Next Steps\nSee IMPLEMENTATION_SUMMARY.md for integration options:\n- Option A (Quick): Integrate shared files with minimal changes\n- Option B (Full): Complete UI refactoring with slider + adaptive checkbox\n- Option C (Hybrid): Incremental rollout starting with math app\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" push -u origin feature/unified-difficulty-system)",
+      "Bash(gh pr create:*)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" add -A)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" restore --staged .claude/settings.local.json)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" commit -m \"$(cat <<''EOF''\nfeat: Integrate shared CSS/JS and simplify HTML apps\n\n## Changes\n\n### deutsch-silben.html\n- ✅ Replaced 450+ lines of CSS with shared.css\n- ✅ Added slider (Level 1-10) + adaptive checkbox\n- ✅ Integrated ProgressTracker for level persistence\n- ✅ Added shared.js for common utilities\n- ✅ Reduced file size by ~350 lines\n\n### mathe-aufgaben.html\n- ✅ Replaced 450+ lines of CSS with shared.css\n- ✅ Added shared.js integration\n- ✅ Reduced code duplication\n- 🔄 Slider integration (partial - to be completed)\n\n## Benefits\n- 📉 -30% code duplication\n- 🎨 Consistent theming via CSS variables\n- 📊 Progress tracking with LocalStorage\n- 🔧 Centralized utilities\n\n## Next Steps\n- Complete mathe-aufgaben.html slider implementation\n- Add comprehensive testing\n- Update documentation\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" checkout master)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" merge feature/unified-difficulty-system --no-edit)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" push origin master)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" pull --rebase origin master)",
+      "Bash(git -C:*)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" stash pop:*)"
     ]
   }
 }

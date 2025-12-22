@@ -104,6 +104,65 @@
         footer a {
             color: var(--german-primary);
         }
+
+        /* Deutsch-specific styles */
+        .emoji-display {
+            font-size: 8rem;
+            margin: 1rem 0 2rem 0;
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        .syllable-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .syllable-btn {
+            padding: 1.25rem 2rem;
+            border: 3px solid var(--german-secondary);
+            border-radius: 16px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            background: white;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .syllable-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+            border-color: var(--german-primary);
+        }
+
+        .syllable-btn.correct {
+            background: linear-gradient(135deg, #D5F4E6 0%, #ABEBC6 100%);
+            border-color: var(--success);
+            animation: celebrate 0.6s ease-in-out;
+        }
+
+        .syllable-btn.incorrect {
+            background: linear-gradient(135deg, #FADBD8 0%, #F5B7B1 100%);
+            border-color: var(--german-tertiary);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .emoji-display {
+                font-size: 6rem;
+            }
+
+            .syllable-btn {
+                font-size: 1.5rem;
+                padding: 1rem 1.5rem;
+                min-width: 100px;
+            }
+        }
     </style>
 </head>
 <body>
