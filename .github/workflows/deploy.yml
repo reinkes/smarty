@@ -134,8 +134,15 @@ jobs:
         cp mathe-aufgaben.html deploy/
         cp deutsch-silben.html deploy/
 
+        # Copy shared resources (CSS/JS)
+        [ -f shared.css ] && cp shared.css deploy/ || echo "⚠️ No shared.css found"
+        [ -f shared.js ] && cp shared.js deploy/ || echo "⚠️ No shared.js found"
+
         # Copy optional files if they exist
         [ -f index.html ] && cp index.html deploy/ || echo "⚠️ No index.html found"
+        [ -f impressum.html ] && cp impressum.html deploy/ || echo "⚠️ No impressum.html found"
+        [ -f datenschutz.html ] && cp datenschutz.html deploy/ || echo "⚠️ No datenschutz.html found"
+        [ -f nutzungsbedingungen.html ] && cp nutzungsbedingungen.html deploy/ || echo "⚠️ No nutzungsbedingungen.html found"
         [ -f README.md ] && cp README.md deploy/ || echo "⚠️ No README.md found"
         [ -f LICENSE ] && cp LICENSE deploy/ || echo "⚠️ No LICENSE found"
         [ -f CHANGELOG.md ] && cp CHANGELOG.md deploy/ || echo "⚠️ No CHANGELOG.md found"
