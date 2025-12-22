@@ -1,0 +1,542 @@
+/* Smarty Learn - Shared Styles */
+
+/* === CSS Variables === */
+:root {
+    /* Math Theme Colors */
+    --math-primary: #FF6B9D;
+    --math-secondary: #FEC260;
+    --math-tertiary: #5DADE2;
+
+    /* German Theme Colors */
+    --german-primary: #9B59B6;
+    --german-secondary: #3498DB;
+    --german-tertiary: #E74C3C;
+
+    /* Common Colors */
+    --success: #2ECC71;
+    --bg-light: #FFF9F0;
+    --bg-card: #FFFFFF;
+    --text-dark: #2C3E50;
+}
+
+/* === Global Reset === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* === Body & Background === */
+body {
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding: 2rem;
+    color: var(--text-dark);
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Playful background elements */
+body::before,
+body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    opacity: 0.08;
+    z-index: 0;
+    pointer-events: none;
+}
+
+body::before {
+    width: 400px;
+    height: 400px;
+    top: -100px;
+    right: -100px;
+    animation: float 20s infinite ease-in-out;
+}
+
+body::after {
+    width: 300px;
+    height: 300px;
+    bottom: -50px;
+    left: -50px;
+    animation: float 15s infinite ease-in-out reverse;
+}
+
+/* === Animations === */
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(30px, -30px) rotate(5deg); }
+    50% { transform: translate(-20px, 20px) rotate(-3deg); }
+    75% { transform: translate(20px, 30px) rotate(2deg); }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes celebrate {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.2) rotate(-10deg); }
+    50% { transform: scale(1.3) rotate(10deg); }
+    75% { transform: scale(1.2) rotate(-10deg); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes milestoneShow {
+    0% {
+        transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2) rotate(10deg);
+        opacity: 1;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(0.9) rotate(-5deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 0;
+    }
+}
+
+/* === Layout === */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* === Header === */
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: slideDown 0.8s ease-out;
+}
+
+h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -1px;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    opacity: 0.8;
+}
+
+/* === Cards === */
+.card {
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 3px solid;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.card::before {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 2rem;
+    opacity: 0.3;
+}
+
+/* === Forms === */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-size: 1.1rem;
+}
+
+select, input[type="number"], input[type="range"] {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 3px solid;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+select:focus, input:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.number-input {
+    max-width: 200px;
+}
+
+/* === Buttons === */
+button {
+    width: 100%;
+    padding: 1.25rem 2rem;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: 'Fredoka', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    color: white;
+    margin-top: 1rem;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+button:hover {
+    transform: translateY(-3px);
+}
+
+button:active {
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-back {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    background: white;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid;
+    border-radius: 25px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-back:hover {
+    transform: translateX(-5px);
+}
+
+/* === Celebrations === */
+.milestone-celebration {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: linear-gradient(135deg, var(--success), #82E0AA);
+    color: white;
+    padding: 2rem 3rem;
+    border-radius: 24px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    z-index: 10000;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    opacity: 0;
+}
+
+.milestone-celebration.show {
+    animation: milestoneShow 1.5s ease-out forwards;
+}
+
+.celebrating {
+    animation: celebrate 0.6s ease-in-out;
+}
+
+/* === Fireworks === */
+.fireworks-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    display: none;
+}
+
+.fireworks-container.active {
+    display: block;
+}
+
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+/* === Preview Section === */
+.preview {
+    display: none;
+}
+
+.preview.active {
+    display: block;
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px dashed;
+}
+
+.preview-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.8rem;
+}
+
+.task-count {
+    background: var(--success);
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* === Slider Container === */
+.slider-container {
+    margin: 1rem 0;
+}
+
+.slider-value {
+    display: inline-block;
+    min-width: 60px;
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+input[type="range"] {
+    padding: 0;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(to right, #82E0AA 0%, #F39C12 50%, #E74C3C 100%);
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--success);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--success);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* === Checkbox === */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #E8F8F5 0%, #D5F4E6 100%);
+    border-radius: 12px;
+    border: 2px dashed var(--success);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.checkbox-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    accent-color: var(--success);
+}
+
+.checkbox-label {
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+
+    .btn-back {
+        top: 1rem;
+        left: 1rem;
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .milestone-celebration {
+        font-size: 1.5rem;
+        padding: 1.5rem 2rem;
+    }
+}
+
+/* === Footer === */
+footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-top: 3rem;
+    border-top: 2px solid rgba(0,0,0,0.1);
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+footer p {
+    margin-bottom: 0.75rem;
+}
+
+footer a {
+    text-decoration: none;
+    margin: 0 0.5rem;
+    transition: opacity 0.3s ease;
+}
+
+footer a:hover {
+    opacity: 0.7;
+}
