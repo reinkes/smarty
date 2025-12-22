@@ -21,7 +21,10 @@
       "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" push origin master)",
       "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" pull --rebase origin master)",
       "Bash(git -C:*)",
-      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" stash pop:*)"
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" stash pop:*)",
+      "Bash(grep:*)",
+      "Bash(for file in datenschutz.html impressum.html index.html nutzungsbedingungen.html)",
+      "Bash(do sed -i '/<meta http-equiv=\"\"X-Frame-Options\"\"/d' \"$file\")"
     ]
   }
 }
