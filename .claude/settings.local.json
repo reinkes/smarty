@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" log --oneline -20)",
+      "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" remote -v)",
+      "Bash(for file in nutzungsbedingungen.html datenschutz.html)",
+      "Bash(do head -7 \"$file\")",
+      "Bash(done)"
+    ]
+  }
+}

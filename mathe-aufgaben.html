@@ -3,9 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none';">
     <title>Mathe-Aufgaben Generator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+      integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNougY+X+vvFqE4N8tZyYuFVhZJjQN1dqxTQQdnF9+XCkJN+9FEAXuEVw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
     <style>
         * {
             margin: 0;
@@ -246,7 +257,35 @@
             cursor: not-allowed;
             transform: none;
         }
-        
+
+        .btn-back {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: white;
+            color: var(--primary);
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--primary);
+            border-radius: 25px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.2);
+        }
+
+        .btn-back:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(-5px);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3);
+        }
+
         .adaptive-settings {
             background: linear-gradient(135deg, #E8F8F5 0%, #D5F4E6 100%);
             padding: 1rem;
@@ -554,6 +593,7 @@
     </style>
 </head>
 <body>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
     <div class="container">
         <header>
             <h1>🎯 Mathe-Aufgaben</h1>
@@ -639,62 +679,97 @@
             }
         }
 
-        function generateTasks() {
-            const taskType = document.getElementById('taskType').value;
-            
-            if (taskType === 'adaptive') {
-                startAdaptiveMode();
-                return;
+        // Input Validation
+        function validateTaskType(type) {
+            const allowed = ['add10', 'add20', 'sub10', 'adaptive'];
+            if (!allowed.includes(type)) {
+                throw new Error('Ungültiger Aufgabentyp');
             }
-            
-            const taskCount = parseInt(document.getElementById('taskCount').value);
-            
-            if (taskCount < 1 || taskCount > 100) {
-                alert('Bitte wähle eine Anzahl zwischen 1 und 100.');
-                return;
-            }
-
-            adaptiveMode = false;
-            currentType = taskType;
-            currentTasks = [];
-            completedTasks = 0;
-            
-            let lastTask = null;
-            for (let i = 0; i < taskCount; i++) {
-                let task;
-                let attempts = 0;
-                // Only prevent consecutive duplicates
-                do {
-                    task = generateSingleTask(taskType);
-                    attempts++;
-                    if (attempts > 50) break; // Safety valve
-                } while (lastTask && task.key === lastTask.key);
-                
-                lastTask = task;
-                currentTasks.push(task);
-            }
-
-            displayTasks();
-            document.getElementById('pdfBtn').disabled = false;
+            return type;
         }
-        
-        function startAdaptiveMode() {
-            adaptiveMode = true;
-            adaptiveMaxResult = parseInt(document.getElementById('maxResult').value);
-            adaptiveLevel = Math.min(5, adaptiveMaxResult); // Start at 5 or lower if max is lower
-            adaptiveCorrectStreak = 0;
-            adaptiveIncorrectCount = 0;
-            adaptiveTasksShown = 0;
-            completedTasks = 0;
-            currentType = 'adaptive';
-            
-            currentTasks = [];
-            // Generate initial 3 tasks
-            for (let i = 0; i < 3; i++) {
-                currentTasks.push(generateAdaptiveTask());
+
+        function validateTaskCount(count) {
+            const num = parseInt(count, 10);
+            if (!Number.isInteger(num) || isNaN(num)) {
+                throw new Error('Aufgabenanzahl muss eine Zahl sein');
             }
-            
-            displayAdaptiveTasks();
+            if (num < 1 || num > 100) {
+                throw new Error('Aufgabenanzahl muss zwischen 1 und 100 liegen');
+            }
+            return num;
+        }
+
+        function validateMaxResult(value) {
+            const num = parseInt(value, 10);
+            if (!Number.isInteger(num) || isNaN(num)) {
+                throw new Error('Maximales Ergebnis muss eine Zahl sein');
+            }
+            if (num < 5 || num > 50) {
+                throw new Error('Maximales Ergebnis muss zwischen 5 und 50 liegen');
+            }
+            return num;
+        }
+
+        function generateTasks() {
+            try {
+                const taskType = validateTaskType(document.getElementById('taskType').value);
+
+                if (taskType === 'adaptive') {
+                    startAdaptiveMode();
+                    return;
+                }
+
+                const taskCount = validateTaskCount(document.getElementById('taskCount').value);
+
+                adaptiveMode = false;
+                currentType = taskType;
+                currentTasks = [];
+                completedTasks = 0;
+
+                let lastTask = null;
+                for (let i = 0; i < taskCount; i++) {
+                    let task;
+                    let attempts = 0;
+                    // Only prevent consecutive duplicates
+                    do {
+                        task = generateSingleTask(taskType);
+                        attempts++;
+                        if (attempts > 50) break; // Safety valve
+                    } while (lastTask && task.key === lastTask.key);
+
+                    lastTask = task;
+                    currentTasks.push(task);
+                }
+
+                displayTasks();
+                document.getElementById('preview').classList.add('active');
+                document.getElementById('pdfBtn').disabled = false;
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        function startAdaptiveMode() {
+            try {
+                adaptiveMode = true;
+                adaptiveMaxResult = validateMaxResult(document.getElementById('maxResult').value);
+                adaptiveLevel = Math.min(5, adaptiveMaxResult); // Start at 5 or lower if max is lower
+                adaptiveCorrectStreak = 0;
+                adaptiveIncorrectCount = 0;
+                adaptiveTasksShown = 0;
+                completedTasks = 0;
+                currentType = 'adaptive';
+
+                currentTasks = [];
+                // Generate initial 3 tasks
+                for (let i = 0; i < 3; i++) {
+                    currentTasks.push(generateAdaptiveTask());
+                }
+
+                displayAdaptiveTasks();
+            } catch (error) {
+                alert(error.message);
+            }
         }
         
         function generateAdaptiveTask() {
@@ -1313,5 +1388,17 @@
             doc.save(fileName);
         }
     </script>
+
+    <footer style="text-align: center; padding: 2rem 1rem; margin-top: 3rem; border-top: 2px solid rgba(255,107,157,0.2); font-size: 0.9rem; opacity: 0.8;">
+        <p style="margin-bottom: 0.75rem;">© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p style="font-size: 0.85rem;">
+            <a href="impressum.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Impressum</a> |
+            <a href="nutzungsbedingungen.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Datenschutz</a>
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.7;">
+            Die unerlaubte Vervielfältigung oder Verbreitung dieser Software ist untersagt.
+        </p>
+    </footer>
 </body>
 </html>

@@ -1,0 +1,291 @@
+name: 🚀 Deploy Smarty
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  validate:
+    name: 🧪 Validate & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🔍 Validate HTML structure
+      run: |
+        echo "📊 Running HTML validation..."
+
+        # Validate mathe-aufgaben.html
+        if grep -q "<!DOCTYPE html>" mathe-aufgaben.html; then
+          echo "✅ mathe-aufgaben.html: DOCTYPE found"
+        else
+          echo "❌ mathe-aufgaben.html: DOCTYPE missing"
+          exit 1
+        fi
+
+        # Validate deutsch-silben.html
+        if grep -q "<!DOCTYPE html>" deutsch-silben.html; then
+          echo "✅ deutsch-silben.html: DOCTYPE found"
+        else
+          echo "❌ deutsch-silben.html: DOCTYPE missing"
+          exit 1
+        fi
+
+        echo "✅ All HTML files validated"
+
+    - name: 🔒 Security scan
+      run: |
+        echo "🔍 Running security checks..."
+
+        # Check for eval() usage
+        if grep -r "eval(" *.html 2>/dev/null; then
+          echo "❌ Found eval() usage - security risk"
+          exit 1
+        fi
+
+        # Check for dangerous innerHTML patterns
+        if grep -r "innerHTML.*+" *.html 2>/dev/null; then
+          echo "⚠️ Found dynamic innerHTML - potential XSS risk"
+        fi
+
+        # Check for external script sources (except CDN)
+        if grep -r "<script.*src=" *.html | grep -v "cdnjs.cloudflare.com\|googleapis.com"; then
+          echo "⚠️ Found non-CDN external script references"
+        fi
+
+        echo "✅ Security checks passed"
+
+    - name: 📏 Code quality checks
+      run: |
+        echo "📏 Running code quality checks..."
+
+        # Check file sizes
+        for file in *.html; do
+          if [ -f "$file" ]; then
+            SIZE=$(wc -c < "$file")
+            echo "📄 $file: ${SIZE} bytes"
+            if [ $SIZE -gt 200000 ]; then
+              echo "⚠️ $file is quite large"
+            fi
+          fi
+        done
+
+        # Check for TODO/FIXME comments
+        TODO_COUNT=$(grep -r "TODO\|FIXME\|HACK" *.html | wc -l)
+        if [ $TODO_COUNT -gt 0 ]; then
+          echo "📝 Found $TODO_COUNT TODO/FIXME comments"
+        fi
+
+        echo "✅ Code quality checks completed"
+
+    - name: 🌐 Test HTTP server
+      run: |
+        echo "🌐 Starting test server..."
+
+        # Start Python HTTP server
+        python3 -m http.server 8080 > server.log 2>&1 &
+        SERVER_PID=$!
+
+        # Wait for server to start
+        sleep 3
+
+        # Test pages load
+        if curl -f -s http://localhost:8080/mathe-aufgaben.html > /dev/null; then
+          echo "✅ mathe-aufgaben.html loads"
+        else
+          echo "❌ mathe-aufgaben.html failed to load"
+          exit 1
+        fi
+
+        if curl -f -s http://localhost:8080/deutsch-silben.html > /dev/null; then
+          echo "✅ deutsch-silben.html loads"
+        else
+          echo "❌ deutsch-silben.html failed to load"
+          exit 1
+        fi
+
+        # Stop server
+        kill $SERVER_PID
+
+        echo "✅ All pages load successfully"
+
+  deploy-production:
+    name: 🌐 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Prepare deployment package
+      run: |
+        echo "📦 Preparing deployment package..."
+
+        # Create deployment directory
+        mkdir -p deploy
+
+        # Copy HTML files
+        cp mathe-aufgaben.html deploy/
+        cp deutsch-silben.html deploy/
+
+        # Copy optional files if they exist
+        [ -f index.html ] && cp index.html deploy/ || echo "⚠️ No index.html found"
+        [ -f README.md ] && cp README.md deploy/ || echo "⚠️ No README.md found"
+        [ -f LICENSE ] && cp LICENSE deploy/ || echo "⚠️ No LICENSE found"
+        [ -f CHANGELOG.md ] && cp CHANGELOG.md deploy/ || echo "⚠️ No CHANGELOG.md found"
+        [ -f robots.txt ] && cp robots.txt deploy/ || echo "⚠️ No robots.txt found"
+        [ -f favicon.ico ] && cp favicon.ico deploy/ || echo "⚠️ No favicon.ico found"
+
+        # Create deployment info
+        cat > deploy/deployment-info.json << EOF
+        {
+          "version": "$(date +%Y%m%d-%H%M%S)",
+          "commit": "$GITHUB_SHA",
+          "branch": "$GITHUB_REF_NAME",
+          "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "build_number": "$GITHUB_RUN_NUMBER"
+        }
+        EOF
+
+        echo "📋 Deployment package contents:"
+        find deploy/ -type f
+
+        echo "✅ Deployment package ready"
+
+    - name: 🚀 Deploy via SFTP/FTP (if configured)
+      if: env.FTP_HOST != ''
+      timeout-minutes: 15
+      continue-on-error: true
+      run: |
+        echo "🚀 Deploying via SFTP/FTP to $FTP_HOST..."
+
+        # Install lftp
+        sudo apt-get update -qq
+        sudo apt-get install -y lftp
+
+        # Create SSH config
+        mkdir -p ~/.ssh
+        cat > ~/.ssh/config << 'SSH_EOF'
+        Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            ServerAliveInterval 60
+            ServerAliveCountMax 3
+            ConnectTimeout 30
+        SSH_EOF
+        chmod 600 ~/.ssh/config
+
+        # Test SFTP connectivity
+        echo "🔍 Testing SFTP connectivity..."
+        if timeout 10 nc -zv $FTP_HOST 22 2>/dev/null; then
+          echo "✅ SFTP port 22 is reachable"
+          SFTP_AVAILABLE=true
+        else
+          echo "❌ SFTP port 22 not reachable"
+          SFTP_AVAILABLE=false
+        fi
+
+        # Deploy via SFTP
+        if [ "$SFTP_AVAILABLE" = true ]; then
+          echo "🔐 Deploying via SFTP..."
+
+          timeout 180 lftp -c "
+            set net:timeout 30
+            set net:max-retries 2
+            set sftp:auto-confirm yes
+            set sftp:connect-program 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+            set cmd:fail-exit yes
+
+            echo 'Connecting to SFTP...'
+            open sftp://$FTP_USER:$FTP_PASSWORD@$FTP_HOST
+
+            echo 'Connected! Current directory:'
+            pwd
+
+            echo 'Changing to target directory...'
+            cd $FTP_PATH || pwd
+
+            echo 'Changing to local deploy directory...'
+            lcd deploy
+
+            echo 'Starting file upload...'
+            mirror --reverse --delete --verbose
+
+            echo 'SFTP deployment completed!'
+            quit
+          "
+
+          if [ $? -eq 0 ]; then
+            echo "✅ SFTP deployment successful!"
+          else
+            echo "❌ SFTP deployment failed"
+            exit 1
+          fi
+        else
+          echo "❌ SFTP not available"
+          exit 1
+        fi
+      env:
+        FTP_HOST: ${{ secrets.FTP_HOST }}
+        FTP_USER: ${{ secrets.FTP_USER }}
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        FTP_PATH: ${{ secrets.FTP_PATH }}
+
+    - name: 🌐 Deploy to GitHub Pages
+      if: env.GITHUB_TOKEN != ''
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./deploy
+        publish_branch: gh-pages
+        force_orphan: true
+
+    - name: ☁️ Deploy to Netlify (if configured)
+      if: env.NETLIFY_SITE_ID != ''
+      run: |
+        echo "☁️ Deploying to Netlify..."
+
+        # Install Netlify CLI
+        npm install -g netlify-cli
+
+        # Deploy to Netlify
+        netlify deploy --prod --dir deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
+
+        echo "✅ Netlify deployment completed"
+      env:
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+    - name: 🎯 Deploy to Vercel (if configured)
+      if: env.VERCEL_TOKEN != ''
+      run: |
+        echo "🎯 Deploying to Vercel..."
+
+        # Install Vercel CLI
+        npm install -g vercel
+
+        # Deploy to Vercel
+        cd deploy
+        vercel --prod --token $VERCEL_TOKEN --yes
+
+        echo "✅ Vercel deployment completed"
+      env:
+        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    - name: 📊 Deployment summary
+      run: |
+        echo "📊 Deployment Summary"
+        echo "===================="
+        echo "✅ Files deployed: $(find deploy/ -type f | wc -l)"
+        echo "📅 Timestamp: $(date)"
+        echo "🔗 Commit: $GITHUB_SHA"
+        echo "🌿 Branch: $GITHUB_REF_NAME"
+        echo "🏗️ Build: $GITHUB_RUN_NUMBER"

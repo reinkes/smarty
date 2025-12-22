@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none';">
+    <title>Smarty Learn - Spielend Lernen</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Quicksand:wght@400;600;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF6B9D;
+            --secondary: #FFC837;
+            --tertiary: #4ECDC4;
+            --purple: #9B59B6;
+            --blue: #3498DB;
+            --text-dark: #2C3E50;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.3;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .particle:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            background: var(--secondary);
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            background: var(--tertiary);
+            top: 60%;
+            left: 80%;
+            animation-delay: 3s;
+        }
+
+        .particle:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            background: var(--primary);
+            top: 80%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        .particle:nth-child(4) {
+            width: 70px;
+            height: 70px;
+            background: var(--purple);
+            top: 30%;
+            left: 70%;
+            animation-delay: 9s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+            50% {
+                transform: translate(-20px, -30px) scale(0.9);
+            }
+            75% {
+                transform: translate(40px, 20px) scale(1.05);
+            }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            padding: 2rem;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Logo */
+        .logo-container {
+            margin-bottom: 3rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        /* SVG Brain with graduation cap */
+        .brain-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .logo-text {
+            text-align: left;
+        }
+
+        .logo-text h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-text p {
+            font-size: 1.3rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* App Cards */
+        .apps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .app-card {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--card-color-1), var(--card-color-2));
+        }
+
+        .app-card.math {
+            --card-color-1: #FF6B9D;
+            --card-color-2: #FFC837;
+        }
+
+        .app-card.deutsch {
+            --card-color-1: #9B59B6;
+            --card-color-2: #3498DB;
+        }
+
+        .app-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            animation: wiggle 3s infinite ease-in-out;
+        }
+
+        .app-card.math .app-icon {
+            animation-delay: 0s;
+        }
+
+        .app-card.deutsch .app-icon {
+            animation-delay: 1.5s;
+        }
+
+        @keyframes wiggle {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(-10deg) scale(1.1);
+            }
+            75% {
+                transform: rotate(10deg) scale(1.1);
+            }
+        }
+
+        .app-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .app-description {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .app-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+
+        .app-features li {
+            padding: 0.5rem 0;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .app-features li::before {
+            content: '✨';
+            margin-right: 0.5rem;
+        }
+
+        .app-btn {
+            background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .app-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Footer */
+        footer {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                flex-direction: column;
+                padding: 2rem;
+            }
+
+            .logo-text h1 {
+                font-size: 3rem;
+            }
+
+            .logo-text p {
+                font-size: 1.1rem;
+            }
+
+            .apps-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .app-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .app-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background particles -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg class="brain-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Brain -->
+                        <g id="brain">
+                            <!-- Left hemisphere -->
+                            <path d="M 30 60 Q 20 40 30 25 Q 40 15 50 20 Q 55 15 60 20" 
+                                  fill="#FF6B9D" stroke="#E74C3C" stroke-width="2"/>
+                            <path d="M 30 60 Q 25 70 30 85 Q 40 95 50 90 Q 55 95 60 90" 
+                                  fill="#FFC837" stroke="#F39C12" stroke-width="2"/>
+                            
+                            <!-- Right hemisphere -->
+                            <path d="M 90 60 Q 100 40 90 25 Q 80 15 70 20 Q 65 15 60 20" 
+                                  fill="#4ECDC4" stroke="#16A085" stroke-width="2"/>
+                            <path d="M 90 60 Q 95 70 90 85 Q 80 95 70 90 Q 65 95 60 90" 
+                                  fill="#9B59B6" stroke="#8E44AD" stroke-width="2"/>
+                            
+                            <!-- Brain details (squiggles) -->
+                            <path d="M 35 35 Q 40 33 45 35" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                            <path d="M 35 50 Q 42 48 48 50" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                            <path d="M 33 65 Q 40 63 46 65" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                            <path d="M 35 78 Q 42 76 48 78" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                            
+                            <path d="M 85 35 Q 80 33 75 35" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                            <path d="M 85 50 Q 78 48 72 50" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                            <path d="M 87 65 Q 80 63 74 65" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                            <path d="M 85 78 Q 78 76 72 78" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                        </g>
+                        
+                        <!-- Graduation cap -->
+                        <g id="cap" transform="translate(0, -5)">
+                            <!-- Cap top -->
+                            <polygon points="60,15 30,25 60,35 90,25" 
+                                     fill="#2C3E50" stroke="#34495E" stroke-width="1.5"/>
+                            <!-- Cap board -->
+                            <ellipse cx="60" cy="25" rx="30" ry="6" 
+                                     fill="#34495E" stroke="#2C3E50" stroke-width="1"/>
+                            <!-- Tassel -->
+                            <line x1="90" y1="25" x2="95" y2="32" 
+                                  stroke="#FFC837" stroke-width="2"/>
+                            <circle cx="95" cy="34" r="3" fill="#FFC837"/>
+                        </g>
+                        
+                        <!-- Sparkles -->
+                        <text x="10" y="30" font-size="12" fill="#FFC837" opacity="0.8">✨</text>
+                        <text x="100" y="50" font-size="10" fill="#FF6B9D" opacity="0.8">⭐</text>
+                        <text x="15" y="95" font-size="11" fill="#4ECDC4" opacity="0.8">💫</text>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Smarty Learn</h1>
+                    <p>Spielend Lernen</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- App Cards -->
+        <div class="apps-container">
+            <!-- Math App -->
+            <a href="mathe-aufgaben.html" class="app-card math">
+                <div class="app-icon">🔢</div>
+                <h2 class="app-title">Mathe</h2>
+                <p class="app-description">
+                    Rechnen üben mit sofortigem Feedback und lustigen Animationen!
+                </p>
+                <ul class="app-features">
+                    <li>Addition & Subtraktion</li>
+                    <li>Adaptiver Trainingsmodus</li>
+                    <li>Feuerwerk bei Erfolg 🎆</li>
+                    <li>PDF-Export für Arbeitsblätter</li>
+                </ul>
+                <span class="app-btn">Los rechnen!</span>
+            </a>
+
+            <!-- Deutsch App -->
+            <a href="deutsch-silben.html" class="app-card deutsch">
+                <div class="app-icon">📖</div>
+                <h2 class="app-title">Deutsch</h2>
+                <p class="app-description">
+                    Silben lernen mit bunten Bildern und interaktiven Aufgaben!
+                </p>
+                <ul class="app-features">
+                    <li>Anfangssilben erkennen</li>
+                    <li>50+ Wörter mit Emojis</li>
+                    <li>Adaptives Lernen 🚀</li>
+                    <li>3 Schwierigkeitsstufen</li>
+                </ul>
+                <span class="app-btn">Lesen lernen!</span>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Made with ❤️ for curious minds</p>
+        <p style="font-size: 0.85rem; opacity: 0.9; margin-top: 0.5rem;">
+            <a href="impressum.html" style="color: white; text-decoration: none; margin: 0 0.5rem;">Impressum</a> |
+            <a href="nutzungsbedingungen.html" style="color: white; text-decoration: none; margin: 0 0.5rem;">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html" style="color: white; text-decoration: none; margin: 0 0.5rem;">Datenschutz</a>
+        </p>
+        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 1rem;">
+            © 2024 Smarty Learn. Alle Rechte vorbehalten.
+        </p>
+    </footer>
+</body>
+</html>

@@ -3,8 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none';">
     <title>Silben-Trainer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
     <style>
         * {
             margin: 0;
@@ -172,6 +178,34 @@
 
         .number-input {
             max-width: 200px;
+        }
+
+        .btn-back {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: white;
+            color: var(--primary);
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--primary);
+            border-radius: 25px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
+        }
+
+        .btn-back:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(-5px);
+            box-shadow: 0 6px 20px rgba(155, 89, 182, 0.3);
         }
 
         button {
@@ -443,6 +477,7 @@
     </style>
 </head>
 <body>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
     <div class="container">
         <header>
             <h1>📖 Silben-Trainer</h1>
@@ -538,18 +573,23 @@
         let adaptiveLevel = 'easy';
         let correctStreak = 0;
         let incorrectCount = 0;
+        let taskIdCounter = 0; // Unique ID for each task
+        let totalTasksToSolve = 0; // For non-adaptive modes
 
         function startTraining() {
             const difficulty = document.getElementById('difficulty').value;
             currentMode = difficulty;
             tasksSolved = 0;
-            
+
             if (difficulty === 'adaptive') {
                 adaptiveLevel = 'easy';
                 correctStreak = 0;
                 incorrectCount = 0;
+                totalTasksToSolve = 0; // Infinite for adaptive
+            } else {
+                totalTasksToSolve = 20; // Fixed 20 tasks for non-adaptive modes
             }
-            
+
             generateTasks();
             document.getElementById('preview').classList.add('active');
             document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
@@ -579,22 +619,57 @@
             }
             
             const correctWord = availableWords[Math.floor(Math.random() * availableWords.length)];
-            
+
             // Generate wrong options
             const wrongOptions = [];
-            const allSyllables = [...new Set(wordDatabase.map(w => w.syllable))];
-            
-            while (wrongOptions.length < 2) {
-                const randomSyllable = allSyllables[Math.floor(Math.random() * allSyllables.length)];
-                if (randomSyllable !== correctWord.syllable && !wrongOptions.includes(randomSyllable)) {
-                    wrongOptions.push(randomSyllable);
+
+            if (currentMode === 'adaptive') {
+                // Adaptive: Komplett zufällige Silben (schwierig)
+                const allSyllables = [...new Set(wordDatabase.map(w => w.syllable))];
+
+                while (wrongOptions.length < 2) {
+                    const randomSyllable = allSyllables[Math.floor(Math.random() * allSyllables.length)];
+                    if (randomSyllable !== correctWord.syllable && !wrongOptions.includes(randomSyllable)) {
+                        wrongOptions.push(randomSyllable);
+                    }
+                }
+            } else {
+                // Easy/Medium/Hard: Gleicher Anfangsbuchstabe für Schwierigkeit
+                const firstLetter = correctWord.syllable[0];
+                const sameLetter = wordDatabase.filter(w =>
+                    w.syllable[0] === firstLetter &&
+                    w.syllable !== correctWord.syllable
+                ).map(w => w.syllable);
+
+                // Deduplizieren
+                const uniqueSameLetter = [...new Set(sameLetter)];
+
+                if (uniqueSameLetter.length >= 2) {
+                    // Genug Silben mit gleichem Anfangsbuchstaben
+                    const shuffled = uniqueSameLetter.sort(() => Math.random() - 0.5);
+                    wrongOptions.push(shuffled[0], shuffled[1]);
+                } else {
+                    // Fallback: Fülle mit allen verfügbaren Silben auf
+                    const allSyllables = [...new Set(wordDatabase.map(w => w.syllable))];
+
+                    // Nehme erst die mit gleichem Buchstaben
+                    wrongOptions.push(...uniqueSameLetter);
+
+                    // Dann fülle mit zufälligen auf
+                    while (wrongOptions.length < 2) {
+                        const randomSyllable = allSyllables[Math.floor(Math.random() * allSyllables.length)];
+                        if (randomSyllable !== correctWord.syllable && !wrongOptions.includes(randomSyllable)) {
+                            wrongOptions.push(randomSyllable);
+                        }
+                    }
                 }
             }
             
             // Shuffle options
             const options = [correctWord.syllable, ...wrongOptions].sort(() => Math.random() - 0.5);
-            
+
             return {
+                id: taskIdCounter++, // Assign unique ID
                 word: correctWord.word,
                 emoji: correctWord.emoji,
                 correctSyllable: correctWord.syllable,
@@ -604,42 +679,47 @@
 
         function displayTasks() {
             const container = document.getElementById('taskContainer');
-            const title = currentMode === 'adaptive' 
+            const title = currentMode === 'adaptive'
                 ? `Adaptives Training (${adaptiveLevel === 'easy' ? 'Einfach' : adaptiveLevel === 'medium' ? 'Mittel' : 'Schwer'})`
                 : 'Silben-Training';
-            
+
             document.getElementById('previewTitle').textContent = title;
-            document.getElementById('taskCountDisplay').textContent = `${tasksSolved} gelöst`;
-            
+
+            const displayText = currentMode === 'adaptive'
+                ? `${tasksSolved} gelöst`
+                : `${tasksSolved} / ${totalTasksToSolve}`;
+            document.getElementById('taskCountDisplay').textContent = displayText;
+
             container.innerHTML = '';
             
             currentTasks.forEach((task, index) => {
                 const taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
                 taskDiv.style.animationDelay = `${index * 0.2}s`;
-                
+                taskDiv.dataset.taskId = task.id; // Store task ID
+
                 const emoji = document.createElement('div');
                 emoji.className = 'emoji-display';
                 emoji.textContent = task.emoji;
-                
+
                 const optionsDiv = document.createElement('div');
                 optionsDiv.className = 'syllable-options';
-                
+
                 task.options.forEach(option => {
                     const btn = document.createElement('button');
                     btn.className = 'syllable-btn';
                     btn.textContent = option;
-                    btn.onclick = () => checkAnswer(option, task.correctSyllable, btn, taskDiv, index);
+                    btn.onclick = () => checkAnswer(option, task.correctSyllable, btn, taskDiv, task.id);
                     optionsDiv.appendChild(btn);
                 });
-                
+
                 taskDiv.appendChild(emoji);
                 taskDiv.appendChild(optionsDiv);
                 container.appendChild(taskDiv);
             });
         }
 
-        function checkAnswer(selected, correct, button, taskDiv, taskIndex) {
+        function checkAnswer(selected, correct, button, taskDiv, taskId) {
             // Disable all buttons in this task
             const buttons = taskDiv.querySelectorAll('.syllable-btn');
             buttons.forEach(btn => btn.style.pointerEvents = 'none');
@@ -668,8 +748,8 @@
                 }
                 
                 setTimeout(() => {
-                    slideOutAndReplace(taskIndex);
-                    
+                    slideOutAndReplace(taskId);
+
                     if (tasksSolved % 10 === 0) {
                         showMilestoneCelebration(tasksSolved);
                     }
@@ -705,53 +785,72 @@
             }
         }
 
-        function slideOutAndReplace(taskIndex) {
+        function slideOutAndReplace(taskId) {
             const container = document.getElementById('taskContainer');
-            const taskDivs = Array.from(container.querySelectorAll('.task-item'));
-            const completedTask = taskDivs[taskIndex];
-            
+            const completedTask = container.querySelector(`[data-task-id="${taskId}"]`);
+
+            if (!completedTask) return; // Safety check
+
             completedTask.style.transition = 'all 0.5s ease-out';
             completedTask.style.transform = 'translateY(-100px)';
             completedTask.style.opacity = '0';
-            
+
             setTimeout(() => {
-                currentTasks.splice(taskIndex, 1);
+                // Find and remove task by ID
+                const taskIndex = currentTasks.findIndex(t => t.id === taskId);
+                if (taskIndex !== -1) {
+                    currentTasks.splice(taskIndex, 1);
+                }
                 completedTask.remove();
-                
-                const newTask = generateTask();
-                currentTasks.push(newTask);
-                
-                const newTaskDiv = document.createElement('div');
-                newTaskDiv.className = 'task-item';
-                newTaskDiv.style.opacity = '0';
-                newTaskDiv.style.transform = 'translateY(50px)';
-                
-                const emoji = document.createElement('div');
-                emoji.className = 'emoji-display';
-                emoji.textContent = newTask.emoji;
-                
-                const optionsDiv = document.createElement('div');
-                optionsDiv.className = 'syllable-options';
-                
-                newTask.options.forEach(option => {
-                    const btn = document.createElement('button');
-                    btn.className = 'syllable-btn';
-                    btn.textContent = option;
-                    btn.onclick = () => checkAnswer(option, newTask.correctSyllable, btn, newTaskDiv, currentTasks.length - 1);
-                    optionsDiv.appendChild(btn);
-                });
-                
-                newTaskDiv.appendChild(emoji);
-                newTaskDiv.appendChild(optionsDiv);
-                container.appendChild(newTaskDiv);
-                
-                setTimeout(() => {
-                    newTaskDiv.style.transition = 'all 0.5s ease-out';
-                    newTaskDiv.style.opacity = '1';
-                    newTaskDiv.style.transform = 'translateY(0)';
-                }, 50);
-                
-                document.getElementById('taskCountDisplay').textContent = `${tasksSolved} gelöst`;
+
+                // Check if we should add new task or finish
+                const shouldContinue = currentMode === 'adaptive' || tasksSolved < totalTasksToSolve;
+
+                if (shouldContinue && currentTasks.length > 0) {
+                    // Replace with new task (adaptive mode or still tasks remaining)
+                    const newTask = generateTask();
+                    currentTasks.push(newTask);
+
+                    const newTaskDiv = document.createElement('div');
+                    newTaskDiv.className = 'task-item';
+                    newTaskDiv.dataset.taskId = newTask.id;
+                    newTaskDiv.style.opacity = '0';
+                    newTaskDiv.style.transform = 'translateY(50px)';
+
+                    const emoji = document.createElement('div');
+                    emoji.className = 'emoji-display';
+                    emoji.textContent = newTask.emoji;
+
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'syllable-options';
+
+                    newTask.options.forEach(option => {
+                        const btn = document.createElement('button');
+                        btn.className = 'syllable-btn';
+                        btn.textContent = option;
+                        btn.onclick = () => checkAnswer(option, newTask.correctSyllable, btn, newTaskDiv, newTask.id);
+                        optionsDiv.appendChild(btn);
+                    });
+
+                    newTaskDiv.appendChild(emoji);
+                    newTaskDiv.appendChild(optionsDiv);
+                    container.appendChild(newTaskDiv);
+
+                    setTimeout(() => {
+                        newTaskDiv.style.transition = 'all 0.5s ease-out';
+                        newTaskDiv.style.opacity = '1';
+                        newTaskDiv.style.transform = 'translateY(0)';
+                    }, 50);
+                } else if (currentTasks.length === 0) {
+                    // All tasks completed!
+                    showCompletionCelebration();
+                }
+
+                // Update display
+                const displayText = currentMode === 'adaptive'
+                    ? `${tasksSolved} gelöst`
+                    : `${tasksSolved} / ${totalTasksToSolve}`;
+                document.getElementById('taskCountDisplay').textContent = displayText;
                 
                 if (currentMode === 'adaptive') {
                     const title = `Adaptives Training (${adaptiveLevel === 'easy' ? 'Einfach' : adaptiveLevel === 'medium' ? 'Mittel' : 'Schwer'})`;
@@ -797,11 +896,57 @@
             const levelText = adaptiveLevel === 'medium' ? 'Mittel' : 'Schwer';
             celebration.textContent = `🚀 Level ${levelText}! 🚀`;
             celebration.classList.add('show');
-            
+
             setTimeout(() => {
                 celebration.classList.remove('show');
             }, 1500);
         }
+
+        function showCompletionCelebration() {
+            const container = document.getElementById('taskContainer');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 4rem 2rem; animation: fadeIn 1s ease-out;">
+                    <div style="font-size: 8rem; margin-bottom: 2rem; animation: bounce 1s ease-in-out infinite;">
+                        🎉
+                    </div>
+                    <h2 style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; font-family: 'Fredoka', sans-serif;">
+                        Geschafft!
+                    </h2>
+                    <p style="font-size: 1.3rem; color: var(--text-dark); margin-bottom: 2rem;">
+                        Du hast alle ${totalTasksToSolve} Aufgaben gelöst! 🌟
+                    </p>
+                    <button onclick="startTraining()" style="
+                        background: linear-gradient(135deg, var(--primary), #C39BD3);
+                        color: white;
+                        padding: 1rem 2rem;
+                        border: none;
+                        border-radius: 25px;
+                        font-size: 1.2rem;
+                        font-weight: 700;
+                        cursor: pointer;
+                        box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        Nochmal üben! 🔄
+                    </button>
+                </div>
+            `;
+
+            // Update display
+            document.getElementById('taskCountDisplay').textContent = `${totalTasksToSolve} / ${totalTasksToSolve} ✅`;
+        }
     </script>
+
+    <footer style="text-align: center; padding: 2rem 1rem; margin-top: 3rem; border-top: 2px solid rgba(155,89,182,0.2); font-size: 0.9rem; opacity: 0.8;">
+        <p style="margin-bottom: 0.75rem;">© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p style="font-size: 0.85rem;">
+            <a href="impressum.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Impressum</a> |
+            <a href="nutzungsbedingungen.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Datenschutz</a>
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.7;">
+            Die unerlaubte Vervielfältigung oder Verbreitung dieser Software ist untersagt.
+        </p>
+    </footer>
 </body>
 </html>
