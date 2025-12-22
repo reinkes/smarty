@@ -1332,7 +1332,12 @@
         }
 
         function generatePDF() {
-            const { jsPDF } = window.jspdf;
+            // jsPDF can be at window.jspdf.jsPDF or window.jsPDF
+            const jsPDF = window.jspdf?.jsPDF || window.jsPDF;
+            if (!jsPDF) {
+                alert('PDF-Bibliothek konnte nicht geladen werden. Bitte Seite neu laden.');
+                return;
+            }
             const doc = new jsPDF();
             
             const typeNames = {
