@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://cdnjs.cloudflare.com;">
     <title>Mathe-Aufgaben Generator</title>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
@@ -793,29 +793,41 @@
         }
         
         function generateAdaptiveTask() {
-            let num1, num2, result;
-            
+            let num1, num2, result, key;
+            let attempts = 0;
+            const maxAttempts = 100;
+
             // Calculate current effective max (starts at adaptiveLevel, grows to 50% of maxResult)
             const maxPossible = Math.min(
                 adaptiveLevel,
-                Math.floor(adaptiveMaxResult * 0.5) + 
+                Math.floor(adaptiveMaxResult * 0.5) +
                 Math.floor((adaptiveMaxResult * 0.5) * (adaptiveTasksShown / 50))
             );
-            
+
             const effectiveMax = Math.max(adaptiveLevel, maxPossible);
-            
+
+            // Get existing task keys to avoid duplicates
+            const existingKeys = currentTasks.map(t => t.key);
+
             do {
                 num1 = Math.floor(Math.random() * (effectiveMax + 1));
                 num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
                 result = num1 + num2;
-            } while ((num1 === 0 || num2 === 0) && Math.random() < 0.9); // Avoid +0
-            
+                key = `${num1}+${num2}`;
+                attempts++;
+
+                // Avoid +0 and duplicates
+            } while (
+                attempts < maxAttempts &&
+                (((num1 === 0 || num2 === 0) && Math.random() < 0.9) || existingKeys.includes(key))
+            );
+
             return {
                 num1,
                 num2,
                 operator: '+',
                 result,
-                key: `${num1}+${num2}`,
+                key,
                 level: effectiveMax
             };
         }
@@ -932,23 +944,30 @@
                     taskDiv.classList.add('correct');
                     playSuccessSound();
                     inputElement.disabled = true;
-                    
+
                     adjustAdaptiveLevel(true);
                     adaptiveTasksShown++;
-                    
+
                     // Update counter
                     document.getElementById('taskCountDisplay').textContent = `${adaptiveTasksShown} gelöst`;
                     document.getElementById('previewTitle').textContent = `Adaptives Training (Level ${adaptiveLevel})`;
-                    
-                    // Slide out the completed task and add new one at bottom
+
+                    // Auto-advance to next task and add smooth scrolling
                     setTimeout(() => {
+                        // Focus next active input
+                        const container = document.getElementById('tasksContainer');
+                        const nextInput = container.querySelector('input:not([disabled])');
+                        if (nextInput) {
+                            nextInput.focus();
+                        }
+
                         slideOutAndReplaceTask(taskIndex);
-                        
+
                         // Check for milestones
                         if (adaptiveTasksShown % 10 === 0) {
                             showMilestoneCelebration(adaptiveTasksShown);
                         }
-                    }, 400);
+                    }, 300);
                 } else {
                     taskDiv.classList.add('incorrect');
                     adjustAdaptiveLevel(false);
@@ -961,20 +980,28 @@
             const container = document.getElementById('tasksContainer');
             const allTaskDivs = Array.from(container.querySelectorAll('.task-item'));
             const completedTaskDiv = allTaskDivs[completedIndex];
-            
-            // Slide out animation
-            completedTaskDiv.style.transition = 'all 0.5s ease-out';
-            completedTaskDiv.style.transform = 'translateY(-100px)';
-            completedTaskDiv.style.opacity = '0';
-            
+
+            // Gray out and prepare for removal
+            completedTaskDiv.style.transition = 'all 0.8s ease-out';
+            completedTaskDiv.style.opacity = '0.3';
+            completedTaskDiv.style.filter = 'grayscale(100%)';
+
+            // After graying out, scroll up smoothly
             setTimeout(() => {
-                // Remove the completed task from array and DOM
-                currentTasks.splice(completedIndex, 1);
-                completedTaskDiv.remove();
-                
-                // Generate new task from full range (can include easier tasks)
-                const newTask = generateAdaptiveTaskFromFullRange();
-                currentTasks.push(newTask);
+                completedTaskDiv.style.transform = 'translateY(-120px) scale(0.95)';
+                completedTaskDiv.style.height = '0';
+                completedTaskDiv.style.margin = '0';
+                completedTaskDiv.style.padding = '0';
+
+                // Remove after animation
+                setTimeout(() => {
+                    // Remove the completed task from array and DOM
+                    currentTasks.splice(completedIndex, 1);
+                    completedTaskDiv.remove();
+
+                    // Generate new task from full range (can include easier tasks)
+                    const newTask = generateAdaptiveTaskFromFullRange();
+                    currentTasks.push(newTask);
                 
                 // Create new task element
                 const newTaskDiv = document.createElement('div');
@@ -1022,44 +1049,57 @@
                     }
                 });
                 
-                // Slide in animation
-                setTimeout(() => {
-                    newTaskDiv.style.transition = 'all 0.5s ease-out';
-                    newTaskDiv.style.opacity = '1';
-                    newTaskDiv.style.transform = 'translateY(0)';
-                }, 50);
-            }, 500);
+                    // Slide in animation
+                    setTimeout(() => {
+                        newTaskDiv.style.transition = 'all 0.5s ease-out';
+                        newTaskDiv.style.opacity = '1';
+                        newTaskDiv.style.transform = 'translateY(0)';
+                    }, 50);
+                }, 600);  // Wait for gray-out animation
+            }, 400);  // Wait for height collapse
         }
         
         function generateAdaptiveTaskFromFullRange() {
-            let num1, num2, result;
-            
+            let num1, num2, result, key;
+            let attempts = 0;
+            const maxAttempts = 100;
+
             // Can generate from easier levels too (random between 5 and current level)
             const minLevel = 5;
             const maxLevel = adaptiveLevel;
             const taskLevel = Math.floor(Math.random() * (maxLevel - minLevel + 1)) + minLevel;
-            
+
             // Calculate current effective max (starts at adaptiveLevel, grows to 50% of maxResult)
             const maxPossible = Math.min(
                 taskLevel,
-                Math.floor(adaptiveMaxResult * 0.5) + 
+                Math.floor(adaptiveMaxResult * 0.5) +
                 Math.floor((adaptiveMaxResult * 0.5) * (adaptiveTasksShown / 50))
             );
-            
+
             const effectiveMax = Math.max(taskLevel, maxPossible);
-            
+
+            // Get existing task keys to avoid duplicates
+            const existingKeys = currentTasks.map(t => t.key);
+
             do {
                 num1 = Math.floor(Math.random() * (effectiveMax + 1));
                 num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
                 result = num1 + num2;
-            } while ((num1 === 0 || num2 === 0) && Math.random() < 0.9); // Avoid +0
-            
+                key = `${num1}+${num2}`;
+                attempts++;
+
+                // Avoid +0 and duplicates
+            } while (
+                attempts < maxAttempts &&
+                (((num1 === 0 || num2 === 0) && Math.random() < 0.9) || existingKeys.includes(key))
+            );
+
             return {
                 num1,
                 num2,
                 operator: '+',
                 result,
-                key: `${num1}+${num2}`,
+                key,
                 level: effectiveMax
             };
         }
