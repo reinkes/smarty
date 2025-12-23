@@ -579,25 +579,21 @@ class DeutschApp {
             transition: all 0.3s ease;
         `;
 
-        // Add event listeners in next section
-        // (will be picked up by the code below)
+        // Add event listeners
+        restartButton.addEventListener('click', () => this.startTraining());
+        restartButton.addEventListener('mouseover', function() {
+            this.style.transform = 'scale(1.05)';
+        });
+        restartButton.addEventListener('mouseout', function() {
+            this.style.transform = 'scale(1)';
+        });
+
         // Assemble DOM
         wrapper.appendChild(emoji);
         wrapper.appendChild(heading);
         wrapper.appendChild(message);
         wrapper.appendChild(restartButton);
-
-        // Add event listener to restart button
-        const restartButton = document.getElementById('restartButton');
-        if (restartButton) {
-            restartButton.addEventListener('click', () => this.startTraining());
-            restartButton.addEventListener('mouseover', function() {
-                this.style.transform = 'scale(1.05)';
-            });
-            restartButton.addEventListener('mouseout', function() {
-                this.style.transform = 'scale(1)';
-            });
-        }
+        this.dom.taskContainer.appendChild(wrapper);
 
         // Update display
         this.dom.taskCountDisplay.textContent = `${this.totalTasksToSolve} / ${this.totalTasksToSolve} ✅`;
