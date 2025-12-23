@@ -34,6 +34,7 @@ class MatheApp {
         this.maxUnlockedNumber = 10; // Start with calculations up to 10
         this.numberUsageCount = {}; // Track how many times each result number was used
         this.tasksNeededPerNumber = 10; // How many tasks with a number before unlocking next
+        this.correctAnswersAtStartLevel = 0; // At level 10, count ALL correct answers
 
         // Timeout references
         this.opacityUpdateTimeout = null;
@@ -580,19 +581,32 @@ class MatheApp {
                 this.adjustAdaptiveLevel(true);
                 this.adaptiveTasksShown++;
 
-                // Progressive unlock system - track result number usage
-                const resultNumber = correctAnswer;
-                if (!this.numberUsageCount[resultNumber]) {
-                    this.numberUsageCount[resultNumber] = 0;
-                }
-                this.numberUsageCount[resultNumber]++;
+                // Progressive unlock system
+                if (this.maxUnlockedNumber === 10) {
+                    // At starting level: count ALL correct answers
+                    this.correctAnswersAtStartLevel++;
 
-                this.updateProgressBar();
+                    this.updateProgressBar();
 
-                // Check if current max number has been used enough times to unlock next
-                const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
-                if (currentMaxUsage >= this.tasksNeededPerNumber) {
-                    this.unlockNextNumber();
+                    // Check if enough tasks completed to unlock 11
+                    if (this.correctAnswersAtStartLevel >= this.tasksNeededPerNumber) {
+                        this.unlockNextNumber();
+                    }
+                } else {
+                    // At higher levels: track specific result numbers
+                    const resultNumber = correctAnswer;
+                    if (!this.numberUsageCount[resultNumber]) {
+                        this.numberUsageCount[resultNumber] = 0;
+                    }
+                    this.numberUsageCount[resultNumber]++;
+
+                    this.updateProgressBar();
+
+                    // Check if current max number has been used enough times to unlock next
+                    const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
+                    if (currentMaxUsage >= this.tasksNeededPerNumber) {
+                        this.unlockNextNumber();
+                    }
                 }
 
                 // Update counter
@@ -1085,17 +1099,27 @@ class MatheApp {
     updateProgressBar() {
         if (!this.dom.progressBarContainer) return;
 
-        // Calculate progress for CURRENT max number
-        const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
-        const progress = (currentMaxUsage / this.tasksNeededPerNumber) * 100;
-        const remaining = this.tasksNeededPerNumber - currentMaxUsage;
+        let progress, remaining, progressText;
+
+        if (this.maxUnlockedNumber === 10) {
+            // At starting level: count ALL correct answers
+            progress = (this.correctAnswersAtStartLevel / this.tasksNeededPerNumber) * 100;
+            remaining = this.tasksNeededPerNumber - this.correctAnswersAtStartLevel;
+            progressText = `Noch ${remaining} Aufgaben bis ${this.maxUnlockedNumber + 1} freigeschaltet wird 🎯`;
+        } else {
+            // At higher levels: track specific result number
+            const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
+            progress = (currentMaxUsage / this.tasksNeededPerNumber) * 100;
+            remaining = this.tasksNeededPerNumber - currentMaxUsage;
+            progressText = `Noch ${remaining} Aufgaben mit ${this.maxUnlockedNumber} bis ${this.maxUnlockedNumber + 1} freigeschaltet wird 🎯`;
+        }
 
         if (this.dom.progressBarFill) {
             this.dom.progressBarFill.style.width = `${Math.min(progress, 100)}%`;
         }
 
         if (this.dom.progressBarText) {
-            this.dom.progressBarText.textContent = `Noch ${remaining} Aufgaben mit ${this.maxUnlockedNumber} bis ${this.maxUnlockedNumber + 1} freigeschaltet wird 🎯`;
+            this.dom.progressBarText.textContent = progressText;
         }
 
         // Show progress bar in adaptive mode
