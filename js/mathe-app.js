@@ -275,6 +275,22 @@ class MatheApp {
             this.maxUnlockedNumber
         );
 
+        // Check if current max number needs more practice
+        const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
+        const needsMorePractice = currentMaxUsage < this.tasksNeededPerNumber;
+
+        // Weighted generation: 60% current max, 40% previous numbers
+        const shouldFocusOnMax = needsMorePractice && Math.random() < 0.6;
+        let targetResult;
+
+        if (shouldFocusOnMax) {
+            // Generate task with result = maxUnlockedNumber
+            targetResult = this.maxUnlockedNumber;
+        } else {
+            // Generate task with result from 1 to maxUnlockedNumber
+            targetResult = Math.floor(Math.random() * this.maxUnlockedNumber) + 1;
+        }
+
         // Get existing task keys to avoid duplicates
         const existingKeys = this.currentTasks.map(t => t.key);
 
@@ -284,15 +300,27 @@ class MatheApp {
 
         do {
             if (this.currentOperator === 'add') {
-                num1 = Math.floor(Math.random() * (effectiveMax + 1));
-                num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
+                // Generate numbers that add up to targetResult
+                if (shouldFocusOnMax && targetResult <= this.maxUnlockedNumber) {
+                    num1 = Math.floor(Math.random() * (targetResult + 1));
+                    num2 = targetResult - num1;
+                } else {
+                    num1 = Math.floor(Math.random() * (effectiveMax + 1));
+                    num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
+                }
                 result = num1 + num2;
                 operator = '+';
                 key = `${num1}+${num2}`;
             } else {
                 // Subtraction
-                num1 = Math.floor(Math.random() * (effectiveMax + 1));
-                num2 = Math.floor(Math.random() * (num1 + 1));
+                if (shouldFocusOnMax && targetResult <= this.maxUnlockedNumber) {
+                    result = targetResult;
+                    num2 = Math.floor(Math.random() * (this.maxUnlockedNumber - targetResult + 1));
+                    num1 = result + num2;
+                } else {
+                    num1 = Math.floor(Math.random() * (effectiveMax + 1));
+                    num2 = Math.floor(Math.random() * (num1 + 1));
+                }
                 result = num1 - num2;
                 operator = '−';
                 key = `${num1}-${num2}`;
@@ -346,6 +374,22 @@ class MatheApp {
             this.maxUnlockedNumber
         );
 
+        // Check if current max number needs more practice
+        const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
+        const needsMorePractice = currentMaxUsage < this.tasksNeededPerNumber;
+
+        // Weighted generation: 60% current max, 40% previous numbers
+        const shouldFocusOnMax = needsMorePractice && Math.random() < 0.6;
+        let targetResult;
+
+        if (shouldFocusOnMax) {
+            // Generate task with result = maxUnlockedNumber
+            targetResult = this.maxUnlockedNumber;
+        } else {
+            // Generate task with result from 1 to maxUnlockedNumber
+            targetResult = Math.floor(Math.random() * this.maxUnlockedNumber) + 1;
+        }
+
         // Get existing task keys to avoid duplicates
         const existingKeys = this.currentTasks.map(t => t.key);
 
@@ -355,15 +399,27 @@ class MatheApp {
 
         do {
             if (this.currentOperator === 'add') {
-                num1 = Math.floor(Math.random() * (effectiveMax + 1));
-                num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
+                // Generate numbers that add up to targetResult
+                if (shouldFocusOnMax && targetResult <= this.maxUnlockedNumber) {
+                    num1 = Math.floor(Math.random() * (targetResult + 1));
+                    num2 = targetResult - num1;
+                } else {
+                    num1 = Math.floor(Math.random() * (effectiveMax + 1));
+                    num2 = Math.floor(Math.random() * (effectiveMax - num1 + 1));
+                }
                 result = num1 + num2;
                 operator = '+';
                 key = `${num1}+${num2}`;
             } else {
                 // Subtraction
-                num1 = Math.floor(Math.random() * (effectiveMax + 1));
-                num2 = Math.floor(Math.random() * (num1 + 1));
+                if (shouldFocusOnMax && targetResult <= this.maxUnlockedNumber) {
+                    result = targetResult;
+                    num2 = Math.floor(Math.random() * (this.maxUnlockedNumber - targetResult + 1));
+                    num1 = result + num2;
+                } else {
+                    num1 = Math.floor(Math.random() * (effectiveMax + 1));
+                    num2 = Math.floor(Math.random() * (num1 + 1));
+                }
                 result = num1 - num2;
                 operator = '−';
                 key = `${num1}-${num2}`;
