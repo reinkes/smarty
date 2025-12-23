@@ -466,20 +466,24 @@ class MatheApp {
 
                 // Auto-advance to next task and add smooth scrolling
                 setTimeout(() => {
+                    // Add new task FIRST (before focusing)
+                    this.addNewAdaptiveTask();
+
                     // Focus next active input
                     const nextInput = this.dom.tasksContainer.querySelector('input:not([disabled])');
                     if (nextInput) {
                         nextInput.focus();
 
-                        // Mobile: Scroll to next input
+                        // Mobile: Scroll to next input smoothly
                         if (window.innerWidth <= 768) {
                             setTimeout(() => {
                                 nextInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }, 300);
+                            }, 100);
                         }
                     }
 
-                    this.slideOutAndReplaceTask(taskIndex);
+                    // Update visual opacity (fade old tasks)
+                    this.updateCompletedTasksVisuals();
 
                     // Check for milestones
                     if (this.adaptiveTasksShown % MatheApp.MILESTONE_INTERVAL === 0) {
@@ -495,120 +499,95 @@ class MatheApp {
     }
 
     /**
-     * Slide out and replace task
+     * Add new adaptive task to the end
      */
-    slideOutAndReplaceTask(completedIndex) {
-        const allTaskDivs = Array.from(this.dom.tasksContainer.querySelectorAll('.task-item'));
-        const completedTaskDiv = allTaskDivs[completedIndex];
+    addNewAdaptiveTask() {
+        // Generate new task from full range (can include easier tasks)
+        const newTask = this.generateAdaptiveTaskFromFullRange();
+        this.currentTasks.push(newTask);
 
-        // Apply gradual transparency to last 10 tasks
-        this.updateTaskOpacities();
+        // Create new task element
+        const newTaskDiv = document.createElement('div');
+        newTaskDiv.className = 'task-item';
+        newTaskDiv.style.opacity = '0';
+        newTaskDiv.style.transform = 'translateY(20px)';
 
-        // Gray out and prepare for removal (SLOWER animation)
-        completedTaskDiv.style.transition = 'all 1.5s ease-out';
-        completedTaskDiv.style.opacity = '0.2';
-        completedTaskDiv.style.filter = 'grayscale(100%)';
+        const equation = document.createElement('span');
+        equation.className = 'equation';
+        equation.textContent = `${newTask.num1} ${newTask.operator} ${newTask.num2} =`;
 
-        // After graying out, scroll up smoothly
-        setTimeout(() => {
-            completedTaskDiv.style.transition = 'all 1.2s ease-out';
-            completedTaskDiv.style.transform = 'translateY(-150px) scale(0.9)';
-            completedTaskDiv.style.height = '0';
-            completedTaskDiv.style.margin = '0';
-            completedTaskDiv.style.padding = '0';
-            completedTaskDiv.style.overflow = 'hidden';
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.placeholder = '?';
+        input.dataset.result = newTask.result;
+        input.dataset.taskIndex = this.currentTasks.length - 1;
+        input.inputMode = 'numeric';
+        input.pattern = '[0-9]*';
+        input.setAttribute('aria-label', `Lösung für ${newTask.num1} ${newTask.operator} ${newTask.num2}`);
 
-            // Remove after animation
-            setTimeout(() => {
-                // Remove the completed task from array and DOM
-                this.currentTasks.splice(completedIndex, 1);
-                completedTaskDiv.remove();
+        input.addEventListener('input', (e) => this.handleAdaptiveInput(e.target, newTaskDiv));
+        input.addEventListener('focus', this.handleInputFocus.bind(this));
+        input.addEventListener('keydown', (e) => this.handleKeyDown(e, this.dom.tasksContainer));
 
-                // Generate new task from full range (can include easier tasks)
-                const newTask = this.generateAdaptiveTaskFromFullRange();
-                this.currentTasks.push(newTask);
+        newTaskDiv.appendChild(equation);
+        newTaskDiv.appendChild(input);
 
-                // Create new task element
-                const newTaskDiv = document.createElement('div');
-                newTaskDiv.className = 'task-item';
-                newTaskDiv.style.opacity = '0';
-                newTaskDiv.style.transform = 'translateY(50px)';
+        // Add to bottom
+        this.dom.tasksContainer.appendChild(newTaskDiv);
 
-                const equation = document.createElement('span');
-                equation.className = 'equation';
-                equation.textContent = `${newTask.num1} ${newTask.operator} ${newTask.num2} =`;
-
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.placeholder = '?';
-                input.dataset.result = newTask.result;
-                input.dataset.taskIndex = this.currentTasks.length - 1;
-                input.inputMode = 'numeric';
-                input.pattern = '[0-9]*';
-                input.setAttribute('aria-label', `Lösung für ${newTask.num1} ${newTask.operator} ${newTask.num2}`);
-
-                input.addEventListener('input', (e) => this.handleAdaptiveInput(e.target, newTaskDiv));
-                input.addEventListener('focus', this.handleInputFocus.bind(this));
-                input.addEventListener('keydown', (e) => this.handleKeyDown(e, this.dom.tasksContainer));
-
-                newTaskDiv.appendChild(equation);
-                newTaskDiv.appendChild(input);
-
-                // Add to bottom
-                this.dom.tasksContainer.appendChild(newTaskDiv);
-
-                // Update all task indices
-                const updatedTaskDivs = this.dom.tasksContainer.querySelectorAll('.task-item');
-                updatedTaskDivs.forEach((div, idx) => {
-                    const inp = div.querySelector('input');
-                    if (inp) {
-                        inp.dataset.taskIndex = idx;
-                    }
-                });
-
-                // Slide in animation
-                setTimeout(() => {
-                    newTaskDiv.style.transition = 'all 0.5s ease-out';
-                    newTaskDiv.style.opacity = '1';
-                    newTaskDiv.style.transform = 'translateY(0)';
-
-                    // Update opacities after new task is added
-                    this.updateTaskOpacities();
-                }, 50);
-            }, MatheApp.SLIDE_OUT_DELAY);
-        }, MatheApp.SLIDE_OUT_DELAY);
+        // Slide in animation
+        requestAnimationFrame(() => {
+            newTaskDiv.style.transition = 'all 0.4s ease-out';
+            newTaskDiv.style.opacity = '1';
+            newTaskDiv.style.transform = 'translateY(0)';
+        });
     }
 
     /**
-     * Update task opacities for gradual fade
+     * Update visuals for completed tasks (fade old ones, remove very old ones)
      */
-    updateTaskOpacities() {
-        // Debounce for performance
-        clearTimeout(this.opacityUpdateTimeout);
-        this.opacityUpdateTimeout = setTimeout(() => {
-            const allTaskDivs = Array.from(this.dom.tasksContainer.querySelectorAll('.task-item:not(.correct):not(.incorrect)'));
+    updateCompletedTasksVisuals() {
+        const allTaskDivs = Array.from(this.dom.tasksContainer.querySelectorAll('.task-item'));
+        const completedTasks = allTaskDivs.filter(div => div.classList.contains('correct'));
 
-            // Only apply if there are more than 10 tasks
-            if (allTaskDivs.length <= 10) return;
+        // Keep last 10 completed tasks, remove older ones
+        const MAX_COMPLETED_VISIBLE = 10;
 
-            // Calculate how many tasks to fade out (older tasks at the beginning)
-            const tasksToFade = Math.min(10, allTaskDivs.length);
+        if (completedTasks.length > MAX_COMPLETED_VISIBLE) {
+            const tasksToRemove = completedTasks.slice(0, completedTasks.length - MAX_COMPLETED_VISIBLE);
+            tasksToRemove.forEach(taskDiv => {
+                taskDiv.style.transition = 'all 0.8s ease-out';
+                taskDiv.style.opacity = '0';
+                taskDiv.style.transform = 'scale(0.8)';
+                taskDiv.style.height = '0';
+                taskDiv.style.margin = '0';
+                taskDiv.style.padding = '0';
 
-            allTaskDivs.forEach((taskDiv, index) => {
-                if (index < tasksToFade) {
-                    // Gradually fade from 0.3 (oldest) to 1.0 (newest)
-                    const opacity = 0.3 + (index / tasksToFade) * 0.7;
-                    taskDiv.style.transition = 'opacity 0.5s ease-out, filter 0.5s ease-out';
-                    taskDiv.style.opacity = opacity;
-                    taskDiv.style.filter = `grayscale(${100 - (index / tasksToFade) * 100}%)`;
-                } else {
-                    // Reset to full visibility for newer tasks
-                    taskDiv.style.transition = 'opacity 0.5s ease-out, filter 0.5s ease-out';
-                    taskDiv.style.opacity = '1';
-                    taskDiv.style.filter = 'grayscale(0%)';
-                }
+                setTimeout(() => {
+                    taskDiv.remove();
+                }, 800);
             });
-        }, 100);
+        }
+
+        // Fade completed tasks gradually (last 10)
+        const visibleCompleted = completedTasks.slice(-MAX_COMPLETED_VISIBLE);
+        visibleCompleted.forEach((taskDiv, index) => {
+            // Gradually fade from 0.3 (oldest) to 0.6 (newest completed)
+            const opacity = 0.3 + (index / MAX_COMPLETED_VISIBLE) * 0.3;
+            const grayscale = 100 - (index / MAX_COMPLETED_VISIBLE) * 30;
+
+            taskDiv.style.transition = 'opacity 0.8s ease-out, filter 0.8s ease-out';
+            taskDiv.style.opacity = opacity;
+            taskDiv.style.filter = `grayscale(${grayscale}%)`;
+        });
+
+        // Keep active tasks fully visible
+        const activeTasks = allTaskDivs.filter(div => !div.classList.contains('correct') && !div.classList.contains('incorrect'));
+        activeTasks.forEach(taskDiv => {
+            taskDiv.style.transition = 'opacity 0.3s ease-out, filter 0.3s ease-out';
+            taskDiv.style.opacity = '1';
+            taskDiv.style.filter = 'grayscale(0%)';
+        });
     }
 
     /**
