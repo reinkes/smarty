@@ -275,19 +275,29 @@ class MatheApp {
             this.maxUnlockedNumber
         );
 
-        // Check if current max number needs more practice
-        const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
-        const needsMorePractice = currentMaxUsage < this.tasksNeededPerNumber;
-
-        // Weighted generation: 60% current max, 40% previous numbers
-        const shouldFocusOnMax = needsMorePractice && Math.random() < 0.6;
+        // Only use weighted generation when beyond starting level (10)
+        // At level 10, allow all results 1-10 equally
+        const useWeightedGeneration = this.maxUnlockedNumber > 10;
         let targetResult;
+        let shouldFocusOnMax = false;
 
-        if (shouldFocusOnMax) {
-            // Generate task with result = maxUnlockedNumber
-            targetResult = this.maxUnlockedNumber;
+        if (useWeightedGeneration) {
+            // Check if current max number needs more practice
+            const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
+            const needsMorePractice = currentMaxUsage < this.tasksNeededPerNumber;
+
+            // Weighted generation: 60% current max, 40% previous numbers
+            shouldFocusOnMax = needsMorePractice && Math.random() < 0.6;
+
+            if (shouldFocusOnMax) {
+                // Generate task with result = maxUnlockedNumber
+                targetResult = this.maxUnlockedNumber;
+            } else {
+                // Generate task with result from 1 to maxUnlockedNumber
+                targetResult = Math.floor(Math.random() * this.maxUnlockedNumber) + 1;
+            }
         } else {
-            // Generate task with result from 1 to maxUnlockedNumber
+            // At starting level (10), generate any result from 1-10
             targetResult = Math.floor(Math.random() * this.maxUnlockedNumber) + 1;
         }
 
@@ -374,19 +384,29 @@ class MatheApp {
             this.maxUnlockedNumber
         );
 
-        // Check if current max number needs more practice
-        const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
-        const needsMorePractice = currentMaxUsage < this.tasksNeededPerNumber;
-
-        // Weighted generation: 60% current max, 40% previous numbers
-        const shouldFocusOnMax = needsMorePractice && Math.random() < 0.6;
+        // Only use weighted generation when beyond starting level (10)
+        // At level 10, allow all results 1-10 equally
+        const useWeightedGeneration = this.maxUnlockedNumber > 10;
         let targetResult;
+        let shouldFocusOnMax = false;
 
-        if (shouldFocusOnMax) {
-            // Generate task with result = maxUnlockedNumber
-            targetResult = this.maxUnlockedNumber;
+        if (useWeightedGeneration) {
+            // Check if current max number needs more practice
+            const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
+            const needsMorePractice = currentMaxUsage < this.tasksNeededPerNumber;
+
+            // Weighted generation: 60% current max, 40% previous numbers
+            shouldFocusOnMax = needsMorePractice && Math.random() < 0.6;
+
+            if (shouldFocusOnMax) {
+                // Generate task with result = maxUnlockedNumber
+                targetResult = this.maxUnlockedNumber;
+            } else {
+                // Generate task with result from 1 to maxUnlockedNumber
+                targetResult = Math.floor(Math.random() * this.maxUnlockedNumber) + 1;
+            }
         } else {
-            // Generate task with result from 1 to maxUnlockedNumber
+            // At starting level (10), generate any result from 1-10
             targetResult = Math.floor(Math.random() * this.maxUnlockedNumber) + 1;
         }
 
