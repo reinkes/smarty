@@ -303,12 +303,15 @@
 
         function generateTask() {
             let availableWords;
-            
+
             if (currentMode === 'adaptive') {
                 availableWords = wordDatabase.filter(w => w.difficulty === adaptiveLevel);
             } else {
                 availableWords = wordDatabase.filter(w => {
-                    if (currentMode === 'easy') return w.difficulty === 'easy';
+                    if (currentMode === 'easy') {
+                        // Easy: Only 2-letter syllables
+                        return w.difficulty === 'easy' && w.syllable.length === 2;
+                    }
                     if (currentMode === 'medium') return w.difficulty === 'easy' || w.difficulty === 'medium';
                     return true; // hard mode
                 });
@@ -330,32 +333,52 @@
                     }
                 }
             } else {
-                // Easy/Medium/Hard: Gleicher Anfangsbuchstabe für Schwierigkeit
-                const firstLetter = correctWord.syllable[0];
-                const sameLetter = wordDatabase.filter(w =>
-                    w.syllable[0] === firstLetter &&
-                    w.syllable !== correctWord.syllable
-                ).map(w => w.syllable);
+                // Easy/Medium/Hard: Different logic per mode
+                if (currentMode === 'easy') {
+                    // Easy: Same consonant, different vowels (e.g., Vo, Va, Vi)
+                    const consonant = correctWord.syllable[0];
+                    const vowels = ['a', 'e', 'i', 'o', 'u', 'ä', 'ö', 'ü'];
 
-                // Deduplizieren
-                const uniqueSameLetter = [...new Set(sameLetter)];
+                    // Get the current vowel
+                    const currentVowel = correctWord.syllable[1];
 
-                if (uniqueSameLetter.length >= 2) {
-                    // Genug Silben mit gleichem Anfangsbuchstaben
-                    const shuffled = uniqueSameLetter.sort(() => Math.random() - 0.5);
-                    wrongOptions.push(shuffled[0], shuffled[1]);
+                    // Generate wrong syllables with same consonant but different vowels
+                    for (const vowel of vowels) {
+                        if (vowel !== currentVowel && wrongOptions.length < 2) {
+                            wrongOptions.push(consonant + vowel);
+                        }
+                    }
+
+                    // Shuffle wrong options
+                    wrongOptions.sort(() => Math.random() - 0.5);
                 } else {
-                    // Fallback: Fülle mit allen verfügbaren Silben auf
-                    const allSyllables = [...new Set(wordDatabase.map(w => w.syllable))];
+                    // Medium/Hard: Same first letter (existing logic)
+                    const firstLetter = correctWord.syllable[0];
+                    const sameLetter = wordDatabase.filter(w =>
+                        w.syllable[0] === firstLetter &&
+                        w.syllable !== correctWord.syllable
+                    ).map(w => w.syllable);
 
-                    // Nehme erst die mit gleichem Buchstaben
-                    wrongOptions.push(...uniqueSameLetter);
+                    // Deduplizieren
+                    const uniqueSameLetter = [...new Set(sameLetter)];
 
-                    // Dann fülle mit zufälligen auf
-                    while (wrongOptions.length < 2) {
-                        const randomSyllable = allSyllables[Math.floor(Math.random() * allSyllables.length)];
-                        if (randomSyllable !== correctWord.syllable && !wrongOptions.includes(randomSyllable)) {
-                            wrongOptions.push(randomSyllable);
+                    if (uniqueSameLetter.length >= 2) {
+                        // Genug Silben mit gleichem Anfangsbuchstaben
+                        const shuffled = uniqueSameLetter.sort(() => Math.random() - 0.5);
+                        wrongOptions.push(shuffled[0], shuffled[1]);
+                    } else {
+                        // Fallback: Fülle mit allen verfügbaren Silben auf
+                        const allSyllables = [...new Set(wordDatabase.map(w => w.syllable))];
+
+                        // Nehme erst die mit gleichem Buchstaben
+                        wrongOptions.push(...uniqueSameLetter);
+
+                        // Dann fülle mit zufälligen auf
+                        while (wrongOptions.length < 2) {
+                            const randomSyllable = allSyllables[Math.floor(Math.random() * allSyllables.length)];
+                            if (randomSyllable !== correctWord.syllable && !wrongOptions.includes(randomSyllable)) {
+                                wrongOptions.push(randomSyllable);
+                            }
                         }
                     }
                 }
