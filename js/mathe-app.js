@@ -287,8 +287,8 @@ class MatheApp {
             const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
             const needsMorePractice = currentMaxUsage < this.tasksNeededPerNumber;
 
-            // Weighted generation: 60% current max, 40% previous numbers
-            shouldFocusOnMax = needsMorePractice && Math.random() < 0.6;
+            // Weighted generation: 40% current max, 60% previous numbers
+            shouldFocusOnMax = needsMorePractice && Math.random() < 0.4;
 
             if (shouldFocusOnMax) {
                 // Generate task with result = maxUnlockedNumber
@@ -396,8 +396,8 @@ class MatheApp {
             const currentMaxUsage = this.numberUsageCount[this.maxUnlockedNumber] || 0;
             const needsMorePractice = currentMaxUsage < this.tasksNeededPerNumber;
 
-            // Weighted generation: 60% current max, 40% previous numbers
-            shouldFocusOnMax = needsMorePractice && Math.random() < 0.6;
+            // Weighted generation: 40% current max, 60% previous numbers
+            shouldFocusOnMax = needsMorePractice && Math.random() < 0.4;
 
             if (shouldFocusOnMax) {
                 // Generate task with result = maxUnlockedNumber
