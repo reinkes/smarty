@@ -256,6 +256,10 @@ class MatheApp {
         // Get existing task keys to avoid duplicates
         const existingKeys = this.currentTasks.map(t => t.key);
 
+        // Check if recent tasks had +0/-0 (last 3 tasks)
+        const recentTasks = this.currentTasks.slice(-3);
+        const hasRecentZero = recentTasks.some(t => t.num2 === 0);
+
         do {
             if (this.currentOperator === 'add') {
                 num1 = Math.floor(Math.random() * (effectiveMax + 1));
@@ -274,9 +278,14 @@ class MatheApp {
             attempts++;
 
             // Avoid +0/-0 and duplicates
+            // If recent tasks had +0, reject ALL +0 attempts
+            // Otherwise reject 98% of +0 attempts
         } while (
             attempts < maxAttempts &&
-            (((num2 === 0) && Math.random() < 0.9) || existingKeys.includes(key))
+            (
+                existingKeys.includes(key) ||
+                (num2 === 0 && (hasRecentZero || Math.random() < 0.98))
+            )
         );
 
         return {
@@ -314,6 +323,10 @@ class MatheApp {
         // Get existing task keys to avoid duplicates
         const existingKeys = this.currentTasks.map(t => t.key);
 
+        // Check if recent tasks had +0/-0 (last 3 tasks)
+        const recentTasks = this.currentTasks.slice(-3);
+        const hasRecentZero = recentTasks.some(t => t.num2 === 0);
+
         do {
             if (this.currentOperator === 'add') {
                 num1 = Math.floor(Math.random() * (effectiveMax + 1));
@@ -332,9 +345,14 @@ class MatheApp {
             attempts++;
 
             // Avoid +0/-0 and duplicates
+            // If recent tasks had +0, reject ALL +0 attempts
+            // Otherwise reject 98% of +0 attempts
         } while (
             attempts < maxAttempts &&
-            (((num2 === 0) && Math.random() < 0.9) || existingKeys.includes(key))
+            (
+                existingKeys.includes(key) ||
+                (num2 === 0 && (hasRecentZero || Math.random() < 0.98))
+            )
         );
 
         return {
@@ -464,32 +482,32 @@ class MatheApp {
                 this.dom.taskCountDisplay.textContent = `${this.adaptiveTasksShown} gelöst`;
                 this.dom.previewTitle.textContent = `Adaptives Training (Level ${this.adaptiveLevel})`;
 
-                // Auto-advance to next task and add smooth scrolling
-                setTimeout(() => {
-                    // Add new task FIRST (before focusing)
-                    this.addNewAdaptiveTask();
+                // CRITICAL: Focus next input SYNCHRONOUSLY to keep keyboard open on mobile
+                // Add new task first
+                this.addNewAdaptiveTask();
 
-                    // Focus next active input
-                    const nextInput = this.dom.tasksContainer.querySelector('input:not([disabled])');
-                    if (nextInput) {
-                        nextInput.focus();
+                // Focus next input IMMEDIATELY (no setTimeout - iOS keyboard requirement)
+                const nextInput = this.dom.tasksContainer.querySelector('input:not([disabled])');
+                if (nextInput) {
+                    nextInput.focus();
 
-                        // Mobile: Scroll to next input smoothly
-                        if (window.innerWidth <= 768) {
-                            setTimeout(() => {
-                                nextInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }, 100);
-                        }
+                    // Scroll to next input (can be async)
+                    if (window.innerWidth <= 768) {
+                        requestAnimationFrame(() => {
+                            nextInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        });
                     }
+                }
 
-                    // Update visual opacity (fade old tasks)
+                // Update visuals asynchronously (doesn't affect keyboard)
+                requestAnimationFrame(() => {
                     this.updateCompletedTasksVisuals();
+                });
 
-                    // Check for milestones
-                    if (this.adaptiveTasksShown % MatheApp.MILESTONE_INTERVAL === 0) {
-                        this.showMilestoneCelebration(this.adaptiveTasksShown);
-                    }
-                }, 300);
+                // Check for milestones
+                if (this.adaptiveTasksShown % MatheApp.MILESTONE_INTERVAL === 0) {
+                    this.showMilestoneCelebration(this.adaptiveTasksShown);
+                }
             } else {
                 taskDiv.classList.add('incorrect');
                 this.adjustAdaptiveLevel(false);
