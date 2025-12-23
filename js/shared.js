@@ -3,34 +3,6 @@
  * Common functions for animations, feedback, and progress tracking
  */
 
-// ============================================
-// AUDIO FEEDBACK
-// ============================================
-
-/**
- * Plays a success sound using Web Audio API
- */
-function playSuccessSound() {
-    try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        oscillator.frequency.value = 800;
-        oscillator.type = 'sine';
-
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.1);
-    } catch (e) {
-        // Silently fail if audio context not supported
-    }
-}
 
 // ============================================
 // CELEBRATION ANIMATIONS
@@ -201,7 +173,17 @@ const ProgressTracker = {
     getProgress(appName) {
         const key = `smarty_progress_${appName}`;
         const data = localStorage.getItem(key);
-        return data ? JSON.parse(data) : this.getDefaultProgress();
+
+        if (!data) {
+            return this.getDefaultProgress();
+        }
+
+        try {
+            return JSON.parse(data);
+        } catch (e) {
+            console.error('Failed to parse progress data:', e);
+            return this.getDefaultProgress();
+        }
     },
 
     /**

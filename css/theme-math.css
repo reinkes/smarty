@@ -1,0 +1,87 @@
+/* === Math App Theme === */
+
+/* Override CSS variables with math theme */
+:root {
+    --primary: var(--math-primary);
+    --secondary: var(--math-secondary);
+    --tertiary: var(--math-tertiary);
+}
+
+/* App-specific Math theme */
+body {
+    background: linear-gradient(135deg, #FFF9F0 0%, #FFE5F1 100%);
+}
+
+body::before {
+    background: var(--math-tertiary);
+}
+
+body::after {
+    background: var(--math-secondary);
+}
+
+h1 {
+    color: var(--math-primary);
+    text-shadow: 3px 3px 0px var(--math-secondary);
+}
+
+.card {
+    border-color: var(--math-primary);
+    box-shadow: 0 8px 32px rgba(255, 107, 157, 0.15);
+}
+
+.card::before {
+    content: '✨';
+}
+
+select, input {
+    border-color: var(--math-tertiary);
+}
+
+select:focus, input:focus {
+    border-color: var(--math-primary);
+    box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.1);
+}
+
+.btn-back {
+    color: var(--math-primary);
+    border-color: var(--math-primary);
+}
+
+.btn-back:hover {
+    background: var(--math-primary);
+}
+
+button {
+    background: linear-gradient(135deg, var(--math-primary), #FF8CB4);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+}
+
+.btn-pdf {
+    background: linear-gradient(135deg, var(--math-tertiary), #7FC8F8);
+    box-shadow: 0 4px 15px rgba(93, 173, 226, 0.4);
+}
+
+.preview-header {
+    border-bottom-color: var(--math-secondary);
+}
+
+.preview-title {
+    color: var(--math-primary);
+}
+
+.task-item {
+    border-color: var(--math-secondary);
+}
+
+.task-item input {
+    border-color: var(--math-tertiary);
+}
+
+.milestone-celebration {
+    background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
+}
+
+footer a {
+    color: var(--math-primary);
+}

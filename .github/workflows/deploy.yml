@@ -134,9 +134,27 @@ jobs:
         cp mathe-aufgaben.html deploy/
         cp deutsch-silben.html deploy/
 
-        # Copy shared resources (CSS/JS)
-        [ -f shared.css ] && cp shared.css deploy/ || echo "⚠️ No shared.css found"
-        [ -f shared.js ] && cp shared.js deploy/ || echo "⚠️ No shared.js found"
+        # Copy CSS directory
+        if [ -d css ]; then
+          echo "📁 Copying CSS directory..."
+          cp -r css deploy/
+        else
+          echo "❌ CSS directory not found"
+          exit 1
+        fi
+
+        # Copy JS directory
+        if [ -d js ]; then
+          echo "📁 Copying JS directory..."
+          cp -r js deploy/
+        else
+          echo "❌ JS directory not found"
+          exit 1
+        fi
+
+        # Legacy support (remove after migration complete)
+        [ -f shared.css ] && echo "ℹ️ Legacy shared.css still exists (should be moved to css/)" || true
+        [ -f shared.js ] && echo "ℹ️ Legacy shared.js still exists (should be moved to js/)" || true
 
         # Copy optional files if they exist
         [ -f index.html ] && cp index.html deploy/ || echo "⚠️ No index.html found"
