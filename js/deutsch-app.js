@@ -555,7 +555,7 @@ class DeutschApp {
         // Create heading
         const heading = document.createElement('h2');
         heading.textContent = 'Geschafft!';
-        heading.style.cssText = 'font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; font-family: 'Fredoka', sans-serif;';
+        heading.style.cssText = 'font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; font-family: "Fredoka", sans-serif;';
 
         // Create message
         const message = document.createElement('p');
