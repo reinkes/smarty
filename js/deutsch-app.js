@@ -67,7 +67,34 @@ class DeutschApp {
             { word: 'Geist', syllable: 'Gei', emoji: '👻', difficulty: 'hard' },
             { word: 'Prinzessin', syllable: 'Pri', emoji: '👸', difficulty: 'hard' },
             { word: 'Kreis', syllable: 'Kre', emoji: '⭕', difficulty: 'hard' },
-            { word: 'Zwiebel', syllable: 'Zwie', emoji: '🧅', difficulty: 'hard' }
+            { word: 'Zwiebel', syllable: 'Zwie', emoji: '🧅', difficulty: 'hard' },
+
+            // === NEUE WÖRTER (Beispiele zum Erweitern) ===
+            // Einfach - Tiere
+            { word: 'Elefant', syllable: 'Ele', emoji: '🐘', difficulty: 'easy' },
+            { word: 'Tiger', syllable: 'Ti', emoji: '🐯', difficulty: 'easy' },
+            { word: 'Löwe', syllable: 'Lö', emoji: '🦁', difficulty: 'easy' },
+            { word: 'Panda', syllable: 'Pan', emoji: '🐼', difficulty: 'easy' },
+            { word: 'Affe', syllable: 'Af', emoji: '🐵', difficulty: 'easy' },
+            { word: 'Giraffe', syllable: 'Gi', emoji: '🦒', difficulty: 'easy' },
+
+            // Einfach - Essen
+            { word: 'Pizza', syllable: 'Pi', emoji: '🍕', difficulty: 'easy' },
+            { word: 'Kuchen', syllable: 'Ku', emoji: '🍰', difficulty: 'easy' },
+            { word: 'Eis', syllable: 'Ei', emoji: '🍦', difficulty: 'easy' },
+            { word: 'Keks', syllable: 'Ke', emoji: '🍪', difficulty: 'easy' },
+
+            // Mittel - Fahrzeuge & Orte
+            { word: 'Hubschrauber', syllable: 'Hub', emoji: '🚁', difficulty: 'medium' },
+            { word: 'Kranwagen', syllable: 'Kran', emoji: '🏗️', difficulty: 'medium' },
+            { word: 'Spielplatz', syllable: 'Spiel', emoji: '🛝', difficulty: 'medium' },
+            { word: 'Schwimmbad', syllable: 'Schwi', emoji: '🏊', difficulty: 'medium' },
+
+            // Schwer - Komplexe Wörter
+            { word: 'Schraubenzieher', syllable: 'Schrau', emoji: '🔧', difficulty: 'hard' },
+            { word: 'Klavier', syllable: 'Kla', emoji: '🎹', difficulty: 'hard' },
+            { word: 'Flöte', syllable: 'Flö', emoji: '🎺', difficulty: 'hard' },
+            { word: 'Trommel', syllable: 'Tro', emoji: '🥁', difficulty: 'hard' }
         ];
 
         // State

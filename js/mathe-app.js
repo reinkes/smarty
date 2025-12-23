@@ -30,6 +30,11 @@ class MatheApp {
         this.adaptiveIncorrectCount = 0;
         this.adaptiveTasksShown = 0;
 
+        // Progressive unlock system
+        this.maxUnlockedNumber = 10; // Start with calculations up to 10
+        this.correctAnswersForUnlock = 0; // Counter for next unlock
+        this.answersNeededPerUnlock = 5; // How many correct answers needed
+
         // Timeout references
         this.opacityUpdateTimeout = null;
 
@@ -47,7 +52,11 @@ class MatheApp {
             taskCountDisplay: null,
             preview: null,
             milestoneCelebration: null,
-            fireworksContainer: null
+            fireworksContainer: null,
+            progressBarContainer: null,
+            progressBarFill: null,
+            progressBarText: null,
+            unlockMessage: null
         };
     }
 
@@ -78,6 +87,10 @@ class MatheApp {
         this.dom.preview = document.getElementById('preview');
         this.dom.milestoneCelebration = document.getElementById('milestoneCelebration');
         this.dom.fireworksContainer = document.getElementById('fireworksContainer');
+        this.dom.progressBarContainer = document.getElementById('progressBarContainer');
+        this.dom.progressBarFill = document.getElementById('progressBarFill');
+        this.dom.progressBarText = document.getElementById('progressBarText');
+        this.dom.unlockMessage = document.getElementById('unlockMessage');
     }
 
     /**
@@ -220,6 +233,11 @@ class MatheApp {
             this.completedTasks = 0;
             this.currentType = 'adaptive';
 
+            // Initialize unlock system
+            this.maxUnlockedNumber = 10;
+            this.correctAnswersForUnlock = 0;
+            this.updateProgressBar();
+
             // Save level
             ProgressTracker.updateLevel('math', level);
 
@@ -251,7 +269,11 @@ class MatheApp {
             Math.floor((this.adaptiveMaxResult * 0.5) * (this.adaptiveTasksShown / 50))
         );
 
-        const effectiveMax = Math.max(this.adaptiveLevel, maxPossible);
+        // Apply unlock limit - never exceed maxUnlockedNumber
+        const effectiveMax = Math.min(
+            Math.max(this.adaptiveLevel, maxPossible),
+            this.maxUnlockedNumber
+        );
 
         // Get existing task keys to avoid duplicates
         const existingKeys = this.currentTasks.map(t => t.key);
@@ -318,7 +340,11 @@ class MatheApp {
             Math.floor((this.adaptiveMaxResult * 0.5) * (this.adaptiveTasksShown / 50))
         );
 
-        const effectiveMax = Math.max(taskLevel, maxPossible);
+        // Apply unlock limit - never exceed maxUnlockedNumber
+        const effectiveMax = Math.min(
+            Math.max(taskLevel, maxPossible),
+            this.maxUnlockedNumber
+        );
 
         // Get existing task keys to avoid duplicates
         const existingKeys = this.currentTasks.map(t => t.key);
@@ -477,6 +503,15 @@ class MatheApp {
 
                 this.adjustAdaptiveLevel(true);
                 this.adaptiveTasksShown++;
+
+                // Progressive unlock system
+                this.correctAnswersForUnlock++;
+                this.updateProgressBar();
+
+                // Check if we should unlock next number
+                if (this.correctAnswersForUnlock >= this.answersNeededPerUnlock) {
+                    this.unlockNextNumber();
+                }
 
                 // Update counter
                 this.dom.taskCountDisplay.textContent = `${this.adaptiveTasksShown} gelöst`;
@@ -960,6 +995,62 @@ class MatheApp {
         const progress = ProgressTracker.getProgress('math');
         this.dom.difficultySlider.value = progress.level || 5;
         this.updateDifficultyLabel();
+    }
+
+    /**
+     * Update progress bar for unlock system
+     */
+    updateProgressBar() {
+        if (!this.dom.progressBarContainer) return;
+
+        const progress = (this.correctAnswersForUnlock / this.answersNeededPerUnlock) * 100;
+        const remaining = this.answersNeededPerUnlock - this.correctAnswersForUnlock;
+
+        if (this.dom.progressBarFill) {
+            this.dom.progressBarFill.style.width = `${progress}%`;
+        }
+
+        if (this.dom.progressBarText) {
+            this.dom.progressBarText.textContent = `Noch ${remaining} richtig bis ${this.maxUnlockedNumber + 1} 🎯`;
+        }
+
+        // Show progress bar in adaptive mode
+        if (this.dom.progressBarContainer && this.adaptiveMode) {
+            this.dom.progressBarContainer.style.display = 'block';
+        }
+    }
+
+    /**
+     * Unlock next number with celebration
+     */
+    unlockNextNumber() {
+        this.maxUnlockedNumber++;
+        this.correctAnswersForUnlock = 0; // Reset counter
+
+        // Show unlock message
+        if (this.dom.unlockMessage) {
+            this.dom.unlockMessage.textContent = `🎉 Super! Rechnungen bis ${this.maxUnlockedNumber} freigeschaltet! 🎉`;
+            this.dom.unlockMessage.style.display = 'block';
+            this.dom.unlockMessage.style.animation = 'bounceIn 0.6s ease-out';
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+                if (this.dom.unlockMessage) {
+                    this.dom.unlockMessage.style.animation = 'fadeOut 0.5s ease-out';
+                    setTimeout(() => {
+                        if (this.dom.unlockMessage) {
+                            this.dom.unlockMessage.style.display = 'none';
+                        }
+                    }, 500);
+                }
+            }, 3000);
+        }
+
+        // Launch fireworks
+        this.launchFireworks(8);
+
+        // Update progress bar for next unlock
+        this.updateProgressBar();
     }
 }
 
