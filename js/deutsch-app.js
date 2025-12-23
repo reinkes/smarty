@@ -109,6 +109,7 @@ class DeutschApp {
         this.dom.difficultySlider = document.getElementById('difficultySlider');
         this.dom.difficultyValue = document.getElementById('difficultyValue');
         this.dom.adaptiveMode = document.getElementById('adaptiveMode');
+        this.dom.startButton = document.getElementById('startButton');
         this.dom.taskContainer = document.getElementById('taskContainer');
         this.dom.previewTitle = document.getElementById('previewTitle');
         this.dom.taskCountDisplay = document.getElementById('taskCountDisplay');
@@ -126,9 +127,8 @@ class DeutschApp {
         }
 
         // Start button
-        const startButton = document.querySelector('button[class=""]');
-        if (startButton) {
-            startButton.addEventListener('click', () => this.startTraining());
+        if (this.dom.startButton) {
+            this.dom.startButton.addEventListener('click', () => this.startTraining());
         }
 
         // Adaptive mode checkbox container
