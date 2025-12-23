@@ -780,6 +780,11 @@ class MatheApp {
             return;
         }
 
+        // Hide progress bar in non-adaptive mode
+        if (this.dom.progressBarContainer) {
+            this.dom.progressBarContainer.style.display = 'none';
+        }
+
         const typeNames = {
             'add10': 'Addition Zahlenraum 10',
             'add20': 'Addition Zahlenraum 20',
@@ -928,7 +933,12 @@ class MatheApp {
     /**
      * Launch fireworks animation
      */
-    launchFireworks() {
+    launchFireworks(count = MatheApp.MAX_FIREWORKS) {
+        if (!this.dom.milestoneCelebration || !this.dom.fireworksContainer) {
+            console.warn('Fireworks elements not found');
+            return;
+        }
+
         this.dom.milestoneCelebration.textContent = `🎊 Alle Aufgaben richtig! Super! 🎊`;
         this.dom.milestoneCelebration.classList.add('show');
 
@@ -939,7 +949,7 @@ class MatheApp {
         let fireworkCount = 0;
 
         const fireworkInterval = setInterval(() => {
-            if (fireworkCount >= MatheApp.MAX_FIREWORKS) {
+            if (fireworkCount >= count) {
                 clearInterval(fireworkInterval);
                 setTimeout(() => {
                     this.dom.fireworksContainer.classList.remove('active');
