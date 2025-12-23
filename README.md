@@ -1,223 +1,318 @@
-# Lern-Apps für Kinder
+# Smarty Learn - Lern-Apps für Kinder
 
-Eine Sammlung interaktiver Lern-Anwendungen für Grundschulkinder zum Üben von Mathe und Deutsch.
+Interaktive Web-Anwendungen für Grundschulkinder zum Üben von **Mathematik** und **Deutsch**.
 
-## 📚 Enthaltene Apps
-
-### 1. Mathe-Aufgaben Generator (`mathe-aufgaben.html`)
-Interaktive Mathematik-Übungen mit automatischer Korrektur und Motivations-Features.
-
-#### Features
-- **Multiple Modi:**
-  - Addition im Zahlenraum 10
-  - Addition im Zahlenraum 20
-  - Subtraktion im Zahlenraum 10
-  - 🚀 Adaptiver Trainingsmodus
-
-- **Interaktives Üben:**
-  - Sofortige Farbprüfung (grün/rot)
-  - Automatischer Cursor-Sprung bei richtiger Antwort
-  - Intelligente Validierung (keine Fehlmeldung beim Tippen zweistelliger Zahlen)
-
-- **Motivations-System:**
-  - 🎉 Celebration alle 10 gelösten Aufgaben
-  - 🎆 Großes Feuerwerk bei kompletter Aufgabenliste
-  - 🚀 Level-Up Benachrichtigungen im adaptiven Modus
-
-- **PDF-Export:**
-  - Professionelles Layout für Arbeitsblätter
-  - Automatische Seitenumbrüche
-  - Namensfeld auf jeder Seite
-
-#### Adaptiver Modus
-Der adaptive Trainingsmodus passt sich automatisch dem Können des Kindes an:
-- Startet mit einfachen Aufgaben (max. Ergebnis 5)
-- Steigt nach 3 richtigen Antworten um ein Level
-- Sinkt nach 2 falschen Antworten um zwei Level
-- Maximales Ergebnis ist konfigurierbar (5-50)
-- Nur 3 Aufgaben gleichzeitig für besseren Fokus
-- Aufgaben aus allen bisherigen Leveln möglich
-
-### 2. Silben-Trainer (`deutsch-silben.html`)
-Spielerisches Lernen von Anfangssilben mit Emoji-Visualisierung.
-
-#### Features
-- **Schwierigkeitsstufen:**
-  - Einfach: 2-Buchstaben-Silben (Ba-, Ma-, Ti-)
-  - Mittel: 2-3 Buchstaben (Blu-, Schu-, Stra-)
-  - Schwer: Komplexe Silben (Schne-, Pfla-, Stru-)
-  - 🚀 Adaptiv: Passt sich automatisch an
-
-- **Interaktives Lernen:**
-  - Große Emoji-Darstellung für klare Visualisierung
-  - 3 Auswahlmöglichkeiten pro Aufgabe
-  - Sofortiges Feedback (richtig/falsch)
-  - Bei Fehler: Anzeige der richtigen Lösung
-
-- **Adaptive Schwierigkeitsanpassung:**
-  - Nach 3 richtigen → schwieriger
-  - Nach 2 falschen → einfacher
-  - Fließende Übergänge zwischen Leveln
-
-## 🚀 Installation
-
-Keine Installation nötig! Einfach die HTML-Dateien im Browser öffnen.
-
-### Voraussetzungen
-- Moderner Webbrowser (Chrome, Firefox, Safari, Edge)
-- Für PDF-Export: Internetverbindung (lädt jsPDF-Bibliothek)
-- Für Mathe-Sounds: Browser mit Web Audio API Unterstützung
-
-## 💻 Verwendung
-
-### Mathe-Aufgaben
-
-1. `mathe-aufgaben.html` im Browser öffnen
-2. Aufgabentyp auswählen:
-   - Standard-Modi: Anzahl der Aufgaben wählen (1-100)
-   - Adaptiver Modus: Maximales Ergebnis festlegen (5-50)
-3. "Aufgaben erstellen" klicken
-4. Aufgaben lösen:
-   - Zahlen eingeben
-   - Bei richtiger Antwort: Automatisch zur nächsten Aufgabe
-   - Grün = richtig, Rot = falsch
-5. Optional: "Als PDF speichern" für Arbeitsblätter
-
-**Tastatur-Shortcuts:**
-- `Enter`: Zur nächsten Aufgabe springen
-
-### Silben-Trainer
-
-1. `deutsch-silben.html` im Browser öffnen
-2. Schwierigkeitsstufe wählen
-3. "Training starten" klicken
-4. Richtige Anfangssilbe anklicken
-5. Nach richtiger Antwort: Neue Aufgabe erscheint automatisch
-
-## 🎯 Pädagogische Konzepte
-
-### Intelligente Aufgabengenerierung
-
-**Mathematik:**
-- Vermeidung langweiliger +0 Aufgaben (nur 10%)
-- Bei Subtraktion: Nur 10% mit Ergebnis 0
-- Keine direkten Duplikate hintereinander
-- Adaptiver Modus: Graduelle Steigerung des Schwierigkeitsgrads
-
-**Deutsch:**
-- Progressive Komplexität (2→3→4+ Buchstaben)
-- Vielfältige Wortauswahl (50+ Wörter)
-- Adaptive Anpassung an Lernfortschritt
-
-### Motivations-Psychologie
-
-- **Sofortiges Feedback:** Kinder wissen sofort, ob die Antwort richtig ist
-- **Positive Verstärkung:** Celebrations und Animationen bei Erfolg
-- **Erfolgserlebnisse:** Meilensteine alle 10 Aufgaben
-- **Selbstbestimmung:** Freie Wahl des Schwierigkeitsgrads
-- **Flow-Zustand:** Adaptive Modi halten optimale Herausforderung
-
-## 🔧 Technische Details
-
-### Technologie-Stack
-- Pure HTML5, CSS3, JavaScript (ES6+)
-- Keine Frameworks, keine Build-Tools nötig
-- Externe Bibliotheken:
-  - jsPDF (nur für PDF-Export)
-  - Google Fonts (Fredoka, Nunito)
-
-### Browser-Kompatibilität
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-
-### Datenschutz
-- ✅ Keine Datenübertragung an Server
-- ✅ Keine Cookies
-- ✅ Keine Tracking-Scripte
-- ✅ Vollständig offline nutzbar (nach initialem Laden der Fonts)
-- ✅ Kein Login erforderlich
-
-## 📱 Mobile Optimierung
-
-Beide Apps sind vollständig responsive:
-- Touch-optimierte Buttons
-- Angepasste Schriftgrößen
-- Optimiertes Layout für Tablets und Smartphones
-- Einhand-Bedienung möglich
-
-## 🎨 Anpassungsmöglichkeiten
-
-### Mathe: Neue Aufgabentypen hinzufügen
-
-In der `generateSingleTask()` Funktion neue `case` hinzufügen:
-
-```javascript
-case 'mult10':
-    num1 = Math.floor(Math.random() * 11);
-    num2 = Math.floor(Math.random() * 11);
-    operator = '×';
-    result = num1 * num2;
-    key = `${num1}*${num2}`;
-    break;
-```
-
-### Deutsch: Neue Wörter hinzufügen
-
-Im `wordDatabase` Array:
-
-```javascript
-{ word: 'Elefant', syllable: 'Ele', emoji: '🐘', difficulty: 'medium' }
-```
-
-## 🐛 Bekannte Limitierungen
-
-- PDF-Export benötigt Internetverbindung für jsPDF-Bibliothek
-- Web Audio API für Sounds nicht in allen Browsern verfügbar
-- Emoji-Darstellung variiert je nach Betriebssystem
-
-## 📄 Lizenz
-
-MIT License - Frei verwendbar für private und kommerzielle Zwecke.
-
-## 👨‍💻 Entwicklung
-
-### Projekt-Struktur
-```
-.
-├── mathe-aufgaben.html    # Mathe-Trainer (standalone)
-├── deutsch-silben.html    # Silben-Trainer (standalone)
-└── README.md              # Diese Datei
-```
-
-### Erweiterungsideen
-- [ ] Multiplikation und Division
-- [ ] Bruchrechnen
-- [ ] Mehr Wörter für Silben-Trainer
-- [ ] KI-generierte Bilder statt Emojis
-- [ ] Statistik-Tracking (optional mit localStorage)
-- [ ] Mehrspielermodus
-- [ ] Drucker-freundliche Ansicht
-
-## 🤝 Beiträge
-
-Verbesserungsvorschläge und Pull Requests sind willkommen!
-
-### Wie kann ich helfen?
-1. Neue Wörter für den Silben-Trainer
-2. Weitere Aufgabentypen für Mathe
-3. Verbesserung der Animationen
-4. Barrierefreiheit-Optimierungen
-5. Übersetzungen in andere Sprachen
-
-## 📞 Support
-
-Bei Fragen oder Problemen:
-1. Issue im GitHub Repository erstellen
-2. Code überprüfen (alle Funktionen sind dokumentiert)
-3. Browser-Konsole für Fehlermeldungen checken
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Browser](https://img.shields.io/badge/browser-Chrome%20%7C%20Firefox%20%7C%20Safari%20%7C%20Edge-green.svg)]()
 
 ---
 
-**Viel Spaß beim Lernen! 🎉**
+## 📱 Apps
+
+### 🔢 Mathe-Aufgaben Generator
+Interaktive Rechenübungen mit automatischer Korrektur und Motivations-Features.
+
+**Features:**
+- ✅ Addition & Subtraktion (Zahlenraum 1-50)
+- 🚀 **Adaptiver Trainingsmodus** - passt sich automatisch an
+- 📊 10 Schwierigkeitsstufen (Level 1-10 via Slider)
+- 📄 PDF-Export für Arbeitsblätter
+- 🎆 Feuerwerk & Celebrations bei Meilensteinen
+- 📱 **Mobile-optimiert** - Tastatur bleibt offen beim Tippen
+- 💾 Progress-Tracking (LocalStorage)
+
+**Adaptive Intelligenz:**
+- Startet mit einfachen Aufgaben
+- **Level-Up** nach 3 korrekten Antworten in Folge
+- **Level-Down** nach 2 falschen Antworten
+- Zeigt letzte 10 gelöste Aufgaben (verblassen graduell)
+- **Keine +0 Cluster** - verhindert langweilige Aufgaben
+
+### 📖 Silben-Trainer
+Spielerisches Lernen von Anfangssilben mit Emoji-Visualisierung.
+
+**Features:**
+- ✅ 50+ Wörter mit bunten Emojis
+- 🎯 10 Schwierigkeitsstufen (2-4+ Buchstaben-Silben)
+- 🚀 **Adaptiver Modus** - automatische Anpassung
+- 🎨 3 Auswahlmöglichkeiten pro Aufgabe
+- ✨ Sofortiges Feedback + Fehlerkorrektur
+- 💾 Progress-Tracking
+
+---
+
+## 🚀 Schnellstart
+
+**Keine Installation nötig!**
+
+1. Repository klonen oder ZIP herunterladen
+2. `index.html` im Browser öffnen
+3. App auswählen und loslegen
+
+**Voraussetzungen:**
+- Moderner Browser (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
+- Für PDF-Export: Internetverbindung (lädt jsPDF via CDN)
+
+---
+
+## 💻 Projekt-Struktur
+
+```
+smarty/
+├── index.html                  # Startseite
+├── mathe-aufgaben.html        # Mathe-App
+├── deutsch-silben.html        # Deutsch-App
+│
+├── css/
+│   ├── shared.css             # Gemeinsame Basis-Styles
+│   ├── animations.css         # Animationen (Feuerwerk, Fading)
+│   ├── theme-math.css         # Mathe-Theme (pink/orange)
+│   └── theme-german.css       # Deutsch-Theme (lila/blau)
+│
+├── js/
+│   ├── shared.js              # Gemeinsame Utilities
+│   ├── audio-manager.js       # Singleton für Sound-Effekte
+│   ├── mathe-app.js          # Mathe-Logik (900+ Zeilen)
+│   └── deutsch-app.js        # Deutsch-Logik (700+ Zeilen)
+│
+└── .github/
+    └── workflows/
+        └── deploy.yml         # CI/CD Pipeline (GitHub Actions)
+```
+
+---
+
+## 🏗️ Technische Details
+
+### Architektur
+
+**Frontend:**
+- Pure HTML5, CSS3, JavaScript (ES6+)
+- **Class-based OOP** - `MatheApp`, `DeutschApp` Klassen
+- **Singleton Pattern** - `AudioManager` für Web Audio API
+- **DOM Caching** - Performance-Optimierung
+- **Event Delegation** - `addEventListener` (keine inline handlers)
+
+**Externe Dependencies:**
+- [jsPDF 2.5.1](https://cdnjs.com/libraries/jspdf) - PDF-Export (via CDN, SRI-Hash)
+- [Google Fonts](https://fonts.google.com/) - Fredoka, Nunito (CORS-enabled)
+
+### Sicherheit
+
+**Content Security Policy (CSP):**
+```html
+<!-- Mathe App -->
+script-src 'self' https://cdnjs.cloudflare.com;
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+```
+
+**Best Practices:**
+- ✅ Keine `eval()` oder `innerHTML` (XSS-Schutz)
+- ✅ Safe DOM Manipulation (`createElement`, `textContent`)
+- ✅ `try-catch` um `JSON.parse` (LocalStorage)
+- ✅ Input Validation & Sanitization
+
+### Performance
+
+**Optimierungen:**
+- **AudioContext Singleton** - 1 Instanz statt N pro Sound
+- **DOM Caching** - Alle Elemente werden in `this.dom` gecacht
+- **requestAnimationFrame** - Smooth Animationen
+- **Debouncing** - Opacity-Updates mit Timeout
+- **Lazy Task Removal** - Nur ältere als 10 werden entfernt
+
+**Mobile Keyboard:**
+- ✅ **Synchrone Focus-Übertragung** - Tastatur bleibt offen
+- ✅ `focus()` ohne `setTimeout` (iOS-Kompatibilität)
+- ✅ `scrollIntoView` mit `requestAnimationFrame`
+
+### Datenschutz
+
+- ✅ **Keine Server-Kommunikation** (außer CDN für Fonts/jsPDF)
+- ✅ **Keine Cookies**
+- ✅ **Keine Tracking-Scripte**
+- ✅ **LocalStorage nur lokal** (kein Upload)
+- ✅ **Offline-fähig** nach initialem Laden
+
+---
+
+## 🎯 Pädagogische Konzepte
+
+### Adaptive Logik
+
+**Mathe:**
+```javascript
+// Level-Up: 3 korrekt in Folge → +1 Level
+if (correctStreak >= 3) level++;
+
+// Level-Down: 2 falsch → -2 Levels
+if (incorrectCount >= 2) level -= 2;
+
+// Aufgabengenerierung: 98% Rejection für +0
+if (num2 === 0 && (hasRecentZero || Math.random() < 0.98)) {
+    retry(); // Verhindert langweilige Aufgaben
+}
+```
+
+**Deutsch:**
+- Progressive Komplexität: 2 → 3 → 4+ Buchstaben
+- Gleicher Adaptive-Algorithmus wie Mathe
+
+### Motivations-Psychologie
+
+1. **Sofortiges Feedback** - Grün/Rot Farbcodierung
+2. **Positive Verstärkung** - Sound + Feuerwerk
+3. **Milestones** - Celebration alle 10 Aufgaben
+4. **Flow-Zustand** - Adaptive Modi halten optimale Challenge
+5. **Visuelle Historie** - Letzte 10 Aufgaben verblassen (zeigt Fortschritt)
+
+---
+
+## 📱 Mobile Optimierung
+
+**Touch-First Design:**
+- Große, fingerfreundliche Buttons (min. 44×44px)
+- `inputMode="numeric"` für Nummern-Tastatur
+- `scrollIntoView` mit smooth behavior
+- Responsive Grid-Layout (`grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))`)
+
+**Tastatur-Handling:**
+- Keine `setTimeout` bei Focus (iOS-Requirement)
+- Synchrone Focus-Übertragung im gleichen Event Handler
+- `requestAnimationFrame` für Scroll (nicht-blockierend)
+
+---
+
+## 🔧 Entwicklung
+
+### Lokaler Development Server
+
+```bash
+# Python 3
+python -m http.server 8080
+
+# Node.js
+npx http-server -p 8080
+
+# Browser öffnen
+open http://localhost:8080
+```
+
+### Code-Struktur
+
+**Mathe-App (`js/mathe-app.js`):**
+```javascript
+class MatheApp {
+    constructor() {
+        this.currentTasks = [];
+        this.adaptiveMode = false;
+        this.dom = {}; // DOM Cache
+    }
+
+    init() {
+        this.cacheDOMElements();
+        this.attachEventListeners();
+        this.loadProgress();
+    }
+
+    generateAdaptiveTask() { /* ... */ }
+    handleAdaptiveInput(input, taskDiv) { /* ... */ }
+    adjustAdaptiveLevel(correct) { /* ... */ }
+}
+```
+
+**Deutsch-App (`js/deutsch-app.js`):**
+```javascript
+class DeutschApp {
+    constructor() {
+        this.wordDatabase = [ /* 65 Wörter */ ];
+        this.currentMode = '';
+        this.dom = {};
+    }
+
+    init() { /* ... */ }
+    startTraining() { /* ... */ }
+    showNextTask() { /* ... */ }
+}
+```
+
+### CSS-Variablen
+
+**Theme-System:**
+```css
+:root {
+    /* Math Theme */
+    --math-primary: #FF6B9D;
+    --math-secondary: #FEC62E;
+    --math-tertiary: #5DADE2;
+
+    /* German Theme */
+    --german-primary: #9B59B6;
+    --german-secondary: #3498DB;
+    --german-tertiary: #1ABC9C;
+}
+```
+
+### Deployment
+
+**GitHub Actions Pipeline (`.github/workflows/deploy.yml`):**
+1. **Validate** - HTML-Struktur, Security-Scan, Code-Quality
+2. **Test** - HTTP-Server, Page-Load Tests
+3. **Deploy** - FTP/SFTP, GitHub Pages, Netlify, Vercel (konfigurierbar)
+
+**Deploy Commands:**
+```bash
+# Manual Deploy
+git add .
+git commit -m "feat: Add new feature"
+git push origin master
+
+# Automatic via GitHub Actions
+# → Triggered on push to master
+# → Validates, tests, deploys
+```
+
+---
+
+## 🐛 Bekannte Limitierungen
+
+- PDF-Export benötigt Internetverbindung (jsPDF via CDN)
+- Web Audio API nicht in allen Browsern (Fallback: stumm)
+- Emoji-Darstellung variiert je nach OS
+
+---
+
+## 🤝 Contributing
+
+**Ideen für Beiträge:**
+- Neue Wörter für Silben-Trainer
+- Weitere Aufgabentypen (Multiplikation, Division)
+- Accessibility-Verbesserungen (ARIA, Screen Reader)
+- Internationalisierung (i18n)
+
+**Development Workflow:**
+1. Fork Repository
+2. Feature Branch erstellen (`git checkout -b feature/neue-funktion`)
+3. Änderungen committen
+4. Pull Request erstellen
+
+---
+
+## 📄 Lizenz
+
+**MIT License** - Frei verwendbar für private und kommerzielle Zwecke.
+
+Siehe [LICENSE](LICENSE) für Details.
+
+---
+
+## 📞 Support
+
+**Probleme melden:**
+1. [GitHub Issues](https://github.com/reinkes/smarty/issues)
+2. Browser-Konsole für Fehler checken
+3. Mit Screenshot + Browser-Version
+
+---
+
+**Viel Spaß beim Lernen! 🎉📚**

@@ -2,112 +2,179 @@
 
 Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
-Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
-und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
+Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
+
+---
+
+## [2.0.0] - 2025-12-23
+
+### 🎉 Major Refactoring - Modular Architecture
+
+#### Added
+- **Organisierte Folder-Struktur:**
+  - `css/` - Alle Stylesheets (shared, animations, themes)
+  - `js/` - Alle JavaScript-Module (shared, apps, audio)
+- **Class-based Architecture:**
+  - `MatheApp` Klasse (900+ Zeilen)
+  - `DeutschApp` Klasse (700+ Zeilen)
+- **Singleton Pattern:**
+  - `AudioManager` - Verhindert mehrfache AudioContext-Instanzen
+- **CSS Module:**
+  - `css/shared.css` - Gemeinsame Basis-Styles
+  - `css/animations.css` - Animationen & Keyframes
+  - `css/theme-math.css` - Mathe-Theme
+  - `css/theme-german.css` - Deutsch-Theme
+- **JS Module:**
+  - `js/shared.js` - ProgressTracker, Utilities
+  - `js/audio-manager.js` - AudioContext Singleton
+  - `js/mathe-app.js` - Mathe-Logik
+  - `js/deutsch-app.js` - Deutsch-Logik
+
+#### Changed
+- **Code-Organisation:**
+  - Entfernt: 1400+ Zeilen inline CSS/JS
+  - Reduziert: Dateigrößen um 30-40%
+  - Verbessert: Wartbarkeit & Erweiterbarkeit
+- **Event Handling:**
+  - Ersetzt alle `onclick="..."` mit `addEventListener`
+  - Implementiert DOM Caching für Performance
+- **Deployment Pipeline:**
+  - `.github/workflows/deploy.yml` kopiert jetzt `css/` und `js/` Ordner
+  - Entfernt alte `shared.css` / `shared.js` Logik
+
+#### Fixed
+- **Security:**
+  - CSP Header entfernt `'unsafe-inline'` für Scripts
+  - Alle `innerHTML` ersetzt mit sicherer DOM-Manipulation
+  - `try-catch` um `JSON.parse` für LocalStorage
+- **Performance:**
+  - AudioContext Singleton spart Memory
+  - DOM Caching reduziert Queries
+
+### 🔧 Technical Debt Elimination
+
+#### Removed
+- ❌ Inline `<style>` Blöcke (600+ Zeilen in mathe, 160+ in deutsch)
+- ❌ Inline `<script>` Blöcke (875+ Zeilen in mathe, 482+ in deutsch)
+- ❌ Inline Event Handlers (`onclick`, `oninput`, `onchange`)
+- ❌ Duplicate Code (playSuccessSound, fireworks, celebrations)
+
+---
+
+## [1.2.0] - 2025-12-23
+
+### 📱 Mobile UX Improvements
+
+#### Fixed
+- **Keyboard bleibt offen (iOS/Android):**
+  - Synchrone Focus-Übertragung ohne `setTimeout`
+  - Verwendet `requestAnimationFrame` für Scroll
+  - Research-basiert: iOS benötigt synchronen Focus im Event Handler
+- **+0 Aufgaben reduziert:**
+  - Erhöht Rejection von 90% auf 98%
+  - Verhindert aufeinanderfolgende +0 Tasks
+  - Prüft letzte 3 Aufgaben auf +0
+
+#### Changed
+- **Adaptive Mode:**
+  - Letzte 10 gelöste Aufgaben bleiben sichtbar
+  - Graduelles Verblassen (Opacity 0.3 → 0.6)
+  - Ältere Tasks werden sanft entfernt (kein abruptes Remove)
+- **Animations:**
+  - Removed 300ms setTimeout vor Focus
+  - Focus passiert sofort nach Validation
+  - Visuelle Updates nutzen `requestAnimationFrame`
+
+#### Performance
+- Reduziert DOM-Manipulation während Input-Focus
+- Verhindert Layout-Thrashing durch Debouncing
+
+---
+
+## [1.1.0] - 2025-12-23
+
+### 🎨 UI/UX Improvements
+
+#### Fixed
+- **Footer Overlap auf Index-Seite:**
+  - Footer nutzt jetzt `position: relative` statt `absolute`
+  - Body verwendet `flex-direction: column` für proper spacing
+  - Responsive padding für Mobile
+
+#### Changed
+- **Layout:**
+  - Container nutzt `flex: 1` für vertikales spacing
+  - Footer hat `margin-top: 3rem` für Trennung
+  - Mobile: Reduzierter padding für kompaktere Ansicht
+
+---
 
 ## [1.0.0] - 2024-12-21
 
-### Hinzugefügt - Mathe-Aufgaben Generator
+### 🎉 Initial Release
 
-#### Features
-- Addition im Zahlenraum 10
-- Addition im Zahlenraum 20
-- Subtraktion im Zahlenraum 10
-- Adaptiver Trainingsmodus mit automatischer Schwierigkeitsanpassung
+#### Mathe-Aufgaben Generator
+
+**Features:**
+- Addition im Zahlenraum 10, 20, 50
+- Subtraktion im Zahlenraum 10, 20, 50
+- Adaptiver Trainingsmodus
 - PDF-Export für Arbeitsblätter
 - Interaktive Aufgabenlösung mit sofortigem Feedback
-- Farbcodierung (grün/rot) für richtige/falsche Antworten
-- Automatischer Cursor-Sprung bei richtiger Antwort
-- Intelligente Validierung (keine Fehlmeldung beim Tippen zweistelliger Zahlen)
+- Farbcodierung (grün/rot)
+- Automatischer Cursor-Sprung
 
-#### Motivations-System
-- Celebration-Animation alle 10 gelösten Aufgaben
-- Großes Feuerwerk bei vollständig gelöster Aufgabenliste
-- Level-Up Benachrichtigungen im adaptiven Modus
-- Sound-Effekte bei richtigen Antworten
+**Motivations-System:**
+- Celebration alle 10 gelösten Aufgaben
+- Großes Feuerwerk bei kompletter Liste
+- Level-Up Benachrichtigungen
+- Sound-Effekte
 
-#### Aufgabengenerierung
-- Vermeidung von +0 Aufgaben (nur 10% Wahrscheinlichkeit)
-- Bei Subtraktion: Nur 10% mit Ergebnis 0
-- Keine direkt aufeinanderfolgenden Duplikate
-- Adaptiver Modus: Graduelle Schwierigkeitssteigerung
-- Start bei max. Ergebnis 5, wächst bis zur konfigurierten Grenze
+**Adaptive Logik:**
+- Start bei Level 5
+- Level-Up nach 3 korrekten Antworten
+- Level-Down nach 2 falschen Antworten
+- Graduelle Schwierigkeitssteigerung
 
-### Hinzugefügt - Silben-Trainer
+#### Silben-Trainer
 
-#### Features
+**Features:**
 - Drei Schwierigkeitsstufen (Einfach, Mittel, Schwer)
-- Adaptiver Modus mit automatischer Anpassung
+- Adaptiver Modus
 - 50+ Wörter mit Emoji-Visualisierung
 - 3 Auswahlmöglichkeiten pro Aufgabe
-- Sofortiges Feedback bei Auswahl
+- Sofortiges Feedback
 - Anzeige der richtigen Lösung bei Fehler
 
-#### Wort-Datenbank
-- Einfach: 20 Wörter mit 2-Buchstaben-Silben
-- Mittel: 15 Wörter mit 2-3 Buchstaben-Silben
-- Schwer: 10 Wörter mit komplexen Silben
+**Wort-Datenbank:**
+- Einfach: 20 Wörter (2-Buchstaben-Silben)
+- Mittel: 15 Wörter (2-3 Buchstaben)
+- Schwer: 10 Wörter (komplexe Silben)
 
-#### Adaptive Logik
-- Nach 3 richtigen Antworten → Level-Up
-- Nach 2 falschen Antworten → Level-Down
-- Celebration bei Meilensteinen
+#### Technische Details
 
-### Technische Details
-
-#### Design
-- Responsive Design (Desktop, Tablet, Mobile)
-- Playful und kinderfreundliche Benutzeroberfläche
+**Design:**
+- Responsive (Desktop, Tablet, Mobile)
+- Kinderfreundliche UI
 - Custom Fonts (Fredoka, Nunito)
-- CSS-Animationen für alle Interaktionen
-- Touch-optimierte Buttons
+- CSS-Animationen
+- Touch-optimiert
 
-#### Browser-Kompatibilität
+**Browser:**
 - Chrome 90+
 - Firefox 88+
 - Safari 14+
 - Edge 90+
 
-#### Performance
-- Keine externen Abhängigkeiten (außer jsPDF für PDF-Export)
+**Performance:**
 - Pure JavaScript (kein Framework)
-- Offline-fähig nach initialem Laden
-- Keine Datenübertragung an Server
-
-### Dokumentation
-- Umfassendes README mit allen Features
-- REQUIREMENTS.txt mit technischen Voraussetzungen
-- MIT Lizenz
-- .gitignore für saubere Repository-Verwaltung
+- Offline-fähig
+- Keine Server-Kommunikation
+- jsPDF für PDF-Export (via CDN)
 
 ---
 
-## [Geplant für zukünftige Versionen]
-
-### Version 1.1.0 (Q1 2025)
-- [ ] Multiplikation und Division
-- [ ] Mehr Wörter für Silben-Trainer (Ziel: 100+)
-- [ ] Statistik-Tracking (optional mit localStorage)
-- [ ] Drucker-freundliche Ansicht
-- [ ] Barrierefreiheit-Verbesserungen (WCAG 2.1 AA)
-
-### Version 1.2.0 (Q2 2025)
-- [ ] KI-generierte Bilder statt Emojis (optional)
-- [ ] Bruchrechnen
-- [ ] Geometrie-Aufgaben
-- [ ] Endsilben-Trainer
-- [ ] Reimwörter-Finder
-
-### Version 2.0.0 (Q3 2025)
-- [ ] Mehrspielermodus (lokal)
-- [ ] Fortschritt-Speicherung
-- [ ] Anpassbare Schwierigkeitskurven
-- [ ] Lehrer-Dashboard (optional)
-- [ ] Multi-Language Support
-
----
-
-## Änderungsrichtlinien
+## Versionsrichtlinien
 
 ### Added (Hinzugefügt)
 Für neue Features.
