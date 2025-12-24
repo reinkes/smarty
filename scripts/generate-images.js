@@ -42,7 +42,7 @@ const CONFIG = {
   quality: 'standard',
   style: 'vivid', // 'vivid' for more vibrant, icon-like colors
   delayBetweenRequests: 12000, // 12 seconds (DALL-E rate limit: 5/min)
-  batchSize: 100, // Process 100 words (full database)
+  batchSize: 10, // Test: Only first 10 words (change to 100 for full generation)
   skipExisting: false, // Set to false to regenerate with new prompts
 };
 
