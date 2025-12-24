@@ -223,12 +223,12 @@ async function main() {
   console.log(`📁 Images saved to: ${CONFIG.imageDir}`);
   console.log(`💾 Database updated: ${CONFIG.dataFile}`);
 
-  // Cost estimation
+  // Cost calculation
   const totalGenerated = successCount;
   const costPerImage = 0.040; // DALL-E 3 standard 1024x1024
-  const estimatedCost = totalGenerated * costPerImage;
+  const actualCost = totalGenerated * costPerImage;
 
-  console.log(`\n💰 Estimated Cost: $${estimatedCost.toFixed(2)} (${totalGenerated} images × $${costPerImage})`);
+  console.log(`\n💰 Actual Cost: $${actualCost.toFixed(2)} (${totalGenerated} images × $${costPerImage})`);
 
   console.log('\n✨ Done!');
 }
