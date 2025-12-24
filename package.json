@@ -4,6 +4,9 @@
   "description": "Learning apps for children - Math and German syllable training",
   "type": "module",
   "scripts": {
+    "debug-env": "node scripts/debug-env.js",
+    "test-api": "node scripts/test-api-key.js",
+    "test-api-detailed": "node scripts/test-api-detailed.js",
     "generate-images": "node scripts/generate-images.js",
     "generate-images-test": "node scripts/generate-images.js --test",
     "serve": "python3 -m http.server 8080"

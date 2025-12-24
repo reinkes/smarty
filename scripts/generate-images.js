@@ -124,9 +124,14 @@ async function main() {
   // Validate API key
   if (!CONFIG.apiKey) {
     console.error('❌ ERROR: OPENAI_API_KEY not found in environment variables');
-    console.error('   Please create a .env file with: OPENAI_API_KEY=sk-...');
+    console.error('   Please run: node scripts/setup-env.js');
     process.exit(1);
   }
+
+  // Show key info
+  console.log('🔑 API Key found');
+  console.log(`   Starts with: ${CONFIG.apiKey.substring(0, 15)}...`);
+  console.log(`   Length: ${CONFIG.apiKey.length} characters\n`);
 
   // Ensure image directory exists
   if (!fs.existsSync(CONFIG.imageDir)) {
@@ -140,6 +145,32 @@ async function main() {
   const words = data.words;
 
   console.log(`   Found ${words.length} words in database\n`);
+
+  // Cost calculation
+  const wordsToGenerate = words.filter(w =>
+    !w.image || w.image === null ||
+    (CONFIG.skipExisting && !fs.existsSync(path.join(CONFIG.imageDir, `${w.word.toLowerCase()}.png`)))
+  );
+
+  const estimatedCost = wordsToGenerate.length * 0.04;
+  const estimatedTime = Math.ceil(wordsToGenerate.length * CONFIG.delayBetweenRequests / 60000);
+
+  console.log('💰 Cost Estimate:');
+  console.log(`   Images to generate: ${wordsToGenerate.length}`);
+  console.log(`   Cost: ~$${estimatedCost.toFixed(2)} (DALL-E 3 standard)`);
+  console.log(`   Time: ~${estimatedTime} minutes\n`);
+
+  if (wordsToGenerate.length === 0) {
+    console.log('✅ All images already generated!');
+    console.log('   Run with skipExisting: false to regenerate.\n');
+    return;
+  }
+
+  // Confirmation
+  console.log('⚠️  This will charge your OpenAI account!\n');
+  console.log('Press Ctrl+C to cancel, or wait 5 seconds to continue...\n');
+
+  await new Promise(resolve => setTimeout(resolve, 5000));
 
   // Process words in batches
   const wordsToProcess = words.slice(0, CONFIG.batchSize);
