@@ -1,0 +1,28 @@
+{
+  "name": "smarty-learn",
+  "version": "2.0.0",
+  "description": "Learning apps for children - Math and German syllable training",
+  "type": "module",
+  "scripts": {
+    "generate-images": "node scripts/generate-images.js",
+    "generate-images-test": "node scripts/generate-images.js --test",
+    "serve": "python3 -m http.server 8080"
+  },
+  "keywords": [
+    "education",
+    "children",
+    "learning",
+    "math",
+    "german",
+    "syllables"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "openai": "^4.72.0",
+    "dotenv": "^16.4.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -16,86 +16,9 @@ class DeutschApp {
     static LEVEL_DOWN_THRESHOLD = 2;
 
     constructor() {
-        // Word database with emojis
-        this.wordDatabase = [
-            // Easy - 2 letter syllables
-            { word: 'Katze', syllable: 'Ka', emoji: '🐱', difficulty: 'easy' },
-            { word: 'Hund', syllable: 'Hun', emoji: '🐕', difficulty: 'easy' },
-            { word: 'Baum', syllable: 'Bau', emoji: '🌳', difficulty: 'easy' },
-            { word: 'Haus', syllable: 'Hau', emoji: '🏠', difficulty: 'easy' },
-            { word: 'Auto', syllable: 'Au', emoji: '🚗', difficulty: 'easy' },
-            { word: 'Ball', syllable: 'Ba', emoji: '⚽', difficulty: 'easy' },
-            { word: 'Sonne', syllable: 'So', emoji: '☀️', difficulty: 'easy' },
-            { word: 'Mond', syllable: 'Mo', emoji: '🌙', difficulty: 'easy' },
-            { word: 'Fisch', syllable: 'Fi', emoji: '🐟', difficulty: 'easy' },
-            { word: 'Vogel', syllable: 'Vo', emoji: '🐦', difficulty: 'easy' },
-            { word: 'Tisch', syllable: 'Ti', emoji: '🪑', difficulty: 'easy' },
-            { word: 'Tasse', syllable: 'Ta', emoji: '☕', difficulty: 'easy' },
-            { word: 'Buch', syllable: 'Bu', emoji: '📖', difficulty: 'easy' },
-            { word: 'Lampe', syllable: 'La', emoji: '💡', difficulty: 'easy' },
-            { word: 'Mama', syllable: 'Ma', emoji: '👩', difficulty: 'easy' },
-            { word: 'Papa', syllable: 'Pa', emoji: '👨', difficulty: 'easy' },
-            { word: 'Baby', syllable: 'Ba', emoji: '👶', difficulty: 'easy' },
-            { word: 'Telefon', syllable: 'Te', emoji: '📱', difficulty: 'easy' },
-            { word: 'Apfel', syllable: 'Ap', emoji: '🍎', difficulty: 'easy' },
-            { word: 'Banane', syllable: 'Ba', emoji: '🍌', difficulty: 'easy' },
-
-            // Medium - 2-3 letter syllables
-            { word: 'Schule', syllable: 'Schu', emoji: '🏫', difficulty: 'medium' },
-            { word: 'Blume', syllable: 'Blu', emoji: '🌸', difficulty: 'medium' },
-            { word: 'Stern', syllable: 'Ste', emoji: '⭐', difficulty: 'medium' },
-            { word: 'Pferd', syllable: 'Pfe', emoji: '🐴', difficulty: 'medium' },
-            { word: 'Frosch', syllable: 'Fro', emoji: '🐸', difficulty: 'medium' },
-            { word: 'Schmetterling', syllable: 'Schme', emoji: '🦋', difficulty: 'medium' },
-            { word: 'Strand', syllable: 'Stra', emoji: '🏖️', difficulty: 'medium' },
-            { word: 'Traktor', syllable: 'Tra', emoji: '🚜', difficulty: 'medium' },
-            { word: 'Flugzeug', syllable: 'Flu', emoji: '✈️', difficulty: 'medium' },
-            { word: 'Schiff', syllable: 'Schi', emoji: '🚢', difficulty: 'medium' },
-            { word: 'Brot', syllable: 'Bro', emoji: '🍞', difficulty: 'medium' },
-            { word: 'Schokolade', syllable: 'Scho', emoji: '🍫', difficulty: 'medium' },
-            { word: 'Glas', syllable: 'Gla', emoji: '🥛', difficulty: 'medium' },
-            { word: 'Stuhl', syllable: 'Stu', emoji: '🪑', difficulty: 'medium' },
-            { word: 'Schwein', syllable: 'Schwe', emoji: '🐷', difficulty: 'medium' },
-
-            // Hard - complex syllables
-            { word: 'Schnee', syllable: 'Schne', emoji: '❄️', difficulty: 'hard' },
-            { word: 'Pflanze', syllable: 'Pfla', emoji: '🌱', difficulty: 'hard' },
-            { word: 'Strumpf', syllable: 'Stru', emoji: '🧦', difficulty: 'hard' },
-            { word: 'Sprung', syllable: 'Spru', emoji: '🦘', difficulty: 'hard' },
-            { word: 'Krone', syllable: 'Kro', emoji: '👑', difficulty: 'hard' },
-            { word: 'Drachen', syllable: 'Dra', emoji: '🐉', difficulty: 'hard' },
-            { word: 'Geist', syllable: 'Gei', emoji: '👻', difficulty: 'hard' },
-            { word: 'Prinzessin', syllable: 'Pri', emoji: '👸', difficulty: 'hard' },
-            { word: 'Kreis', syllable: 'Kre', emoji: '⭕', difficulty: 'hard' },
-            { word: 'Zwiebel', syllable: 'Zwie', emoji: '🧅', difficulty: 'hard' },
-
-            // === NEUE WÖRTER (Beispiele zum Erweitern) ===
-            // Einfach - Tiere
-            { word: 'Elefant', syllable: 'Ele', emoji: '🐘', difficulty: 'easy' },
-            { word: 'Tiger', syllable: 'Ti', emoji: '🐯', difficulty: 'easy' },
-            { word: 'Löwe', syllable: 'Lö', emoji: '🦁', difficulty: 'easy' },
-            { word: 'Panda', syllable: 'Pan', emoji: '🐼', difficulty: 'easy' },
-            { word: 'Affe', syllable: 'Af', emoji: '🐵', difficulty: 'easy' },
-            { word: 'Giraffe', syllable: 'Gi', emoji: '🦒', difficulty: 'easy' },
-
-            // Einfach - Essen
-            { word: 'Pizza', syllable: 'Pi', emoji: '🍕', difficulty: 'easy' },
-            { word: 'Kuchen', syllable: 'Ku', emoji: '🍰', difficulty: 'easy' },
-            { word: 'Eis', syllable: 'Ei', emoji: '🍦', difficulty: 'easy' },
-            { word: 'Keks', syllable: 'Ke', emoji: '🍪', difficulty: 'easy' },
-
-            // Mittel - Fahrzeuge & Orte
-            { word: 'Hubschrauber', syllable: 'Hub', emoji: '🚁', difficulty: 'medium' },
-            { word: 'Kranwagen', syllable: 'Kran', emoji: '🏗️', difficulty: 'medium' },
-            { word: 'Spielplatz', syllable: 'Spiel', emoji: '🛝', difficulty: 'medium' },
-            { word: 'Schwimmbad', syllable: 'Schwi', emoji: '🏊', difficulty: 'medium' },
-
-            // Schwer - Komplexe Wörter
-            { word: 'Schraubenzieher', syllable: 'Schrau', emoji: '🔧', difficulty: 'hard' },
-            { word: 'Klavier', syllable: 'Kla', emoji: '🎹', difficulty: 'hard' },
-            { word: 'Flöte', syllable: 'Flö', emoji: '🎺', difficulty: 'hard' },
-            { word: 'Trommel', syllable: 'Tro', emoji: '🥁', difficulty: 'hard' }
-        ];
+        // Word database - loaded from JSON file
+        this.wordDatabase = [];
+        this.wordDatabaseLoaded = false;
 
         // State
         this.currentMode = '';
@@ -123,10 +46,34 @@ class DeutschApp {
     /**
      * Initialize the application
      */
-    init() {
+    async init() {
         this.cacheDOMElements();
         this.attachEventListeners();
+        await this.loadWordDatabase();
         this.loadProgress();
+    }
+
+    /**
+     * Load word database from JSON file
+     */
+    async loadWordDatabase() {
+        try {
+            const response = await fetch('data/deutsch-words.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            this.wordDatabase = data.words;
+            this.wordDatabaseLoaded = true;
+            console.log(`✅ Loaded ${this.wordDatabase.length} words from database (v${data.version})`);
+        } catch (error) {
+            console.error('❌ Failed to load word database:', error);
+            // Fallback: disable start button if database failed to load
+            if (this.dom.startButton) {
+                this.dom.startButton.disabled = true;
+                this.dom.startButton.textContent = 'Fehler beim Laden der Wörter';
+            }
+        }
     }
 
     /**
@@ -366,9 +313,21 @@ class DeutschApp {
             taskDiv.style.animationDelay = `${index * 0.2}s`;
             taskDiv.dataset.taskId = task.id;
 
-            const emoji = document.createElement('div');
-            emoji.className = 'emoji-display';
-            emoji.textContent = task.emoji;
+            // Display image if available, otherwise emoji
+            const visual = document.createElement('div');
+            visual.className = 'emoji-display';
+
+            if (task.image && task.image !== null) {
+                // Use AI-generated image
+                const img = document.createElement('img');
+                img.src = task.image;
+                img.alt = task.word;
+                img.className = 'word-image';
+                visual.appendChild(img);
+            } else {
+                // Fallback to emoji
+                visual.textContent = task.emoji;
+            }
 
             const optionsDiv = document.createElement('div');
             optionsDiv.className = 'syllable-options';
@@ -381,7 +340,7 @@ class DeutschApp {
                 optionsDiv.appendChild(btn);
             });
 
-            taskDiv.appendChild(emoji);
+            taskDiv.appendChild(visual);
             taskDiv.appendChild(optionsDiv);
             this.dom.taskContainer.appendChild(taskDiv);
         });

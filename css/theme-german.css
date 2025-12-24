@@ -114,6 +114,25 @@ footer a {
     text-align: center;
 }
 
+/* AI-generated word images */
+.word-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 16px;
+    background: white;
+    padding: 1rem;
+    box-shadow: 0 4px 20px rgba(155, 89, 182, 0.15);
+    animation: bounceIn 0.6s ease-out;
+}
+
+@media (max-width: 768px) {
+    .word-image {
+        width: 150px;
+        height: 150px;
+    }
+}
+
 .syllable-options {
     display: flex;
     justify-content: center;

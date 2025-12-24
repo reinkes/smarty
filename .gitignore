@@ -49,3 +49,7 @@ coverage/
 # Optional: Temporary files
 temp/
 tmp/
+
+# Generated images (large files - can be regenerated or deployed separately)
+# Uncomment the line below if you don't want to commit generated images
+# images/generated/*.png

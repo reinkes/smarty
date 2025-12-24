@@ -3,6 +3,8 @@ name: 🚀 Deploy Smarty
 on:
   push:
     branches: [ master, main ]
+    tags:
+      - 'v*.*.*'  # Trigger on version tags like v1.0.0, v2.1.3, etc.
   pull_request:
     branches: [ master, main ]
 
@@ -113,19 +115,161 @@ jobs:
 
         echo "✅ All pages load successfully"
 
-  deploy-production:
-    name: 🌐 Deploy to Production
+  deploy-beta:
+    name: 🧪 Deploy to Beta
     runs-on: ubuntu-latest
     needs: validate
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')
 
     steps:
     - name: 📥 Checkout code
       uses: actions/checkout@v4
 
-    - name: 📦 Prepare deployment package
+    - name: 📦 Prepare beta deployment package
       run: |
-        echo "📦 Preparing deployment package..."
+        echo "📦 Preparing BETA deployment package..."
+
+        # Create deployment directory
+        mkdir -p deploy/beta
+
+        # Copy HTML files
+        cp mathe-aufgaben.html deploy/beta/
+        cp deutsch-silben.html deploy/beta/
+
+        # Copy CSS directory
+        if [ -d css ]; then
+          echo "📁 Copying CSS directory..."
+          cp -r css deploy/beta/
+        else
+          echo "❌ CSS directory not found"
+          exit 1
+        fi
+
+        # Copy JS directory
+        if [ -d js ]; then
+          echo "📁 Copying JS directory..."
+          cp -r js deploy/beta/
+        else
+          echo "❌ JS directory not found"
+          exit 1
+        fi
+
+        # Copy images directory if it exists (for AI-generated images)
+        if [ -d images ]; then
+          echo "📁 Copying images directory..."
+          cp -r images deploy/beta/
+        fi
+
+        # Copy data directory if it exists (for JSON databases)
+        if [ -d data ]; then
+          echo "📁 Copying data directory..."
+          cp -r data deploy/beta/
+        fi
+
+        # Copy optional files
+        [ -f index.html ] && cp index.html deploy/beta/ || echo "⚠️ No index.html found"
+        [ -f impressum.html ] && cp impressum.html deploy/beta/ || echo "⚠️ No impressum.html found"
+        [ -f datenschutz.html ] && cp datenschutz.html deploy/beta/ || echo "⚠️ No datenschutz.html found"
+        [ -f nutzungsbedingungen.html ] && cp nutzungsbedingungen.html deploy/beta/ || echo "⚠️ No nutzungsbedingungen.html found"
+
+        # Create deployment info with BETA marker
+        cat > deploy/beta/deployment-info.json << EOF
+        {
+          "environment": "BETA",
+          "version": "beta-$(date +%Y%m%d-%H%M%S)",
+          "commit": "$GITHUB_SHA",
+          "branch": "$GITHUB_REF_NAME",
+          "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "build_number": "$GITHUB_RUN_NUMBER"
+        }
+        EOF
+
+        echo "📋 Beta deployment package contents:"
+        find deploy/beta/ -type f
+
+        echo "✅ Beta deployment package ready"
+
+    - name: 🚀 Deploy Beta via SFTP/FTP (if configured)
+      if: env.FTP_HOST != ''
+      timeout-minutes: 15
+      continue-on-error: true
+      run: |
+        echo "🚀 Deploying BETA via SFTP/FTP to $FTP_HOST/beta..."
+
+        # Install lftp
+        sudo apt-get update -qq
+        sudo apt-get install -y lftp
+
+        # Create SSH config
+        mkdir -p ~/.ssh
+        cat > ~/.ssh/config << 'SSH_EOF'
+        Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            ServerAliveInterval 60
+            ServerAliveCountMax 3
+            ConnectTimeout 30
+        SSH_EOF
+        chmod 600 ~/.ssh/config
+
+        # Deploy to beta folder
+        timeout 180 lftp -c "
+          set net:timeout 30
+          set net:max-retries 2
+          set sftp:auto-confirm yes
+          set sftp:connect-program 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+          set cmd:fail-exit yes
+
+          echo 'Connecting to SFTP...'
+          open sftp://$FTP_USER:$FTP_PASSWORD@$FTP_HOST
+
+          echo 'Changing to target directory...'
+          cd $FTP_PATH || pwd
+
+          echo 'Changing to local deploy/beta directory...'
+          lcd deploy/beta
+
+          echo 'Starting BETA file upload...'
+          mirror --reverse --delete --verbose --target-directory=beta
+
+          echo 'BETA SFTP deployment completed!'
+          quit
+        "
+
+        echo "✅ BETA SFTP deployment successful!"
+      env:
+        FTP_HOST: ${{ secrets.FTP_HOST }}
+        FTP_USER: ${{ secrets.FTP_USER }}
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        FTP_PATH: ${{ secrets.FTP_PATH }}
+
+    - name: 📊 Beta Deployment summary
+      run: |
+        echo "📊 BETA Deployment Summary"
+        echo "=========================="
+        echo "🧪 Environment: BETA"
+        echo "✅ Files deployed: $(find deploy/beta/ -type f | wc -l)"
+        echo "📅 Timestamp: $(date)"
+        echo "🔗 Commit: $GITHUB_SHA"
+        echo "🌿 Branch: $GITHUB_REF_NAME"
+        echo "🏗️ Build: $GITHUB_RUN_NUMBER"
+        echo ""
+        echo "🔗 Beta URL: https://your-domain.com/beta/"
+
+  deploy-production:
+    name: 🌐 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: validate
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Prepare production deployment package
+      run: |
+        echo "📦 Preparing PRODUCTION deployment package..."
+        echo "🏷️ Tag: $GITHUB_REF_NAME"
 
         # Create deployment directory
         mkdir -p deploy
@@ -152,11 +296,19 @@ jobs:
           exit 1
         fi
 
-        # Legacy support (remove after migration complete)
-        [ -f shared.css ] && echo "ℹ️ Legacy shared.css still exists (should be moved to css/)" || true
-        [ -f shared.js ] && echo "ℹ️ Legacy shared.js still exists (should be moved to js/)" || true
+        # Copy images directory if it exists (for AI-generated images)
+        if [ -d images ]; then
+          echo "📁 Copying images directory..."
+          cp -r images deploy/
+        fi
 
-        # Copy optional files if they exist
+        # Copy data directory if it exists (for JSON databases)
+        if [ -d data ]; then
+          echo "📁 Copying data directory..."
+          cp -r data deploy/
+        fi
+
+        # Copy optional files
         [ -f index.html ] && cp index.html deploy/ || echo "⚠️ No index.html found"
         [ -f impressum.html ] && cp impressum.html deploy/ || echo "⚠️ No impressum.html found"
         [ -f datenschutz.html ] && cp datenschutz.html deploy/ || echo "⚠️ No datenschutz.html found"
@@ -167,21 +319,25 @@ jobs:
         [ -f robots.txt ] && cp robots.txt deploy/ || echo "⚠️ No robots.txt found"
         [ -f favicon.ico ] && cp favicon.ico deploy/ || echo "⚠️ No favicon.ico found"
 
+        # Extract version from tag
+        VERSION=${GITHUB_REF_NAME#v}
+
         # Create deployment info
         cat > deploy/deployment-info.json << EOF
         {
-          "version": "$(date +%Y%m%d-%H%M%S)",
+          "environment": "PRODUCTION",
+          "version": "$VERSION",
+          "tag": "$GITHUB_REF_NAME",
           "commit": "$GITHUB_SHA",
-          "branch": "$GITHUB_REF_NAME",
           "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
           "build_number": "$GITHUB_RUN_NUMBER"
         }
         EOF
 
-        echo "📋 Deployment package contents:"
+        echo "📋 Production deployment package contents:"
         find deploy/ -type f
 
-        echo "✅ Deployment package ready"
+        echo "✅ Production deployment package ready"
 
     - name: 🚀 Deploy via SFTP/FTP (if configured)
       if: env.FTP_HOST != ''
@@ -305,12 +461,16 @@ jobs:
         VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-    - name: 📊 Deployment summary
+    - name: 📊 Production Deployment summary
       run: |
-        echo "📊 Deployment Summary"
-        echo "===================="
+        echo "📊 PRODUCTION Deployment Summary"
+        echo "================================="
+        echo "🌐 Environment: PRODUCTION"
+        echo "🏷️ Version Tag: $GITHUB_REF_NAME"
         echo "✅ Files deployed: $(find deploy/ -type f | wc -l)"
         echo "📅 Timestamp: $(date)"
         echo "🔗 Commit: $GITHUB_SHA"
-        echo "🌿 Branch: $GITHUB_REF_NAME"
         echo "🏗️ Build: $GITHUB_RUN_NUMBER"
+        echo ""
+        echo "🎉 Production deployment completed!"
+        echo "🔗 Production URL: https://your-domain.com/"
