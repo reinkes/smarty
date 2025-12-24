@@ -40,10 +40,10 @@ const CONFIG = {
   model: 'dall-e-3',
   size: '1024x1024',
   quality: 'standard',
-  style: 'natural', // or 'vivid'
+  style: 'vivid', // 'vivid' for more vibrant, icon-like colors
   delayBetweenRequests: 12000, // 12 seconds (DALL-E rate limit: 5/min)
   batchSize: 100, // Process 100 words (full database)
-  skipExisting: true, // Skip if image already exists
+  skipExisting: false, // Set to false to regenerate with new prompts
 };
 
 // Initialize OpenAI client
@@ -53,12 +53,16 @@ const openai = new OpenAI({ apiKey: CONFIG.apiKey });
  * Generate prompt for AI image generation
  */
 function generatePrompt(word, category) {
-  const basePrompt = `A simple, child-friendly illustration of a ${word} (${category}). `;
-  const stylePrompt = `Clean vector art style, bright cheerful colors, minimal details, white background. `;
-  const targetPrompt = `Designed for German language learning for children aged 6-8 years. `;
-  const constraints = `No text, no labels, just the object/concept itself.`;
+  // Icon-style prompt for children
+  const objectPrompt = `A single ${word}, centered. `;
+  const stylePrompt = `Flat icon style, simple shapes, bold outlines, bright solid colors. `;
+  const structurePrompt = `Clear, recognizable silhouette. Like an emoji or app icon. `;
+  const detailPrompt = `Minimal details, cartoon style, friendly appearance. `;
+  const backgroundPrompt = `Plain white background, no shadows, no text. `;
+  const targetPrompt = `Perfect for children aged 6-8 to instantly recognize. `;
+  const constraint = `Only ONE ${word}, not multiple. Front view, full object visible.`;
 
-  return basePrompt + stylePrompt + targetPrompt + constraints;
+  return objectPrompt + stylePrompt + structurePrompt + detailPrompt + backgroundPrompt + targetPrompt + constraint;
 }
 
 /**
