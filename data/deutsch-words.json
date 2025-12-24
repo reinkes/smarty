@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "lastUpdated": "2024-12-24",
+  "version": "1.0.4",
+  "lastUpdated": "2025-12-24",
   "description": "German syllable training word database",
   "totalWords": 83,
   "words": [
@@ -8,7 +8,7 @@
       "word": "Katze",
       "syllable": "Ka",
       "emoji": "🐱",
-      "image": null,
+      "image": "images/generated/katze.png",
       "difficulty": "easy",
       "category": "Tiere"
     },
@@ -16,7 +16,7 @@
       "word": "Hund",
       "syllable": "Hun",
       "emoji": "🐕",
-      "image": null,
+      "image": "images/generated/hund.png",
       "difficulty": "easy",
       "category": "Tiere"
     },
@@ -24,7 +24,7 @@
       "word": "Baum",
       "syllable": "Bau",
       "emoji": "🌳",
-      "image": null,
+      "image": "images/generated/baum.png",
       "difficulty": "easy",
       "category": "Natur"
     },
@@ -32,7 +32,7 @@
       "word": "Haus",
       "syllable": "Hau",
       "emoji": "🏠",
-      "image": null,
+      "image": "images/generated/haus.png",
       "difficulty": "easy",
       "category": "Gebäude"
     },
@@ -40,7 +40,7 @@
       "word": "Auto",
       "syllable": "Au",
       "emoji": "🚗",
-      "image": null,
+      "image": "images/generated/auto.png",
       "difficulty": "easy",
       "category": "Fahrzeuge"
     },
@@ -48,7 +48,7 @@
       "word": "Ball",
       "syllable": "Ba",
       "emoji": "⚽",
-      "image": null,
+      "image": "images/generated/ball.png",
       "difficulty": "easy",
       "category": "Spielzeug"
     },
@@ -56,7 +56,7 @@
       "word": "Sonne",
       "syllable": "So",
       "emoji": "☀️",
-      "image": null,
+      "image": "images/generated/sonne.png",
       "difficulty": "easy",
       "category": "Natur"
     },
@@ -64,7 +64,7 @@
       "word": "Mond",
       "syllable": "Mo",
       "emoji": "🌙",
-      "image": null,
+      "image": "images/generated/mond.png",
       "difficulty": "easy",
       "category": "Natur"
     },
@@ -72,7 +72,7 @@
       "word": "Fisch",
       "syllable": "Fi",
       "emoji": "🐟",
-      "image": null,
+      "image": "images/generated/fisch.png",
       "difficulty": "easy",
       "category": "Tiere"
     },
@@ -80,7 +80,7 @@
       "word": "Vogel",
       "syllable": "Vo",
       "emoji": "🐦",
-      "image": null,
+      "image": "images/generated/vogel.png",
       "difficulty": "easy",
       "category": "Tiere"
     },
@@ -88,7 +88,7 @@
       "word": "Tisch",
       "syllable": "Ti",
       "emoji": "🪑",
-      "image": null,
+      "image": "images/generated/tisch.png",
       "difficulty": "easy",
       "category": "Möbel"
     },
@@ -96,7 +96,7 @@
       "word": "Tasse",
       "syllable": "Ta",
       "emoji": "☕",
-      "image": null,
+      "image": "images/generated/tasse.png",
       "difficulty": "easy",
       "category": "Haushalt"
     },
@@ -104,7 +104,7 @@
       "word": "Buch",
       "syllable": "Bu",
       "emoji": "📖",
-      "image": null,
+      "image": "images/generated/buch.png",
       "difficulty": "easy",
       "category": "Schule"
     },
@@ -112,7 +112,7 @@
       "word": "Lampe",
       "syllable": "La",
       "emoji": "💡",
-      "image": null,
+      "image": "images/generated/lampe.png",
       "difficulty": "easy",
       "category": "Haushalt"
     },
@@ -120,7 +120,7 @@
       "word": "Mama",
       "syllable": "Ma",
       "emoji": "👩",
-      "image": null,
+      "image": "images/generated/mama.png",
       "difficulty": "easy",
       "category": "Familie"
     },
@@ -128,7 +128,7 @@
       "word": "Papa",
       "syllable": "Pa",
       "emoji": "👨",
-      "image": null,
+      "image": "images/generated/papa.png",
       "difficulty": "easy",
       "category": "Familie"
     },
@@ -136,7 +136,7 @@
       "word": "Baby",
       "syllable": "Ba",
       "emoji": "👶",
-      "image": null,
+      "image": "images/generated/baby.png",
       "difficulty": "easy",
       "category": "Familie"
     },
@@ -144,7 +144,7 @@
       "word": "Telefon",
       "syllable": "Te",
       "emoji": "📱",
-      "image": null,
+      "image": "images/generated/telefon.png",
       "difficulty": "easy",
       "category": "Elektronik"
     },
@@ -152,7 +152,7 @@
       "word": "Apfel",
       "syllable": "Ap",
       "emoji": "🍎",
-      "image": null,
+      "image": "images/generated/apfel.png",
       "difficulty": "easy",
       "category": "Essen"
     },
@@ -160,7 +160,7 @@
       "word": "Banane",
       "syllable": "Ba",
       "emoji": "🍌",
-      "image": null,
+      "image": "images/generated/banane.png",
       "difficulty": "easy",
       "category": "Essen"
     },
@@ -168,7 +168,7 @@
       "word": "Elefant",
       "syllable": "Ele",
       "emoji": "🐘",
-      "image": null,
+      "image": "images/generated/elefant.png",
       "difficulty": "easy",
       "category": "Tiere"
     },
@@ -176,7 +176,7 @@
       "word": "Tiger",
       "syllable": "Ti",
       "emoji": "🐯",
-      "image": null,
+      "image": "images/generated/tiger.png",
       "difficulty": "easy",
       "category": "Tiere"
     },
@@ -184,7 +184,7 @@
       "word": "Löwe",
       "syllable": "Lö",
       "emoji": "🦁",
-      "image": null,
+      "image": "images/generated/loewe.png",
       "difficulty": "easy",
       "category": "Tiere"
     },
@@ -192,7 +192,7 @@
       "word": "Panda",
       "syllable": "Pan",
       "emoji": "🐼",
-      "image": null,
+      "image": "images/generated/panda.png",
       "difficulty": "easy",
       "category": "Tiere"
     },
@@ -200,7 +200,7 @@
       "word": "Affe",
       "syllable": "Af",
       "emoji": "🐵",
-      "image": null,
+      "image": "images/generated/affe.png",
       "difficulty": "easy",
       "category": "Tiere"
     },
@@ -208,7 +208,7 @@
       "word": "Giraffe",
       "syllable": "Gi",
       "emoji": "🦒",
-      "image": null,
+      "image": "images/generated/giraffe.png",
       "difficulty": "easy",
       "category": "Tiere"
     },
@@ -216,7 +216,7 @@
       "word": "Pizza",
       "syllable": "Pi",
       "emoji": "🍕",
-      "image": null,
+      "image": "images/generated/pizza.png",
       "difficulty": "easy",
       "category": "Essen"
     },
@@ -224,7 +224,7 @@
       "word": "Kuchen",
       "syllable": "Ku",
       "emoji": "🍰",
-      "image": null,
+      "image": "images/generated/kuchen.png",
       "difficulty": "easy",
       "category": "Essen"
     },
@@ -232,7 +232,7 @@
       "word": "Eis",
       "syllable": "Ei",
       "emoji": "🍦",
-      "image": null,
+      "image": "images/generated/eis.png",
       "difficulty": "easy",
       "category": "Essen"
     },
@@ -240,7 +240,7 @@
       "word": "Keks",
       "syllable": "Ke",
       "emoji": "🍪",
-      "image": null,
+      "image": "images/generated/keks.png",
       "difficulty": "easy",
       "category": "Essen"
     },
@@ -248,7 +248,7 @@
       "word": "Schule",
       "syllable": "Schu",
       "emoji": "🏫",
-      "image": null,
+      "image": "images/generated/schule.png",
       "difficulty": "medium",
       "category": "Gebäude"
     },
@@ -256,7 +256,7 @@
       "word": "Blume",
       "syllable": "Blu",
       "emoji": "🌸",
-      "image": null,
+      "image": "images/generated/blume.png",
       "difficulty": "medium",
       "category": "Natur"
     },
@@ -264,7 +264,7 @@
       "word": "Stern",
       "syllable": "Ste",
       "emoji": "⭐",
-      "image": null,
+      "image": "images/generated/stern.png",
       "difficulty": "medium",
       "category": "Natur"
     },
@@ -272,7 +272,7 @@
       "word": "Pferd",
       "syllable": "Pfe",
       "emoji": "🐴",
-      "image": null,
+      "image": "images/generated/pferd.png",
       "difficulty": "medium",
       "category": "Tiere"
     },
@@ -280,7 +280,7 @@
       "word": "Frosch",
       "syllable": "Fro",
       "emoji": "🐸",
-      "image": null,
+      "image": "images/generated/frosch.png",
       "difficulty": "medium",
       "category": "Tiere"
     },
@@ -288,7 +288,7 @@
       "word": "Schmetterling",
       "syllable": "Schme",
       "emoji": "🦋",
-      "image": null,
+      "image": "images/generated/schmetterling.png",
       "difficulty": "medium",
       "category": "Tiere"
     },
@@ -296,7 +296,7 @@
       "word": "Strand",
       "syllable": "Stra",
       "emoji": "🏖️",
-      "image": null,
+      "image": "images/generated/strand.png",
       "difficulty": "medium",
       "category": "Orte"
     },
@@ -304,7 +304,7 @@
       "word": "Traktor",
       "syllable": "Tra",
       "emoji": "🚜",
-      "image": null,
+      "image": "images/generated/traktor.png",
       "difficulty": "medium",
       "category": "Fahrzeuge"
     },
@@ -312,7 +312,7 @@
       "word": "Flugzeug",
       "syllable": "Flu",
       "emoji": "✈️",
-      "image": null,
+      "image": "images/generated/flugzeug.png",
       "difficulty": "medium",
       "category": "Fahrzeuge"
     },
@@ -320,7 +320,7 @@
       "word": "Schiff",
       "syllable": "Schi",
       "emoji": "🚢",
-      "image": null,
+      "image": "images/generated/schiff.png",
       "difficulty": "medium",
       "category": "Fahrzeuge"
     },
@@ -328,7 +328,7 @@
       "word": "Brot",
       "syllable": "Bro",
       "emoji": "🍞",
-      "image": null,
+      "image": "images/generated/brot.png",
       "difficulty": "medium",
       "category": "Essen"
     },
@@ -336,7 +336,7 @@
       "word": "Schokolade",
       "syllable": "Scho",
       "emoji": "🍫",
-      "image": null,
+      "image": "images/generated/schokolade.png",
       "difficulty": "medium",
       "category": "Essen"
     },
@@ -344,7 +344,7 @@
       "word": "Glas",
       "syllable": "Gla",
       "emoji": "🥛",
-      "image": null,
+      "image": "images/generated/glas.png",
       "difficulty": "medium",
       "category": "Haushalt"
     },
@@ -352,7 +352,7 @@
       "word": "Stuhl",
       "syllable": "Stu",
       "emoji": "🪑",
-      "image": null,
+      "image": "images/generated/stuhl.png",
       "difficulty": "medium",
       "category": "Möbel"
     },
@@ -360,7 +360,7 @@
       "word": "Schwein",
       "syllable": "Schwe",
       "emoji": "🐷",
-      "image": null,
+      "image": "images/generated/schwein.png",
       "difficulty": "medium",
       "category": "Tiere"
     },
@@ -368,7 +368,7 @@
       "word": "Hubschrauber",
       "syllable": "Hub",
       "emoji": "🚁",
-      "image": null,
+      "image": "images/generated/hubschrauber.png",
       "difficulty": "medium",
       "category": "Fahrzeuge"
     },
@@ -376,7 +376,7 @@
       "word": "Kranwagen",
       "syllable": "Kran",
       "emoji": "🏗️",
-      "image": null,
+      "image": "images/generated/kranwagen.png",
       "difficulty": "medium",
       "category": "Fahrzeuge"
     },
@@ -384,7 +384,7 @@
       "word": "Spielplatz",
       "syllable": "Spiel",
       "emoji": "🛝",
-      "image": null,
+      "image": "images/generated/spielplatz.png",
       "difficulty": "medium",
       "category": "Orte"
     },
@@ -392,7 +392,7 @@
       "word": "Schwimmbad",
       "syllable": "Schwi",
       "emoji": "🏊",
-      "image": null,
+      "image": "images/generated/schwimmbad.png",
       "difficulty": "medium",
       "category": "Orte"
     },
@@ -400,7 +400,7 @@
       "word": "Schnee",
       "syllable": "Schne",
       "emoji": "❄️",
-      "image": null,
+      "image": "images/generated/schnee.png",
       "difficulty": "hard",
       "category": "Natur"
     },
@@ -408,7 +408,7 @@
       "word": "Pflanze",
       "syllable": "Pfla",
       "emoji": "🌱",
-      "image": null,
+      "image": "images/generated/pflanze.png",
       "difficulty": "hard",
       "category": "Natur"
     },
@@ -416,7 +416,7 @@
       "word": "Strumpf",
       "syllable": "Stru",
       "emoji": "🧦",
-      "image": null,
+      "image": "images/generated/strumpf.png",
       "difficulty": "hard",
       "category": "Kleidung"
     },
@@ -424,7 +424,7 @@
       "word": "Sprung",
       "syllable": "Spru",
       "emoji": "🦘",
-      "image": null,
+      "image": "images/generated/sprung.png",
       "difficulty": "hard",
       "category": "Bewegung"
     },
@@ -432,7 +432,7 @@
       "word": "Krone",
       "syllable": "Kro",
       "emoji": "👑",
-      "image": null,
+      "image": "images/generated/krone.png",
       "difficulty": "hard",
       "category": "Gegenstände"
     },
@@ -440,7 +440,7 @@
       "word": "Drachen",
       "syllable": "Dra",
       "emoji": "🐉",
-      "image": null,
+      "image": "images/generated/drachen.png",
       "difficulty": "hard",
       "category": "Fantasy"
     },
@@ -448,7 +448,7 @@
       "word": "Geist",
       "syllable": "Gei",
       "emoji": "👻",
-      "image": null,
+      "image": "images/generated/geist.png",
       "difficulty": "hard",
       "category": "Fantasy"
     },
@@ -456,7 +456,7 @@
       "word": "Prinzessin",
       "syllable": "Pri",
       "emoji": "👸",
-      "image": null,
+      "image": "images/generated/prinzessin.png",
       "difficulty": "hard",
       "category": "Fantasy"
     },
@@ -464,7 +464,7 @@
       "word": "Kreis",
       "syllable": "Kre",
       "emoji": "⭕",
-      "image": null,
+      "image": "images/generated/kreis.png",
       "difficulty": "hard",
       "category": "Formen"
     },
@@ -472,7 +472,7 @@
       "word": "Zwiebel",
       "syllable": "Zwie",
       "emoji": "🧅",
-      "image": null,
+      "image": "images/generated/zwiebel.png",
       "difficulty": "hard",
       "category": "Essen"
     },
@@ -480,7 +480,7 @@
       "word": "Schraubenzieher",
       "syllable": "Schrau",
       "emoji": "🔧",
-      "image": null,
+      "image": "images/generated/schraubenzieher.png",
       "difficulty": "hard",
       "category": "Werkzeug"
     },
@@ -488,7 +488,7 @@
       "word": "Klavier",
       "syllable": "Kla",
       "emoji": "🎹",
-      "image": null,
+      "image": "images/generated/klavier.png",
       "difficulty": "hard",
       "category": "Musik"
     },
@@ -496,7 +496,7 @@
       "word": "Flöte",
       "syllable": "Flö",
       "emoji": "🎺",
-      "image": null,
+      "image": "images/generated/floete.png",
       "difficulty": "hard",
       "category": "Musik"
     },
@@ -504,7 +504,7 @@
       "word": "Trommel",
       "syllable": "Tro",
       "emoji": "🥁",
-      "image": null,
+      "image": "images/generated/trommel.png",
       "difficulty": "hard",
       "category": "Musik"
     }

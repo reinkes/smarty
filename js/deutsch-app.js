@@ -39,7 +39,8 @@ class DeutschApp {
             previewTitle: null,
             taskCountDisplay: null,
             preview: null,
-            milestoneCelebration: null
+            milestoneCelebration: null,
+            fireworksContainer: null
         };
     }
 
@@ -89,6 +90,7 @@ class DeutschApp {
         this.dom.taskCountDisplay = document.getElementById('taskCountDisplay');
         this.dom.preview = document.getElementById('preview');
         this.dom.milestoneCelebration = document.getElementById('milestoneCelebration');
+        this.dom.fireworksContainer = document.getElementById('fireworksContainer');
     }
 
     /**
@@ -583,6 +585,92 @@ class DeutschApp {
 
         // Update display
         this.dom.taskCountDisplay.textContent = `${this.totalTasksToSolve} / ${this.totalTasksToSolve} ✅`;
+
+        // Launch fireworks celebration
+        this.launchFireworks();
+    }
+
+    /**
+     * Launch fireworks animation
+     */
+    launchFireworks() {
+        if (!this.dom.milestoneCelebration || !this.dom.fireworksContainer) {
+            console.warn('Fireworks elements not found');
+            return;
+        }
+
+        this.dom.milestoneCelebration.textContent = `🎊 Alle Aufgaben richtig! Super! 🎊`;
+        this.dom.milestoneCelebration.classList.add('show');
+
+        this.dom.fireworksContainer.classList.add('active');
+
+        // Launch multiple fireworks
+        const colors = ['#9B59B6', '#E91E63', '#FEC260', '#5DADE2', '#82E0AA', '#BB8FCE'];
+        let fireworkCount = 0;
+        const maxFireworks = 15;
+
+        const fireworkInterval = setInterval(() => {
+            if (fireworkCount >= maxFireworks) {
+                clearInterval(fireworkInterval);
+                setTimeout(() => {
+                    this.dom.fireworksContainer.classList.remove('active');
+                    this.dom.fireworksContainer.innerHTML = '';
+                    this.dom.milestoneCelebration.classList.remove('show');
+                }, 2000);
+                return;
+            }
+
+            this.createFirework(colors[fireworkCount % colors.length]);
+            fireworkCount++;
+        }, 200);
+    }
+
+    /**
+     * Create a single firework
+     */
+    createFirework(color) {
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * (window.innerHeight * 0.5);
+
+        const firework = document.createElement('div');
+        firework.className = 'firework';
+        firework.style.left = x + 'px';
+        firework.style.top = y + 'px';
+        firework.style.backgroundColor = color;
+        this.dom.fireworksContainer.appendChild(firework);
+
+        // Create explosion after delay
+        setTimeout(() => {
+            firework.remove();
+            this.createExplosion(x, y, color);
+        }, 800);
+    }
+
+    /**
+     * Create explosion effect
+     */
+    createExplosion(x, y, color) {
+        const particleCount = 30;
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+
+            const angle = (Math.PI * 2 * i) / particleCount;
+            const velocity = 100 + Math.random() * 100;
+            const tx = Math.cos(angle) * velocity;
+            const ty = Math.sin(angle) * velocity;
+
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            particle.style.backgroundColor = color;
+            particle.style.setProperty('--tx', tx + 'px');
+            particle.style.setProperty('--ty', ty + 'px');
+            particle.style.transform = `translate(var(--tx), var(--ty)) scale(0)`;
+
+            this.dom.fireworksContainer.appendChild(particle);
+
+            setTimeout(() => particle.remove(), 1000);
+        }
     }
 
     /**

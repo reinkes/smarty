@@ -53,16 +53,16 @@ const openai = new OpenAI({ apiKey: CONFIG.apiKey });
  * Generate prompt for AI image generation
  */
 function generatePrompt(word, category) {
-  // Icon-style prompt for children
-  const objectPrompt = `A single ${word}, centered. `;
-  const stylePrompt = `Flat icon style, simple shapes, bold outlines, bright solid colors. `;
-  const structurePrompt = `Clear, recognizable silhouette. Like an emoji or app icon. `;
-  const detailPrompt = `Minimal details, cartoon style, friendly appearance. `;
-  const backgroundPrompt = `Plain white background, no shadows, no text. `;
-  const targetPrompt = `Perfect for children aged 6-8 to instantly recognize. `;
-  const constraint = `Only ONE ${word}, not multiple. Front view, full object visible.`;
+  // Strict icon-style prompt for children - MUST be single object
+  const objectPrompt = `EXACTLY ONE ${word}, nothing else. `;
+  const viewPrompt = `Centered, front view, full object clearly visible. `;
+  const stylePrompt = `Ultra-simple flat icon, like an emoji. Bold black outlines, bright solid colors. `;
+  const simplicity = `Minimal details, maximum clarity. Cartoon style, instantly recognizable. `;
+  const backgroundPrompt = `Pure white background. No shadows, no borders, no frames, no text, no decorations. `;
+  const constraint = `CRITICAL: Show ONLY the ${word} itself - no scenery, no multiple objects, no context. `;
+  const targetPrompt = `Child-friendly, ages 6-8 must recognize it immediately. `;
 
-  return objectPrompt + stylePrompt + structurePrompt + detailPrompt + backgroundPrompt + targetPrompt + constraint;
+  return objectPrompt + viewPrompt + stylePrompt + simplicity + backgroundPrompt + constraint + targetPrompt;
 }
 
 /**
@@ -157,23 +157,37 @@ async function main() {
 
   console.log(`   Found ${words.length} words in database\n`);
 
-  // Cost calculation
-  const wordsToGenerate = words.filter(w =>
-    !w.image || w.image === null ||
-    (CONFIG.skipExisting && !fs.existsSync(path.join(CONFIG.imageDir, `${w.word.toLowerCase()}.png`)))
-  );
+  // Determine which words to process
+  let wordsToProcess;
+  if (CONFIG.skipExisting) {
+    // Skip words that already have generated images
+    wordsToProcess = words.filter(w => {
+      const filename = `${w.word.toLowerCase().replace(/[äöüß]/g, c => {
+        const map = { 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss' };
+        return map[c] || c;
+      })}.png`;
+      const filepath = path.join(CONFIG.imageDir, filename);
+      return !fs.existsSync(filepath);
+    });
+  } else {
+    // Regenerate all words (up to batchSize)
+    wordsToProcess = words;
+  }
 
-  const estimatedCost = wordsToGenerate.length * 0.04;
-  const estimatedTime = Math.ceil(wordsToGenerate.length * CONFIG.delayBetweenRequests / 60000);
+  // Limit to batchSize
+  wordsToProcess = wordsToProcess.slice(0, CONFIG.batchSize);
+
+  const estimatedCost = wordsToProcess.length * 0.04;
+  const estimatedTime = Math.ceil(wordsToProcess.length * CONFIG.delayBetweenRequests / 60000);
 
   console.log('💰 Cost Estimate:');
-  console.log(`   Images to generate: ${wordsToGenerate.length}`);
+  console.log(`   Images to generate: ${wordsToProcess.length}`);
   console.log(`   Cost: ~$${estimatedCost.toFixed(2)} (DALL-E 3 standard)`);
   console.log(`   Time: ~${estimatedTime} minutes\n`);
 
-  if (wordsToGenerate.length === 0) {
+  if (wordsToProcess.length === 0) {
     console.log('✅ All images already generated!');
-    console.log('   Run with skipExisting: false to regenerate.\n');
+    console.log('   Set skipExisting: false to regenerate.\n');
     return;
   }
 
@@ -183,8 +197,7 @@ async function main() {
 
   await new Promise(resolve => setTimeout(resolve, 5000));
 
-  // Process words in batches
-  const wordsToProcess = words.slice(0, CONFIG.batchSize);
+  // Process words
   let successCount = 0;
   let skippedCount = 0;
   let errorCount = 0;
