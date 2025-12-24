@@ -16,20 +16,27 @@ import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
-
-// Load environment variables
-dotenv.config();
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Load API key directly from .env file (bypass dotenv issues)
+function loadApiKey() {
+  const envPath = path.join(__dirname, '..', '.env');
+  if (!fs.existsSync(envPath)) {
+    return null;
+  }
+  const envContent = fs.readFileSync(envPath, 'utf-8');
+  const match = envContent.match(/OPENAI_API_KEY=(.+)/);
+  return match ? match[1].trim() : null;
+}
+
 // Configuration
 const CONFIG = {
   dataFile: path.join(__dirname, '..', 'data', 'deutsch-words.json'),
   imageDir: path.join(__dirname, '..', 'images', 'generated'),
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: loadApiKey(),
   model: 'dall-e-3',
   size: '1024x1024',
   quality: 'standard',
