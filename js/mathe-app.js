@@ -36,6 +36,10 @@ class MatheApp {
         this.tasksNeededPerNumber = 10; // How many tasks with a number before unlocking next
         this.correctAnswersAtStartLevel = 0; // At level 10, count ALL correct answers
 
+        // Crown achievement system
+        this.crownsEarned = 0;
+        this.loadCrowns();
+
         // Timeout references
         this.opacityUpdateTimeout = null;
 
@@ -57,7 +61,9 @@ class MatheApp {
             progressBarContainer: null,
             progressBarFill: null,
             progressBarText: null,
-            unlockMessage: null
+            unlockMessage: null,
+            crownCounter: null,
+            crownCount: null
         };
     }
 
@@ -92,6 +98,8 @@ class MatheApp {
         this.dom.progressBarFill = document.getElementById('progressBarFill');
         this.dom.progressBarText = document.getElementById('progressBarText');
         this.dom.unlockMessage = document.getElementById('unlockMessage');
+        this.dom.crownCounter = document.getElementById('crownCounter');
+        this.dom.crownCount = document.getElementById('crownCount');
     }
 
     /**
@@ -250,6 +258,7 @@ class MatheApp {
 
             this.displayAdaptiveTasks();
             this.dom.pdfBtn.disabled = true; // No PDF in adaptive mode
+            this.hideCrownCounter(); // Hide crowns in adaptive mode
         } catch (error) {
             alert(error.message);
         }
@@ -821,6 +830,9 @@ class MatheApp {
         this.dom.preview.classList.add('active');
         this.dom.preview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
+        // Show crown counter in non-adaptive mode
+        this.showCrownCounter();
+
         // Focus on first input after a short delay
         setTimeout(() => {
             const firstInput = this.dom.tasksContainer.querySelector('input');
@@ -865,6 +877,7 @@ class MatheApp {
                     if (this.completedTasks === this.currentTasks.length) {
                         setTimeout(() => {
                             this.launchFireworks();
+                            this.earnCrown(); // Award crown for completing all tasks
                         }, 300);
                     }
 
@@ -1169,6 +1182,77 @@ class MatheApp {
 
         // Update progress bar for next unlock
         this.updateProgressBar();
+    }
+
+    /**
+     * Load crowns from localStorage
+     */
+    loadCrowns() {
+        const saved = localStorage.getItem('smarty-math-crowns');
+        this.crownsEarned = saved ? parseInt(saved) : 0;
+    }
+
+    /**
+     * Save crowns to localStorage
+     */
+    saveCrowns() {
+        localStorage.setItem('smarty-math-crowns', this.crownsEarned.toString());
+    }
+
+    /**
+     * Update crown counter display
+     */
+    updateCrownDisplay() {
+        if (this.dom.crownCount) {
+            this.dom.crownCount.textContent = this.crownsEarned;
+        }
+    }
+
+    /**
+     * Show crown counter (non-adaptive mode only)
+     */
+    showCrownCounter() {
+        if (this.dom.crownCounter && !this.adaptiveMode) {
+            this.dom.crownCounter.style.display = 'flex';
+            this.updateCrownDisplay();
+        }
+    }
+
+    /**
+     * Hide crown counter
+     */
+    hideCrownCounter() {
+        if (this.dom.crownCounter) {
+            this.dom.crownCounter.style.display = 'none';
+        }
+    }
+
+    /**
+     * Earn a crown (called when all tasks completed)
+     */
+    earnCrown() {
+        if (!this.adaptiveMode) {
+            this.crownsEarned++;
+            this.saveCrowns();
+            this.updateCrownDisplay();
+
+            // Animate crown counter
+            if (this.dom.crownCounter) {
+                this.dom.crownCounter.classList.add('earn');
+                setTimeout(() => {
+                    this.dom.crownCounter.classList.remove('earn');
+                }, 600);
+            }
+
+            // Show celebration message
+            if (this.dom.milestoneCelebration) {
+                this.dom.milestoneCelebration.textContent = `👑 Krone verdient! Du hast jetzt ${this.crownsEarned} Kronen! 👑`;
+                this.dom.milestoneCelebration.classList.add('show');
+                setTimeout(() => {
+                    this.dom.milestoneCelebration.classList.remove('show');
+                }, 2000);
+            }
+        }
     }
 }
 
