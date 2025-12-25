@@ -9,7 +9,9 @@
     "test-api-detailed": "node scripts/test-api-detailed.js",
     "generate-images": "node scripts/generate-images.js",
     "generate-images-test": "node scripts/generate-images.js --test",
-    "serve": "python3 -m http.server 8080"
+    "serve": "python3 -m http.server 8080",
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "keywords": [
     "education",
@@ -21,6 +23,10 @@
   ],
   "author": "",
   "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
   "devDependencies": {
     "openai": "^4.72.0",
     "dotenv": "^16.4.7"

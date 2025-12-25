@@ -1,0 +1,107 @@
+# Smarty Learn - Development Guide
+
+## Local Development Server
+
+Die Admin-Oberfläche kann die Wortdatenbank direkt bearbeiten, wenn der lokale Entwicklungsserver läuft.
+
+### Installation
+
+```bash
+npm install
+```
+
+### Server starten
+
+```bash
+npm start
+# oder
+npm run dev
+```
+
+Der Server läuft dann auf: **http://localhost:3000**
+
+### Verfügbare Seiten
+
+- **Main App**: http://localhost:3000/index.html
+- **Admin Interface**: http://localhost:3000/admin.html
+- **German App**: http://localhost:3000/deutsch-silben.html
+- **Math App**: http://localhost:3000/mathe-aufgaben.html
+
+## Admin Interface Funktionen
+
+### Zwei Speicher-Modi:
+
+1. **Mit Dev-Server** (localhost:3000)
+   - Änderungen werden **direkt** in `data/deutsch-words.json` gespeichert
+   - Keine manuellen Schritte nötig
+   - Sofort verfügbar für alle Apps
+
+2. **Ohne Dev-Server** (statische Datei oder deployed)
+   - Lädt JSON-Datei herunter
+   - Muss manuell in `data/deutsch-words.json` ersetzt werden
+   - Für Deployment committen und pushen
+
+### Workflow mit Dev-Server:
+
+1. `npm start` ausführen
+2. http://localhost:3000/admin.html öffnen
+3. Wörter bearbeiten, hinzufügen oder löschen
+4. **"💾 Änderungen speichern"** klicken
+5. ✅ Datei wird direkt gespeichert!
+6. Änderungen committen und pushen
+
+### Workflow ohne Dev-Server:
+
+1. `admin.html` direkt im Browser öffnen
+2. Wörter bearbeiten
+3. **"💾 Änderungen speichern"** klicken
+4. 📥 JSON wird heruntergeladen
+5. Datei in `data/deutsch-words.json` ersetzen
+6. Änderungen committen und pushen
+
+## API Endpoints
+
+### POST /api/save-words
+Speichert die Wortdatenbank direkt in `data/deutsch-words.json`
+
+**Request:**
+```json
+{
+  "version": "1.0.4",
+  "lastUpdated": "2025-12-25",
+  "description": "German syllable training word database",
+  "totalWords": 83,
+  "words": [...]
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Daten erfolgreich gespeichert!",
+  "totalWords": 83
+}
+```
+
+### GET /api/get-words
+Lädt die aktuelle Wortdatenbank
+
+## Andere Scripts
+
+```bash
+# AI-Bilder generieren
+npm run generate-images
+
+# API-Key testen
+npm run test-api
+
+# Python Server (alternativ)
+npm run serve
+```
+
+## Deployment
+
+Der `feature/admin-interface` Branch deployed automatisch zu **Beta** via GitHub Actions.
+
+Für Production: Merge zu `master` und Tag erstellen (`v*.*.*`).

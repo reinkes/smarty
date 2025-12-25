@@ -270,7 +270,7 @@ class AdminInterface {
         }
     }
 
-    downloadJSON() {
+    async saveData() {
         const data = {
             version: "1.0.4",
             lastUpdated: new Date().toISOString().split('T')[0],
@@ -278,6 +278,41 @@ class AdminInterface {
             totalWords: this.words.length,
             words: this.words
         };
+
+        // Try to save via API first (when dev server is running)
+        try {
+            const response = await fetch('http://localhost:3000/api/save-words', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                this.showSuccess('✅ Datei direkt gespeichert! ' + result.message);
+                return;
+            }
+        } catch (error) {
+            // API not available, fall back to download
+            console.log('Dev server not running, falling back to download');
+        }
+
+        // Fallback: Download JSON file
+        this.downloadJSON(data);
+    }
+
+    downloadJSON(data) {
+        if (!data) {
+            data = {
+                version: "1.0.4",
+                lastUpdated: new Date().toISOString().split('T')[0],
+                description: "German syllable training word database",
+                totalWords: this.words.length,
+                words: this.words
+            };
+        }
 
         const json = JSON.stringify(data, null, 2);
         const blob = new Blob([json], { type: 'application/json' });
@@ -291,7 +326,7 @@ class AdminInterface {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        this.showSuccess('JSON heruntergeladen! Ersetze die Datei in data/deutsch-words.json');
+        this.showSuccess('📥 JSON heruntergeladen! Ersetze die Datei in data/deutsch-words.json');
     }
 
     async resetData() {
