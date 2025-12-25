@@ -380,6 +380,12 @@
                 </button>
             </div>
 
+            <div style="text-align: right; margin-top: 1rem;">
+                <button class="btn-small btn-primary" onclick="admin.showSettingsModal()" style="background: linear-gradient(135deg, #95A5A6, #7F8C8D);">
+                    ⚙️ GitHub Einstellungen
+                </button>
+            </div>
+
             <div class="filter-controls">
                 <input type="text" id="searchInput" placeholder="🔍 Suche nach Wort, Silbe oder Kategorie..." oninput="admin.applyFilters()">
                 <select id="difficultyFilter" onchange="admin.applyFilters()">
@@ -451,6 +457,46 @@
             <button class="btn-success" onclick="admin.saveWord()" style="width: 100%;">
                 💾 Speichern
             </button>
+        </div>
+    </div>
+
+    <!-- GitHub Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ GitHub Einstellungen</h2>
+                <button class="modal-close" onclick="admin.closeSettingsModal()">&times;</button>
+            </div>
+            <div class="form-row">
+                <label for="githubToken">GitHub Personal Access Token</label>
+                <input type="password" id="githubToken" placeholder="ghp_...">
+                <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">
+                    Für direktes Speichern zu GitHub. Token wird lokal im Browser gespeichert.<br>
+                    <a href="https://github.com/settings/tokens/new?scopes=repo&description=Smarty%20Admin" target="_blank" style="color: var(--admin-primary);">
+                        → Token erstellen
+                    </a> (Berechtigung: <code>repo</code>)
+                </p>
+            </div>
+            <div class="form-row">
+                <label>Repository</label>
+                <input type="text" value="reinkes/smarty" disabled style="opacity: 0.6;">
+            </div>
+            <div class="form-row">
+                <label>Branch</label>
+                <input type="text" value="feature/admin-interface" disabled style="opacity: 0.6;">
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn-success" onclick="admin.saveSettings()" style="flex: 1;">
+                    💾 Speichern
+                </button>
+                <button class="btn-danger" onclick="admin.clearToken()" style="flex: 1;">
+                    🗑️ Token löschen
+                </button>
+            </div>
+            <div style="margin-top: 1.5rem; padding: 1rem; background: #FFF3CD; border-radius: 8px; font-size: 0.9rem;">
+                <strong>ℹ️ Info:</strong><br>
+                Mit GitHub Token committed die Admin-Oberfläche Änderungen direkt ins Repository, auch wenn online deployed. Ohne Token wird die Datei heruntergeladen.
+            </div>
         </div>
     </div>
 

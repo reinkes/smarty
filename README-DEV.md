@@ -29,17 +29,26 @@ Der Server läuft dann auf: **http://localhost:3000**
 
 ## Admin Interface Funktionen
 
-### Zwei Speicher-Modi:
+### Drei Speicher-Modi (automatische Auswahl):
 
-1. **Mit Dev-Server** (localhost:3000)
+1. **Mit Dev-Server** (localhost:3000) - **Priorität 1**
    - Änderungen werden **direkt** in `data/deutsch-words.json` gespeichert
    - Keine manuellen Schritte nötig
    - Sofort verfügbar für alle Apps
+   - ✅ Nachricht: "Lokal gespeichert!"
 
-2. **Ohne Dev-Server** (statische Datei oder deployed)
+2. **Mit GitHub Token** (online deployed) - **Priorität 2**
+   - Committed Änderungen **direkt zu GitHub**
+   - Triggert automatisch Deployment-Pipeline
+   - Funktioniert auch auf deployed/statischer Version
+   - ✅ Nachricht: "Direkt zu GitHub committed!"
+   - Setup: `⚙️ GitHub Einstellungen` → Token erstellen & speichern
+
+3. **Download Fallback** (ohne Server/Token) - **Priorität 3**
    - Lädt JSON-Datei herunter
    - Muss manuell in `data/deutsch-words.json` ersetzt werden
    - Für Deployment committen und pushen
+   - 📥 Nachricht: "JSON heruntergeladen! Ersetze..."
 
 ### Workflow mit Dev-Server:
 
@@ -50,7 +59,18 @@ Der Server läuft dann auf: **http://localhost:3000**
 5. ✅ Datei wird direkt gespeichert!
 6. Änderungen committen und pushen
 
-### Workflow ohne Dev-Server:
+### Workflow mit GitHub Token (online):
+
+1. Admin-Oberfläche online öffnen (deployed version)
+2. **"⚙️ GitHub Einstellungen"** klicken
+3. [GitHub Token erstellen](https://github.com/settings/tokens/new?scopes=repo&description=Smarty%20Admin) mit `repo` Berechtigung
+4. Token kopieren und in Einstellungen speichern
+5. Wörter bearbeiten
+6. **"💾 Änderungen speichern"** klicken
+7. ✅ Wird direkt zu GitHub committed!
+8. GitHub Actions deployed automatisch
+
+### Workflow ohne Dev-Server/Token:
 
 1. `admin.html` direkt im Browser öffnen
 2. Wörter bearbeiten

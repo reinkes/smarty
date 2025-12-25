@@ -10,6 +10,12 @@ class AdminInterface {
         this.showOnlyMissingEmojis = false;
         this.editingIndex = null;
 
+        // GitHub settings
+        this.githubToken = localStorage.getItem('smarty-github-token') || '';
+        this.githubOwner = 'reinkes';
+        this.githubRepo = 'smarty';
+        this.githubBranch = 'feature/admin-interface';
+
         // Common emojis for picker
         this.commonEmojis = [
             '🐱', '🐕', '🐘', '🐯', '🦁', '🐼', '🐵', '🦒', '🐷', '🐸',
@@ -210,6 +216,32 @@ class AdminInterface {
         this.editingIndex = null;
     }
 
+    showSettingsModal() {
+        document.getElementById('githubToken').value = this.githubToken;
+        document.getElementById('settingsModal').classList.add('active');
+    }
+
+    closeSettingsModal() {
+        document.getElementById('settingsModal').classList.remove('active');
+    }
+
+    saveSettings() {
+        const token = document.getElementById('githubToken').value.trim();
+        this.githubToken = token;
+        localStorage.setItem('smarty-github-token', token);
+        this.closeSettingsModal();
+        this.showSuccess(token ? '✅ GitHub Token gespeichert!' : 'Token entfernt');
+    }
+
+    clearToken() {
+        if (confirm('GitHub Token wirklich löschen?')) {
+            this.githubToken = '';
+            localStorage.removeItem('smarty-github-token');
+            document.getElementById('githubToken').value = '';
+            this.showSuccess('Token gelöscht');
+        }
+    }
+
     saveWord() {
         const word = document.getElementById('modalWord').value.trim();
         const syllable = document.getElementById('modalSyllable').value.trim();
@@ -279,7 +311,7 @@ class AdminInterface {
             words: this.words
         };
 
-        // Try to save via API first (when dev server is running)
+        // Method 1: Try local dev server API first
         try {
             const response = await fetch('http://localhost:3000/api/save-words', {
                 method: 'POST',
@@ -291,16 +323,79 @@ class AdminInterface {
 
             if (response.ok) {
                 const result = await response.json();
-                this.showSuccess('✅ Datei direkt gespeichert! ' + result.message);
+                this.showSuccess('✅ Lokal gespeichert! ' + result.message);
                 return;
             }
         } catch (error) {
-            // API not available, fall back to download
-            console.log('Dev server not running, falling back to download');
+            console.log('Dev server not running, trying GitHub API...');
         }
 
-        // Fallback: Download JSON file
+        // Method 2: Try GitHub API (for online deployment)
+        if (this.githubToken) {
+            try {
+                await this.saveViaGitHub(data);
+                this.showSuccess('✅ Direkt zu GitHub committed!');
+                return;
+            } catch (error) {
+                console.error('GitHub save failed:', error);
+                this.showError('GitHub Fehler: ' + error.message);
+            }
+        }
+
+        // Method 3: Fallback to download
         this.downloadJSON(data);
+    }
+
+    async saveViaGitHub(data) {
+        const filePath = 'data/deutsch-words.json';
+        const content = JSON.stringify(data, null, 2);
+        const message = `feat: Update word database via admin interface
+
+Updated ${data.totalWords} words
+
+🤖 Auto-committed from admin interface`;
+
+        // Get current file SHA
+        const fileUrl = `https://api.github.com/repos/${this.githubOwner}/${this.githubRepo}/contents/${filePath}?ref=${this.githubBranch}`;
+
+        const fileResponse = await fetch(fileUrl, {
+            headers: {
+                'Authorization': `Bearer ${this.githubToken}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (!fileResponse.ok) {
+            throw new Error('Konnte Datei nicht laden von GitHub');
+        }
+
+        const fileData = await fileResponse.json();
+        const sha = fileData.sha;
+
+        // Update file
+        const updateUrl = `https://api.github.com/repos/${this.githubOwner}/${this.githubRepo}/contents/${filePath}`;
+
+        const updateResponse = await fetch(updateUrl, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${this.githubToken}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: message,
+                content: btoa(unescape(encodeURIComponent(content))),
+                sha: sha,
+                branch: this.githubBranch
+            })
+        });
+
+        if (!updateResponse.ok) {
+            const error = await updateResponse.json();
+            throw new Error(error.message || 'GitHub commit fehlgeschlagen');
+        }
+
+        return await updateResponse.json();
     }
 
     downloadJSON(data) {
@@ -377,16 +472,23 @@ class AdminInterface {
 // Initialize admin interface
 const admin = new AdminInterface();
 
-// Close modal on outside click
+// Close modals on outside click
 document.getElementById('wordModal').addEventListener('click', (e) => {
     if (e.target.id === 'wordModal') {
         admin.closeModal();
     }
 });
 
-// ESC key to close modal
+document.getElementById('settingsModal').addEventListener('click', (e) => {
+    if (e.target.id === 'settingsModal') {
+        admin.closeSettingsModal();
+    }
+});
+
+// ESC key to close modals
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         admin.closeModal();
+        admin.closeSettingsModal();
     }
 });
