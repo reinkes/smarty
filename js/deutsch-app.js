@@ -702,7 +702,7 @@ class DeutschApp {
      * Load crowns from localStorage
      */
     loadCrowns() {
-        const saved = localStorage.getItem('smarty-german-crowns');
+        const saved = localStorage.getItem('smarty-crowns');
         this.crownsEarned = saved ? parseInt(saved) : 0;
     }
 
@@ -710,7 +710,7 @@ class DeutschApp {
      * Save crowns to localStorage
      */
     saveCrowns() {
-        localStorage.setItem('smarty-german-crowns', this.crownsEarned.toString());
+        localStorage.setItem('smarty-crowns', this.crownsEarned.toString());
     }
 
     /**

@@ -1188,7 +1188,7 @@ class MatheApp {
      * Load crowns from localStorage
      */
     loadCrowns() {
-        const saved = localStorage.getItem('smarty-math-crowns');
+        const saved = localStorage.getItem('smarty-crowns');
         this.crownsEarned = saved ? parseInt(saved) : 0;
     }
 
@@ -1196,7 +1196,7 @@ class MatheApp {
      * Save crowns to localStorage
      */
     saveCrowns() {
-        localStorage.setItem('smarty-math-crowns', this.crownsEarned.toString());
+        localStorage.setItem('smarty-crowns', this.crownsEarned.toString());
     }
 
     /**
