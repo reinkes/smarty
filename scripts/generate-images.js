@@ -42,27 +42,47 @@ const CONFIG = {
   quality: 'standard',
   style: 'vivid', // 'vivid' for more vibrant, icon-like colors
   delayBetweenRequests: 12000, // 12 seconds (DALL-E rate limit: 5/min)
-  batchSize: 10, // Test: Only first 10 words (change to 100 for full generation)
-  skipExisting: false, // Set to false to regenerate with new prompts
+  batchSize: 100, // Generate all images
+  skipExisting: false, // Regenerate all with new ultra-strict prompts
 };
 
 // Initialize OpenAI client
 const openai = new OpenAI({ apiKey: CONFIG.apiKey });
 
 /**
+ * Translate German word to English for DALL-E prompt
+ */
+function translateToEnglish(germanWord) {
+  const translations = {
+    'Katze': 'cat', 'Hund': 'dog', 'Baum': 'tree', 'Haus': 'house', 'Auto': 'car',
+    'Ball': 'ball', 'Sonne': 'sun', 'Mond': 'moon', 'Fisch': 'fish', 'Vogel': 'bird',
+    'Tisch': 'table', 'Tasse': 'cup', 'Buch': 'book', 'Lampe': 'lamp', 'Mama': 'mother',
+    'Papa': 'father', 'Baby': 'baby', 'Telefon': 'telephone', 'Apfel': 'apple', 'Banane': 'banana',
+    'Elefant': 'elephant', 'Tiger': 'tiger', 'Löwe': 'lion', 'Panda': 'panda', 'Affe': 'monkey',
+    'Giraffe': 'giraffe', 'Pizza': 'pizza', 'Kuchen': 'cake', 'Eis': 'ice cream', 'Keks': 'cookie',
+    'Schule': 'school', 'Blume': 'flower', 'Stern': 'star', 'Pferd': 'horse', 'Frosch': 'frog',
+    'Schmetterling': 'butterfly', 'Strand': 'beach', 'Traktor': 'tractor', 'Flugzeug': 'airplane',
+    'Schiff': 'ship', 'Brot': 'bread', 'Schokolade': 'chocolate', 'Glas': 'glass', 'Stuhl': 'chair',
+    'Fahrrad': 'bicycle', 'Roller': 'scooter', 'Zug': 'train', 'Bus': 'bus', 'Rakete': 'rocket',
+    'Igel': 'hedgehog', 'Hase': 'rabbit', 'Eule': 'owl', 'Fuchs': 'fox', 'Bär': 'bear',
+    'Pinguin': 'penguin', 'Delfin': 'dolphin', 'Eichhörnchen': 'squirrel', 'Schlange': 'snake',
+    'Schildkröte': 'turtle', 'Käfer': 'beetle', 'Schnecke': 'snail', 'Wolke': 'cloud',
+    'Regenbogen': 'rainbow', 'Berg': 'mountain', 'Kirsche': 'cherry', 'Erdbeere': 'strawberry',
+    'Orange': 'orange', 'Tomate': 'tomato', 'Karotte': 'carrot'
+  };
+
+  return translations[germanWord] || germanWord.toLowerCase();
+}
+
+/**
  * Generate prompt for AI image generation
  */
 function generatePrompt(word, category) {
-  // Strict icon-style prompt for children - MUST be single object
-  const objectPrompt = `EXACTLY ONE ${word}, nothing else. `;
-  const viewPrompt = `Centered, front view, full object clearly visible. `;
-  const stylePrompt = `Ultra-simple flat icon, like an emoji. Bold black outlines, bright solid colors. `;
-  const simplicity = `Minimal details, maximum clarity. Cartoon style, instantly recognizable. `;
-  const backgroundPrompt = `Pure white background. No shadows, no borders, no frames, no text, no decorations. `;
-  const constraint = `CRITICAL: Show ONLY the ${word} itself - no scenery, no multiple objects, no context. `;
-  const targetPrompt = `Child-friendly, ages 6-8 must recognize it immediately. `;
+  // Translate German word to English for consistent prompt
+  const englishWord = translateToEnglish(word);
 
-  return objectPrompt + viewPrompt + stylePrompt + simplicity + backgroundPrompt + constraint + targetPrompt;
+  // RADICAL SIMPLICITY - less is more
+  return `A single ${englishWord} icon. Flat simple cartoon style like an emoji. White background. Nothing else.`;
 }
 
 /**
