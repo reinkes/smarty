@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
+    <title>Smarty Learn - Admin Interface</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+    <style>
+        :root {
+            --admin-primary: #3498DB;
+            --admin-success: #2ECC71;
+            --admin-warning: #F39C12;
+            --admin-danger: #E74C3C;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body::before, body::after {
+            background: var(--admin-primary);
+        }
+
+        h1 {
+            background: linear-gradient(135deg, var(--admin-primary), #9B59B6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .admin-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-badge {
+            background: linear-gradient(135deg, var(--admin-primary), #5DADE2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .stat-badge.warning {
+            background: linear-gradient(135deg, var(--admin-warning), #F8C471);
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .toolbar button {
+            flex: 1;
+            min-width: 150px;
+            margin: 0;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--admin-primary), #5DADE2);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--admin-success), #82E0AA);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--admin-warning), #F8C471);
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--admin-danger), #EC7063);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-controls input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-controls select {
+            min-width: 150px;
+        }
+
+        .word-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .word-table thead {
+            background: linear-gradient(135deg, var(--admin-primary), #5DADE2);
+            color: white;
+        }
+
+        .word-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .word-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #ECF0F1;
+        }
+
+        .word-table tbody tr:hover {
+            background: #F8F9FA;
+        }
+
+        .word-table tbody tr.no-emoji {
+            background: #FFF3CD;
+        }
+
+        .emoji-display {
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .emoji-input {
+            width: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            padding: 0.25rem;
+            border: 2px solid #ECF0F1;
+            border-radius: 8px;
+        }
+
+        .word-input, .syllable-input, .category-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid #ECF0F1;
+            border-radius: 8px;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .word-input:focus, .syllable-input:focus, .category-input:focus, .emoji-input:focus {
+            outline: none;
+            border-color: var(--admin-primary);
+        }
+
+        .difficulty-select, .category-select {
+            padding: 0.5rem;
+            border: 2px solid #ECF0F1;
+            border-radius: 8px;
+            font-family: 'Nunito', sans-serif;
+            width: 100%;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            margin: 0;
+            font-size: 0.85rem;
+            min-width: auto;
+            border-radius: 8px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #ECF0F1;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-family: 'Fredoka', sans-serif;
+            color: var(--admin-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #95A5A6;
+            padding: 0;
+            width: auto;
+            margin: 0;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--admin-danger);
+            transform: none;
+        }
+
+        .form-row {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .form-row input, .form-row select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ECF0F1;
+            border-radius: 12px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+        }
+
+        .emoji-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding: 1rem;
+            background: #F8F9FA;
+            border-radius: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .emoji-option {
+            font-size: 2rem;
+            cursor: pointer;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .emoji-option:hover {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .no-words-message {
+            text-align: center;
+            padding: 3rem;
+            color: #95A5A6;
+            font-size: 1.2rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .back-link {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: white;
+            color: var(--admin-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .word-table {
+                font-size: 0.85rem;
+            }
+
+            .word-table th, .word-table td {
+                padding: 0.5rem;
+            }
+
+            .emoji-display {
+                font-size: 1.5rem;
+            }
+
+            .toolbar button {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 Admin Interface</h1>
+            <p class="subtitle">Wörter und Emojis verwalten</p>
+        </header>
+
+        <div class="card">
+            <div class="admin-header">
+                <div class="admin-stats">
+                    <span class="stat-badge" id="totalWords">0 Wörter</span>
+                    <span class="stat-badge warning" id="missingEmojis">0 ohne Emoji</span>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <button class="btn-success" onclick="admin.showAddWordModal()">
+                    ➕ Neues Wort hinzufügen
+                </button>
+                <button class="btn-primary" onclick="admin.downloadJSON()">
+                    💾 JSON herunterladen
+                </button>
+                <button class="btn-warning" onclick="admin.toggleMissingEmojis()">
+                    🔍 Nur fehlende Emojis
+                </button>
+                <button class="btn-danger" onclick="admin.resetData()">
+                    🔄 Daten neu laden
+                </button>
+            </div>
+
+            <div class="filter-controls">
+                <input type="text" id="searchInput" placeholder="🔍 Suche nach Wort, Silbe oder Kategorie..." oninput="admin.applyFilters()">
+                <select id="difficultyFilter" onchange="admin.applyFilters()">
+                    <option value="">Alle Schwierigkeiten</option>
+                    <option value="easy">Einfach</option>
+                    <option value="medium">Mittel</option>
+                    <option value="hard">Schwer</option>
+                </select>
+                <select id="categoryFilter" onchange="admin.applyFilters()">
+                    <option value="">Alle Kategorien</option>
+                </select>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="word-table">
+                    <thead>
+                        <tr>
+                            <th>Emoji</th>
+                            <th>Wort</th>
+                            <th>Silbe</th>
+                            <th>Kategorie</th>
+                            <th>Schwierigkeit</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="wordsTableBody">
+                        <tr>
+                            <td colspan="6" class="no-words-message">Lade Wörter...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Word Modal -->
+    <div class="modal" id="wordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Neues Wort hinzufügen</h2>
+                <button class="modal-close" onclick="admin.closeModal()">&times;</button>
+            </div>
+            <div class="form-row">
+                <label for="modalWord">Wort</label>
+                <input type="text" id="modalWord" placeholder="z.B. Katze">
+            </div>
+            <div class="form-row">
+                <label for="modalSyllable">Silbe</label>
+                <input type="text" id="modalSyllable" placeholder="z.B. Ka">
+            </div>
+            <div class="form-row">
+                <label for="modalEmoji">Emoji</label>
+                <input type="text" id="modalEmoji" placeholder="🐱" class="emoji-input" maxlength="2">
+                <div class="emoji-picker-grid" id="emojiPicker"></div>
+            </div>
+            <div class="form-row">
+                <label for="modalCategory">Kategorie</label>
+                <input type="text" id="modalCategory" placeholder="z.B. Tiere" list="categories">
+                <datalist id="categories"></datalist>
+            </div>
+            <div class="form-row">
+                <label for="modalDifficulty">Schwierigkeit</label>
+                <select id="modalDifficulty">
+                    <option value="easy">Einfach</option>
+                    <option value="medium">Mittel</option>
+                    <option value="hard">Schwer</option>
+                </select>
+            </div>
+            <button class="btn-success" onclick="admin.saveWord()" style="width: 100%;">
+                💾 Speichern
+            </button>
+        </div>
+    </div>
+
+    <a href="index.html" class="back-link">🏠 Zur Startseite</a>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
