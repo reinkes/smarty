@@ -29,34 +29,59 @@ Der Server läuft dann auf: **http://localhost:3000**
 
 ## Admin Interface Funktionen
 
-### Drei Speicher-Modi (automatische Auswahl):
+### Vier Speicher-Modi (automatische Auswahl):
 
-1. **Mit Dev-Server** (localhost:3000) - **Priorität 1**
-   - Änderungen werden **direkt** in `data/deutsch-words.json` gespeichert
-   - Keine manuellen Schritte nötig
-   - Sofort verfügbar für alle Apps
+1. **FTP Upload** (mit Dev-Server + FTP Config) - **Priorität 1**
+   - Uploaded **direkt zum FTP-Server**
+   - Produktionsdaten bleiben auf Server
+   - Default-Datei bleibt im Repo
+   - ✅ Nachricht: "Zu FTP hochgeladen!"
+   - Setup: `.env` mit FTP-Zugangsdaten
+
+2. **Lokal + FTP** (Dev-Server ohne FTP Config) - **Priorität 2**
+   - Speichert lokal in `data/deutsch-words.json`
+   - Keine FTP-Credentials erforderlich
+   - Für lokale Entwicklung
    - ✅ Nachricht: "Lokal gespeichert!"
 
-2. **Mit GitHub Token** (online deployed) - **Priorität 2**
+3. **Mit GitHub Token** (online deployed) - **Priorität 3**
    - Committed Änderungen **direkt zu GitHub**
    - Triggert automatisch Deployment-Pipeline
    - Funktioniert auch auf deployed/statischer Version
    - ✅ Nachricht: "Direkt zu GitHub committed!"
    - Setup: `⚙️ GitHub Einstellungen` → Token erstellen & speichern
 
-3. **Download Fallback** (ohne Server/Token) - **Priorität 3**
+4. **Download Fallback** (ohne Server/Token) - **Priorität 4**
    - Lädt JSON-Datei herunter
    - Muss manuell in `data/deutsch-words.json` ersetzt werden
    - Für Deployment committen und pushen
    - 📥 Nachricht: "JSON heruntergeladen! Ersetze..."
 
-### Workflow mit Dev-Server:
+### Workflow mit Dev-Server + FTP:
 
-1. `npm start` ausführen
+1. `.env` Datei erstellen (kopiere `.env.example`)
+2. FTP-Zugangsdaten eintragen:
+   ```env
+   FTP_HOST=ftp.example.com
+   FTP_USER=username
+   FTP_PASSWORD=password
+   FTP_REMOTE_PATH=/data/deutsch-words.json
+   ```
+3. `npm install` (installiert basic-ftp)
+4. `npm start` ausführen
+5. http://localhost:3000/admin.html öffnen
+6. Wörter bearbeiten
+7. **"💾 Änderungen speichern"** klicken
+8. ✅ Wird zu FTP hochgeladen!
+9. Produktionsdaten sind sofort live
+
+### Workflow mit Dev-Server (ohne FTP):
+
+1. `npm start` ausführen (ohne FTP in .env)
 2. http://localhost:3000/admin.html öffnen
-3. Wörter bearbeiten, hinzufügen oder löschen
+3. Wörter bearbeiten
 4. **"💾 Änderungen speichern"** klicken
-5. ✅ Datei wird direkt gespeichert!
+5. ✅ Lokal gespeichert in `data/deutsch-words.json`
 6. Änderungen committen und pushen
 
 ### Workflow mit GitHub Token (online):

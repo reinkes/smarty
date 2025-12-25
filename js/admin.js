@@ -311,9 +311,9 @@ class AdminInterface {
             words: this.words
         };
 
-        // Method 1: Try local dev server API first
+        // Method 1: Try FTP upload via dev server (if configured)
         try {
-            const response = await fetch('http://localhost:3000/api/save-words', {
+            const response = await fetch('http://localhost:3000/api/upload-to-ftp', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -323,7 +323,11 @@ class AdminInterface {
 
             if (response.ok) {
                 const result = await response.json();
-                this.showSuccess('✅ Lokal gespeichert! ' + result.message);
+                if (result.ftpUploaded) {
+                    this.showSuccess('✅ Zu FTP hochgeladen! ' + result.message);
+                } else {
+                    this.showSuccess('✅ Lokal gespeichert! ' + result.message);
+                }
                 return;
             }
         } catch (error) {
