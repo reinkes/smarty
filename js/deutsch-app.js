@@ -6,7 +6,7 @@ class DeutschApp {
     // Constants
     static MILESTONE_INTERVAL = 10;
     static INITIAL_TASK_COUNT = 3;
-    static FIXED_TASK_COUNT = 22;
+    static FIXED_TASK_COUNT = 20;
     static DIFFICULTY_LEVELS = {
         EASY: 'easy',
         MEDIUM: 'medium',
@@ -469,7 +469,10 @@ class DeutschApp {
             completedTask.remove();
 
             // Check if we should add new task or finish
-            const shouldContinue = this.currentMode === 'adaptive' || this.tasksSolved < this.totalTasksToSolve;
+            // Account for tasks still on screen to avoid generating too many
+            const tasksRemaining = this.currentTasks.length; // After removing one above
+            const totalTasksGenerated = this.tasksSolved + tasksRemaining;
+            const shouldContinue = this.currentMode === 'adaptive' || totalTasksGenerated < this.totalTasksToSolve;
 
             if (shouldContinue && this.currentTasks.length > 0) {
                 // Replace with new task
