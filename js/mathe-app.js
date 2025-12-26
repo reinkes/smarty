@@ -878,7 +878,9 @@ class MatheApp {
                         setTimeout(() => {
                             const crowns = this.earnCrown(); // Award crowns for completing all tasks
                             this.launchFireworks(MatheApp.MAX_FIREWORKS, crowns);
-                            this.showNochmalButton(); // Show retry button
+                            setTimeout(() => {
+                                this.showCompletionScreen(crowns); // Show completion screen
+                            }, 2000); // Wait for fireworks to finish
                         }, 300);
                     }
 
@@ -1233,31 +1235,104 @@ class MatheApp {
     }
 
     /**
-     * Show "Nochmal" (retry) button after completion
+     * Show completion screen with crown count and retry button
      */
-    showNochmalButton() {
-        // Remove existing button if any
-        const existing = document.getElementById('nochmalButton');
-        if (existing) existing.remove();
+    showCompletionScreen(crownsEarned) {
+        // Create wrapper
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'text-align: center; padding: 4rem 2rem; animation: fadeIn 1s ease-out; margin-top: 2rem;';
 
-        // Create button
-        const button = document.createElement('button');
-        button.id = 'nochmalButton';
-        button.className = 'btn-generate';
-        button.textContent = '🔄 Nochmal!';
-        button.style.position = 'fixed';
-        button.style.bottom = '2rem';
-        button.style.left = '50%';
-        button.style.transform = 'translateX(-50%)';
-        button.style.zIndex = '10000';
-        button.style.animation = 'bounceIn 0.6s ease-out';
+        // Create emoji
+        const emoji = document.createElement('div');
+        emoji.textContent = '🎉';
+        emoji.style.cssText = 'font-size: 8rem; margin-bottom: 2rem; animation: bounce 1s ease-in-out infinite;';
 
-        button.addEventListener('click', () => {
-            button.remove();
+        // Create heading
+        const heading = document.createElement('h2');
+        heading.textContent = 'Geschafft!';
+        heading.style.cssText = 'font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; font-family: "Fredoka", sans-serif;';
+
+        // Create message
+        const message = document.createElement('p');
+        message.textContent = `Alle ${this.currentTasks.length} Aufgaben richtig gelöst! 🌟`;
+        message.style.cssText = 'font-size: 1.3rem; color: var(--text-dark); margin-bottom: 1rem;';
+
+        // Create crown display (if not in adaptive mode)
+        let crownDisplay = null;
+        if (!this.adaptiveMode && this.crownsEarned > 0) {
+            crownDisplay = document.createElement('div');
+            crownDisplay.style.cssText = `
+                display: inline-block;
+                background: linear-gradient(135deg, #FFD700, #FFA500);
+                padding: 1rem 2rem;
+                border-radius: 20px;
+                margin-bottom: 2rem;
+                box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+                animation: bounceIn 0.8s ease-out 0.5s both;
+            `;
+
+            const crownIcon = document.createElement('span');
+            crownIcon.textContent = '👑';
+            crownIcon.style.cssText = 'font-size: 2rem; margin-right: 0.5rem;';
+
+            const crownText = document.createElement('span');
+            if (crownsEarned > 0) {
+                crownText.textContent = `+${crownsEarned} = ${this.crownsEarned} Kronen!`;
+            } else {
+                crownText.textContent = `${this.crownsEarned} Kronen gesammelt!`;
+            }
+            crownText.style.cssText = 'font-size: 1.5rem; font-weight: 700; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);';
+
+            crownDisplay.appendChild(crownIcon);
+            crownDisplay.appendChild(crownText);
+        }
+
+        // Create restart button
+        const restartButton = document.createElement('button');
+        restartButton.id = 'restartButton';
+        restartButton.textContent = 'Nochmal üben! 🔄';
+        restartButton.style.cssText = `
+            background: linear-gradient(135deg, var(--primary), #FF8DC7);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+        `;
+
+        // Add event listeners
+        restartButton.addEventListener('click', () => {
+            wrapper.remove();
             this.generateTasks(); // Generate new tasks with same difficulty
         });
+        restartButton.addEventListener('mouseover', function() {
+            this.style.transform = 'scale(1.05)';
+        });
+        restartButton.addEventListener('mouseout', function() {
+            this.style.transform = 'scale(1)';
+        });
 
-        document.body.appendChild(button);
+        // Assemble DOM
+        wrapper.appendChild(emoji);
+        wrapper.appendChild(heading);
+        wrapper.appendChild(message);
+        if (crownDisplay) {
+            wrapper.appendChild(crownDisplay);
+        }
+        wrapper.appendChild(restartButton);
+
+        // Insert after preview header
+        const previewCard = document.querySelector('.preview');
+        if (previewCard) {
+            const tasksGrid = previewCard.querySelector('.tasks-grid');
+            if (tasksGrid) {
+                tasksGrid.appendChild(wrapper);
+            }
+        }
     }
 
     /**

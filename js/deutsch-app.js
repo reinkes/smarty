@@ -563,7 +563,32 @@ class DeutschApp {
         // Create message
         const message = document.createElement('p');
         message.textContent = `Du hast alle ${this.totalTasksToSolve} Aufgaben gelöst! 🌟`;
-        message.style.cssText = 'font-size: 1.3rem; color: var(--text-dark); margin-bottom: 2rem;';
+        message.style.cssText = 'font-size: 1.3rem; color: var(--text-dark); margin-bottom: 1rem;';
+
+        // Create crown display (if not in adaptive mode)
+        let crownDisplay = null;
+        if (!this.adaptiveMode && this.crownsEarned > 0) {
+            crownDisplay = document.createElement('div');
+            crownDisplay.style.cssText = `
+                display: inline-block;
+                background: linear-gradient(135deg, #FFD700, #FFA500);
+                padding: 1rem 2rem;
+                border-radius: 20px;
+                margin-bottom: 2rem;
+                box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            `;
+
+            const crownIcon = document.createElement('span');
+            crownIcon.textContent = '👑';
+            crownIcon.style.cssText = 'font-size: 2rem; margin-right: 0.5rem;';
+
+            const crownText = document.createElement('span');
+            crownText.textContent = `${this.crownsEarned} Kronen gesammelt!`;
+            crownText.style.cssText = 'font-size: 1.5rem; font-weight: 700; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);';
+
+            crownDisplay.appendChild(crownIcon);
+            crownDisplay.appendChild(crownText);
+        }
 
         // Create restart button
         const restartButton = document.createElement('button');
@@ -595,6 +620,9 @@ class DeutschApp {
         wrapper.appendChild(emoji);
         wrapper.appendChild(heading);
         wrapper.appendChild(message);
+        if (crownDisplay) {
+            wrapper.appendChild(crownDisplay);
+        }
         wrapper.appendChild(restartButton);
         this.dom.taskContainer.appendChild(wrapper);
 
