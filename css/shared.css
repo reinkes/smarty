@@ -264,11 +264,20 @@ button:disabled {
     display: block;
 }
 
+.firework {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    animation: fireworkFly 1s ease-out forwards;
+}
+
 .particle {
     position: absolute;
     width: 6px;
     height: 6px;
     border-radius: 50%;
+    animation: particleExplode 1s ease-out forwards;
 }
 
 /* === Preview Section === */
