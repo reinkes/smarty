@@ -30,6 +30,10 @@ class DeutschApp {
         this.taskIdCounter = 0;
         this.totalTasksToSolve = 0;
 
+        // Crown achievement system
+        this.crownsEarned = 0;
+        this.loadCrowns();
+
         // DOM cache
         this.dom = {
             difficultySlider: null,
@@ -40,7 +44,9 @@ class DeutschApp {
             taskCountDisplay: null,
             preview: null,
             milestoneCelebration: null,
-            fireworksContainer: null
+            fireworksContainer: null,
+            crownCounter: null,
+            crownCount: null
         };
     }
 
@@ -91,6 +97,8 @@ class DeutschApp {
         this.dom.preview = document.getElementById('preview');
         this.dom.milestoneCelebration = document.getElementById('milestoneCelebration');
         this.dom.fireworksContainer = document.getElementById('fireworksContainer');
+        this.dom.crownCounter = document.getElementById('crownCounter');
+        this.dom.crownCount = document.getElementById('crownCount');
     }
 
     /**
@@ -161,6 +169,13 @@ class DeutschApp {
         this.generateTasks();
         this.dom.preview.classList.add('active');
         this.dom.preview.scrollIntoView({ behavior: 'smooth' });
+
+        // Show/hide crown counter based on mode
+        if (isAdaptive) {
+            this.hideCrownCounter();
+        } else {
+            this.showCrownCounter();
+        }
     }
 
     /**
@@ -586,8 +601,9 @@ class DeutschApp {
         // Update display
         this.dom.taskCountDisplay.textContent = `${this.totalTasksToSolve} / ${this.totalTasksToSolve} ✅`;
 
-        // Launch fireworks celebration
+        // Launch fireworks celebration and earn crown
         this.launchFireworks();
+        this.earnCrown();
     }
 
     /**
@@ -680,6 +696,77 @@ class DeutschApp {
         const progress = ProgressTracker.getProgress('german');
         this.dom.difficultySlider.value = progress.level || 5;
         this.updateDifficultyLabel();
+    }
+
+    /**
+     * Load crowns from localStorage
+     */
+    loadCrowns() {
+        const saved = localStorage.getItem('smarty-crowns');
+        this.crownsEarned = saved ? parseInt(saved) : 0;
+    }
+
+    /**
+     * Save crowns to localStorage
+     */
+    saveCrowns() {
+        localStorage.setItem('smarty-crowns', this.crownsEarned.toString());
+    }
+
+    /**
+     * Update crown counter display
+     */
+    updateCrownDisplay() {
+        if (this.dom.crownCount) {
+            this.dom.crownCount.textContent = this.crownsEarned;
+        }
+    }
+
+    /**
+     * Show crown counter (non-adaptive mode only)
+     */
+    showCrownCounter() {
+        if (this.dom.crownCounter && this.currentMode !== 'adaptive') {
+            this.dom.crownCounter.style.display = 'flex';
+            this.updateCrownDisplay();
+        }
+    }
+
+    /**
+     * Hide crown counter
+     */
+    hideCrownCounter() {
+        if (this.dom.crownCounter) {
+            this.dom.crownCounter.style.display = 'none';
+        }
+    }
+
+    /**
+     * Earn a crown (called when all tasks completed)
+     */
+    earnCrown() {
+        if (this.currentMode !== 'adaptive') {
+            this.crownsEarned++;
+            this.saveCrowns();
+            this.updateCrownDisplay();
+
+            // Animate crown counter
+            if (this.dom.crownCounter) {
+                this.dom.crownCounter.classList.add('earn');
+                setTimeout(() => {
+                    this.dom.crownCounter.classList.remove('earn');
+                }, 600);
+            }
+
+            // Show celebration message
+            if (this.dom.milestoneCelebration) {
+                this.dom.milestoneCelebration.textContent = `👑 Krone verdient! Du hast jetzt ${this.crownsEarned} Kronen! 👑`;
+                this.dom.milestoneCelebration.classList.add('show');
+                setTimeout(() => {
+                    this.dom.milestoneCelebration.classList.remove('show');
+                }, 2000);
+            }
+        }
     }
 }
 

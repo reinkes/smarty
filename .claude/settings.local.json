@@ -24,7 +24,14 @@
       "Bash(git -C \"C:\\Users\\me\\dev\\smarty\" stash pop:*)",
       "Bash(grep:*)",
       "Bash(for file in datenschutz.html impressum.html index.html nutzungsbedingungen.html)",
-      "Bash(do sed -i '/<meta http-equiv=\"\"X-Frame-Options\"\"/d' \"$file\")"
+      "Bash(do sed -i '/<meta http-equiv=\"\"X-Frame-Options\"\"/d' \"$file\")",
+      "Bash(npm run test-api-detailed:*)",
+      "Bash(npm run generate-images:*)",
+      "Bash(git add:*)",
+      "Bash(timeout 5 cat:*)",
+      "Bash(timeout 8 cat:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }
