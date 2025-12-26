@@ -567,7 +567,7 @@ class DeutschApp {
 
         // Create crown display (if not in adaptive mode)
         let crownDisplay = null;
-        if (!this.adaptiveMode && this.crownsEarned > 0) {
+        if (this.currentMode !== 'adaptive' && this.crownsEarned > 0) {
             crownDisplay = document.createElement('div');
             crownDisplay.style.cssText = `
                 display: inline-block;
@@ -576,6 +576,7 @@ class DeutschApp {
                 border-radius: 20px;
                 margin-bottom: 2rem;
                 box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+                animation: bounceIn 0.8s ease-out 0.5s both;
             `;
 
             const crownIcon = document.createElement('span');
@@ -583,7 +584,9 @@ class DeutschApp {
             crownIcon.style.cssText = 'font-size: 2rem; margin-right: 0.5rem;';
 
             const crownText = document.createElement('span');
-            crownText.textContent = `${this.crownsEarned} Kronen gesammelt!`;
+            // Get the crowns that were just earned from the last earnCrown call
+            const justEarned = this.calculateCrownReward();
+            crownText.textContent = `+${justEarned} = ${this.crownsEarned} Kronen!`;
             crownText.style.cssText = 'font-size: 1.5rem; font-weight: 700; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);';
 
             crownDisplay.appendChild(crownIcon);
@@ -629,21 +632,25 @@ class DeutschApp {
         // Update display
         this.dom.taskCountDisplay.textContent = `${this.totalTasksToSolve} / ${this.totalTasksToSolve} ✅`;
 
-        // Launch fireworks celebration and earn crown
-        this.launchFireworks();
-        this.earnCrown();
+        // Launch fireworks celebration and earn crowns
+        const crowns = this.earnCrown();
+        this.launchFireworks(15, crowns);
     }
 
     /**
      * Launch fireworks animation
      */
-    launchFireworks() {
+    launchFireworks(count = 15, crownsEarned = 0) {
         if (!this.dom.milestoneCelebration || !this.dom.fireworksContainer) {
             console.warn('Fireworks elements not found');
             return;
         }
 
-        this.dom.milestoneCelebration.textContent = `🎊 Alle Aufgaben richtig! Super! 🎊`;
+        // Show completion message with crown count
+        const message = crownsEarned > 0
+            ? `🎊 Alle Aufgaben richtig! +${crownsEarned} 👑 Kronen! 🎊`
+            : `🎊 Alle Aufgaben richtig! Super! 🎊`;
+        this.dom.milestoneCelebration.textContent = message;
         this.dom.milestoneCelebration.classList.add('show');
 
         this.dom.fireworksContainer.classList.add('active');
@@ -654,7 +661,7 @@ class DeutschApp {
         const maxFireworks = 15;
 
         const fireworkInterval = setInterval(() => {
-            if (fireworkCount >= maxFireworks) {
+            if (fireworkCount >= count) {
                 clearInterval(fireworkInterval);
                 setTimeout(() => {
                     this.dom.fireworksContainer.classList.remove('active');
@@ -770,11 +777,28 @@ class DeutschApp {
     }
 
     /**
-     * Earn a crown (called when all tasks completed)
+     * Calculate crowns based on difficulty level
+     * Level 1-3: 1 crown
+     * Level 4-6: 2 crowns
+     * Level 7-9: 3 crowns
+     * Level 10: 5 crowns
+     */
+    calculateCrownReward() {
+        const level = parseInt(this.dom.difficultySlider.value);
+        if (level <= 3) return 1;
+        if (level <= 6) return 2;
+        if (level <= 9) return 3;
+        return 5; // Level 10
+    }
+
+    /**
+     * Earn crowns (called when all tasks completed)
+     * Returns number of crowns earned
      */
     earnCrown() {
         if (this.currentMode !== 'adaptive') {
-            this.crownsEarned++;
+            const reward = this.calculateCrownReward();
+            this.crownsEarned += reward;
             this.saveCrowns();
             this.updateCrownDisplay();
 
@@ -786,15 +810,9 @@ class DeutschApp {
                 }, 600);
             }
 
-            // Show celebration message
-            if (this.dom.milestoneCelebration) {
-                this.dom.milestoneCelebration.textContent = `👑 Krone verdient! Du hast jetzt ${this.crownsEarned} Kronen! 👑`;
-                this.dom.milestoneCelebration.classList.add('show');
-                setTimeout(() => {
-                    this.dom.milestoneCelebration.classList.remove('show');
-                }, 2000);
-            }
+            return reward;
         }
+        return 0;
     }
 }
 
