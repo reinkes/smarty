@@ -16,6 +16,7 @@ Interaktive Rechenübungen mit automatischer Korrektur und Motivations-Features.
 - ✅ Addition & Subtraktion (Zahlenraum 1-50)
 - 🚀 **Adaptiver Trainingsmodus** - passt sich automatisch an
 - 📊 10 Schwierigkeitsstufen (Level 1-10 via Slider)
+- 👑 **Kronen-Belohnungssystem** - verdiene Kronen basierend auf Schwierigkeit
 - 📄 PDF-Export für Arbeitsblätter
 - 🎆 Feuerwerk & Celebrations bei Meilensteinen
 - 📱 **Mobile-optimiert** - Tastatur bleibt offen beim Tippen
@@ -32,9 +33,11 @@ Interaktive Rechenübungen mit automatischer Korrektur und Motivations-Features.
 Spielerisches Lernen von Anfangssilben mit Emoji-Visualisierung.
 
 **Features:**
-- ✅ 50+ Wörter mit bunten Emojis
+- ✅ **113 Wörter** mit bunten Emojis (einfach/mittel/schwer)
 - 🎯 10 Schwierigkeitsstufen (2-4+ Buchstaben-Silben)
 - 🚀 **Adaptiver Modus** - automatische Anpassung
+- 👑 **Kronen-Belohnungssystem** - verdiene Kronen basierend auf Schwierigkeit
+- 🎲 **Duplikat-Vermeidung** - keine identischen Icons hintereinander
 - 🎨 3 Auswahlmöglichkeiten pro Aufgabe
 - ✨ Sofortiges Feedback + Fehlerkorrektur
 - 💾 Progress-Tracking
@@ -73,7 +76,10 @@ smarty/
 │   ├── shared.js              # Gemeinsame Utilities
 │   ├── audio-manager.js       # Singleton für Sound-Effekte
 │   ├── mathe-app.js          # Mathe-Logik (900+ Zeilen)
-│   └── deutsch-app.js        # Deutsch-Logik (700+ Zeilen)
+│   └── deutsch-app.js        # Deutsch-Logik (820+ Zeilen)
+│
+├── data/
+│   └── deutsch-words.json     # Wort-Datenbank (v1.1.0, 113 Wörter)
 │
 └── .github/
     └── workflows/
@@ -162,9 +168,14 @@ if (num2 === 0 && (hasRecentZero || Math.random() < 0.98)) {
 
 1. **Sofortiges Feedback** - Grün/Rot Farbcodierung
 2. **Positive Verstärkung** - Sound + Feuerwerk
-3. **Milestones** - Celebration alle 10 Aufgaben
-4. **Flow-Zustand** - Adaptive Modi halten optimale Challenge
-5. **Visuelle Historie** - Letzte 10 Aufgaben verblassen (zeigt Fortschritt)
+3. **Kronen-Belohnungen** - Mehr Kronen für schwierigere Levels
+   - Level 1-3: 1 Krone 👑
+   - Level 4-6: 2 Kronen 👑👑
+   - Level 7-9: 3 Kronen 👑👑👑
+   - Level 10: 5 Kronen 👑👑👑👑👑
+4. **Milestones** - Celebration alle 10 Aufgaben
+5. **Flow-Zustand** - Adaptive Modi halten optimale Challenge
+6. **Visuelle Historie** - Letzte 10 Aufgaben verblassen (zeigt Fortschritt)
 
 ---
 
@@ -225,14 +236,24 @@ class MatheApp {
 ```javascript
 class DeutschApp {
     constructor() {
-        this.wordDatabase = [ /* 65 Wörter */ ];
+        this.wordDatabase = []; // Geladen aus JSON
         this.currentMode = '';
+        this.crownsEarned = 0;
+        this.lastUsedWord = null; // Duplikat-Vermeidung
         this.dom = {};
     }
 
-    init() { /* ... */ }
-    startTraining() { /* ... */ }
-    showNextTask() { /* ... */ }
+    async loadWordDatabase() {
+        // Lädt 113 Wörter aus data/deutsch-words.json
+    }
+
+    calculateCrownReward() {
+        // Level 1-3: 1, 4-6: 2, 7-9: 3, 10: 5
+    }
+
+    generateTask() {
+        // Verhindert consecutive duplicates
+    }
 }
 ```
 

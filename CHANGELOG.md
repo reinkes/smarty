@@ -6,6 +6,58 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ---
 
+## [2.2.0] - 2025-12-26
+
+### 🎯 Crown System & German App Enhancements
+
+#### Added
+- **Difficulty-Based Crown Rewards:**
+  - Level 1-3: 1 Krone 👑
+  - Level 4-6: 2 Kronen 👑👑
+  - Level 7-9: 3 Kronen 👑👑👑
+  - Level 10: 5 Kronen 👑👑👑👑👑
+  - Shared across both apps via LocalStorage (`smarty-crowns`)
+- **Unified Completion Screens:**
+  - Both apps show crown rewards in format: "+X = Y Kronen!"
+  - Animated crown badge with `bounceIn` effect
+  - "Nochmal üben!" button to restart training
+- **Expanded German Word Database:**
+  - Added 30 new easy-level words (83 → 113 words, +36%)
+  - All new words use 2-letter syllables (Ba, Di, Do, Fu, etc.)
+  - Categories: Animals, Food, Objects, Clothing, Nature, Vehicles, Toys
+  - Version bumped to 1.1.0 (`data/deutsch-words.json`)
+- **Duplicate Prevention:**
+  - `lastUsedWord` tracking prevents consecutive identical icons
+  - Improves learning variety and user experience
+
+#### Changed
+- **Crown Display Timing:**
+  - `earnCrown()` now called BEFORE showing completion screen
+  - Completion screen receives earned crowns as parameter
+  - Fixes bug where crowns wouldn't display on first completion
+- **Fireworks Integration:**
+  - Both apps pass `crownsEarned` to `launchFireworks()`
+  - Celebration message shows "+X 👑 Kronen!" when applicable
+
+#### Fixed
+- **German App Task Count Bug:**
+  - Was: User had to solve 22 tasks despite counter showing "X / 20"
+  - Root cause: Logic didn't account for 3 simultaneously visible tasks
+  - Fix: Calculate `totalTasksGenerated = tasksSolved + tasksRemaining`
+  - Now: Exactly 20 tasks, no more, no less
+- **Crown Display Bug:**
+  - Crown info wasn't showing on German app completion screen
+  - Fixed by earning crowns before building DOM elements
+  - Now both apps show identical crown rewards
+
+#### Technical Details
+- **Database:** `deutsch-words.json` v1.1.0 with 113 words
+- **Task Logic:** Improved `shouldContinue` calculation in `slideOutAndReplace()`
+- **Crown System:** Unified `calculateCrownReward()` method across both apps
+- **Code Consistency:** Both apps now use identical completion flow
+
+---
+
 ## [2.0.0] - 2025-12-23
 
 ### 🎉 Major Refactoring - Modular Architecture
