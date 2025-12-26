@@ -1,8 +1,8 @@
 {
-  "version": "1.0.4",
-  "lastUpdated": "2025-12-24",
+  "version": "1.1.0",
+  "lastUpdated": "2025-12-26",
   "description": "German syllable training word database",
-  "totalWords": 83,
+  "totalWords": 113,
   "words": [
     {
       "word": "Katze",
@@ -243,6 +243,246 @@
       "image": "images/generated/keks.png",
       "difficulty": "easy",
       "category": "Essen"
+    },
+    {
+      "word": "Dose",
+      "syllable": "Do",
+      "emoji": "🥫",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Haushalt"
+    },
+    {
+      "word": "Dino",
+      "syllable": "Di",
+      "emoji": "🦕",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Foto",
+      "syllable": "Fo",
+      "emoji": "📷",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Gegenstände"
+    },
+    {
+      "word": "Fuchs",
+      "syllable": "Fu",
+      "emoji": "🦊",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Gans",
+      "syllable": "Ga",
+      "emoji": "🦆",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Gorilla",
+      "syllable": "Go",
+      "emoji": "🦍",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Gurke",
+      "syllable": "Gu",
+      "emoji": "🥒",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Essen"
+    },
+    {
+      "word": "Hase",
+      "syllable": "Ha",
+      "emoji": "🐰",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Herz",
+      "syllable": "He",
+      "emoji": "❤️",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Symbole"
+    },
+    {
+      "word": "Hose",
+      "syllable": "Ho",
+      "emoji": "👖",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Kleidung"
+    },
+    {
+      "word": "Huhn",
+      "syllable": "Hu",
+      "emoji": "🐔",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Jacke",
+      "syllable": "Ja",
+      "emoji": "🧥",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Kleidung"
+    },
+    {
+      "word": "Jojo",
+      "syllable": "Jo",
+      "emoji": "🪀",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Spielzeug"
+    },
+    {
+      "word": "Lied",
+      "syllable": "Li",
+      "emoji": "🎵",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Musik"
+    },
+    {
+      "word": "Lolli",
+      "syllable": "Lo",
+      "emoji": "🍭",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Essen"
+    },
+    {
+      "word": "Messer",
+      "syllable": "Me",
+      "emoji": "🔪",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Haushalt"
+    },
+    {
+      "word": "Milch",
+      "syllable": "Mi",
+      "emoji": "🥛",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Essen"
+    },
+    {
+      "word": "Maus",
+      "syllable": "Mau",
+      "emoji": "🐭",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Nase",
+      "syllable": "Na",
+      "emoji": "👃",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Körper"
+    },
+    {
+      "word": "Nest",
+      "syllable": "Ne",
+      "emoji": "🪹",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Natur"
+    },
+    {
+      "word": "Nilpferd",
+      "syllable": "Ni",
+      "emoji": "🦛",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Nuss",
+      "syllable": "Nu",
+      "emoji": "🥜",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Essen"
+    },
+    {
+      "word": "Puppe",
+      "syllable": "Pu",
+      "emoji": "🪆",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Spielzeug"
+    },
+    {
+      "word": "Rakete",
+      "syllable": "Ra",
+      "emoji": "🚀",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Fahrzeuge"
+    },
+    {
+      "word": "Regen",
+      "syllable": "Re",
+      "emoji": "🌧️",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Natur"
+    },
+    {
+      "word": "Ring",
+      "syllable": "Ri",
+      "emoji": "💍",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Gegenstände"
+    },
+    {
+      "word": "Rose",
+      "syllable": "Ro",
+      "emoji": "🌹",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Natur"
+    },
+    {
+      "word": "Suppe",
+      "syllable": "Su",
+      "emoji": "🍲",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Essen"
+    },
+    {
+      "word": "Zebra",
+      "syllable": "Ze",
+      "emoji": "🦓",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Zug",
+      "syllable": "Zu",
+      "emoji": "🚂",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Fahrzeuge"
     },
     {
       "word": "Schule",

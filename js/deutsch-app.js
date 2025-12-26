@@ -6,7 +6,7 @@ class DeutschApp {
     // Constants
     static MILESTONE_INTERVAL = 10;
     static INITIAL_TASK_COUNT = 3;
-    static FIXED_TASK_COUNT = 20;
+    static FIXED_TASK_COUNT = 22;
     static DIFFICULTY_LEVELS = {
         EASY: 'easy',
         MEDIUM: 'medium',
@@ -29,6 +29,7 @@ class DeutschApp {
         this.incorrectCount = 0;
         this.taskIdCounter = 0;
         this.totalTasksToSolve = 0;
+        this.lastUsedWord = null; // Track last word to prevent duplicates
 
         // Crown achievement system
         this.crownsEarned = 0;
@@ -156,6 +157,7 @@ class DeutschApp {
         this.tasksSolved = 0;
         this.correctStreak = 0;
         this.incorrectCount = 0;
+        this.lastUsedWord = null; // Reset to allow fresh start
 
         if (isAdaptive) {
             this.totalTasksToSolve = 0; // Infinite for adaptive
@@ -221,7 +223,15 @@ class DeutschApp {
             });
         }
 
+        // Filter out last used word to prevent consecutive duplicates
+        if (this.lastUsedWord && availableWords.length > 1) {
+            availableWords = availableWords.filter(w => w.word !== this.lastUsedWord);
+        }
+
         const correctWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+
+        // Track this word to prevent it from appearing next time
+        this.lastUsedWord = correctWord.word;
 
         // Generate wrong options
         const wrongOptions = this.generateWrongOptions(correctWord);
