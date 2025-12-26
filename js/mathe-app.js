@@ -876,8 +876,9 @@ class MatheApp {
                     // Check if all tasks completed
                     if (this.completedTasks === this.currentTasks.length) {
                         setTimeout(() => {
-                            this.launchFireworks();
-                            this.earnCrown(); // Award crown for completing all tasks
+                            const crowns = this.earnCrown(); // Award crowns for completing all tasks
+                            this.launchFireworks(MatheApp.MAX_FIREWORKS, crowns);
+                            this.showNochmalButton(); // Show retry button
                         }, 300);
                     }
 
@@ -946,13 +947,17 @@ class MatheApp {
     /**
      * Launch fireworks animation
      */
-    launchFireworks(count = MatheApp.MAX_FIREWORKS) {
+    launchFireworks(count = MatheApp.MAX_FIREWORKS, crownsEarned = 0) {
         if (!this.dom.milestoneCelebration || !this.dom.fireworksContainer) {
             console.warn('Fireworks elements not found');
             return;
         }
 
-        this.dom.milestoneCelebration.textContent = `🎊 Alle Aufgaben richtig! Super! 🎊`;
+        // Show completion message with crown count
+        const message = crownsEarned > 0
+            ? `🎊 Alle Aufgaben richtig! +${crownsEarned} 👑 Kronen! 🎊`
+            : `🎊 Alle Aufgaben richtig! Super! 🎊`;
+        this.dom.milestoneCelebration.textContent = message;
         this.dom.milestoneCelebration.classList.add('show');
 
         this.dom.fireworksContainer.classList.add('active');
@@ -1228,11 +1233,56 @@ class MatheApp {
     }
 
     /**
-     * Earn a crown (called when all tasks completed)
+     * Show "Nochmal" (retry) button after completion
+     */
+    showNochmalButton() {
+        // Remove existing button if any
+        const existing = document.getElementById('nochmalButton');
+        if (existing) existing.remove();
+
+        // Create button
+        const button = document.createElement('button');
+        button.id = 'nochmalButton';
+        button.className = 'btn-generate';
+        button.textContent = '🔄 Nochmal!';
+        button.style.position = 'fixed';
+        button.style.bottom = '2rem';
+        button.style.left = '50%';
+        button.style.transform = 'translateX(-50%)';
+        button.style.zIndex = '10000';
+        button.style.animation = 'bounceIn 0.6s ease-out';
+
+        button.addEventListener('click', () => {
+            button.remove();
+            this.generateTasks(); // Generate new tasks with same difficulty
+        });
+
+        document.body.appendChild(button);
+    }
+
+    /**
+     * Calculate crowns based on difficulty level
+     * Level 1-3: 1 crown
+     * Level 4-6: 2 crowns
+     * Level 7-9: 3 crowns
+     * Level 10: 5 crowns
+     */
+    calculateCrownReward() {
+        const level = parseInt(this.dom.difficultySlider.value);
+        if (level <= 3) return 1;
+        if (level <= 6) return 2;
+        if (level <= 9) return 3;
+        return 5; // Level 10
+    }
+
+    /**
+     * Earn crowns (called when all tasks completed)
+     * Returns number of crowns earned
      */
     earnCrown() {
         if (!this.adaptiveMode) {
-            this.crownsEarned++;
+            const reward = this.calculateCrownReward();
+            this.crownsEarned += reward;
             this.saveCrowns();
             this.updateCrownDisplay();
 
@@ -1244,15 +1294,9 @@ class MatheApp {
                 }, 600);
             }
 
-            // Show celebration message
-            if (this.dom.milestoneCelebration) {
-                this.dom.milestoneCelebration.textContent = `👑 Krone verdient! Du hast jetzt ${this.crownsEarned} Kronen! 👑`;
-                this.dom.milestoneCelebration.classList.add('show');
-                setTimeout(() => {
-                    this.dom.milestoneCelebration.classList.remove('show');
-                }, 2000);
-            }
+            return reward;
         }
+        return 0;
     }
 }
 
