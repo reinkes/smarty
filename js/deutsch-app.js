@@ -498,7 +498,8 @@ class DeutschApp {
                 }, 50);
             } else if (this.currentTasks.length === 0) {
                 // All tasks completed!
-                this.showCompletionCelebration();
+                const crowns = this.earnCrown(); // Earn crowns BEFORE showing screen
+                this.showCompletionCelebration(crowns);
             }
 
             // Update display
@@ -542,7 +543,7 @@ class DeutschApp {
     /**
      * Show completion celebration
      */
-    showCompletionCelebration() {
+    showCompletionCelebration(crownsEarned = 0) {
         // Clear container safely
         this.dom.taskContainer.textContent = '';
 
@@ -567,7 +568,7 @@ class DeutschApp {
 
         // Create crown display (if not in adaptive mode)
         let crownDisplay = null;
-        if (this.currentMode !== 'adaptive' && this.crownsEarned > 0) {
+        if (this.currentMode !== 'adaptive' && crownsEarned > 0) {
             crownDisplay = document.createElement('div');
             crownDisplay.style.cssText = `
                 display: inline-block;
@@ -584,9 +585,7 @@ class DeutschApp {
             crownIcon.style.cssText = 'font-size: 2rem; margin-right: 0.5rem;';
 
             const crownText = document.createElement('span');
-            // Get the crowns that were just earned from the last earnCrown call
-            const justEarned = this.calculateCrownReward();
-            crownText.textContent = `+${justEarned} = ${this.crownsEarned} Kronen!`;
+            crownText.textContent = `+${crownsEarned} = ${this.crownsEarned} Kronen!`;
             crownText.style.cssText = 'font-size: 1.5rem; font-weight: 700; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);';
 
             crownDisplay.appendChild(crownIcon);
@@ -632,9 +631,8 @@ class DeutschApp {
         // Update display
         this.dom.taskCountDisplay.textContent = `${this.totalTasksToSolve} / ${this.totalTasksToSolve} ✅`;
 
-        // Launch fireworks celebration and earn crowns
-        const crowns = this.earnCrown();
-        this.launchFireworks(15, crowns);
+        // Launch fireworks celebration
+        this.launchFireworks(15, crownsEarned);
     }
 
     /**
