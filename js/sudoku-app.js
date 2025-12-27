@@ -85,9 +85,7 @@ class SudokuApp {
             this.dom.startButton.addEventListener('click', () => this.startNewGame());
         }
 
-        if (this.dom.checkButton) {
-            this.dom.checkButton.addEventListener('click', () => this.checkSolution());
-        }
+        // Check button removed - auto-check is used instead
 
         if (this.dom.hintButton) {
             this.dom.hintButton.addEventListener('click', () => this.giveHint());
@@ -329,6 +327,9 @@ class SudokuApp {
 
         // Clear validation states
         input.classList.remove('correct', 'incorrect');
+
+        // Auto-check when all cells are filled
+        this.autoCheckIfComplete();
     }
 
     /**
@@ -433,6 +434,30 @@ class SudokuApp {
     }
 
     /**
+     * Auto-check if puzzle is complete
+     */
+    autoCheckIfComplete() {
+        // Check if all cells are filled
+        let allFilled = true;
+        for (let row = 0; row < SudokuApp.GRID_SIZE; row++) {
+            for (let col = 0; col < SudokuApp.GRID_SIZE; col++) {
+                if (this.puzzle[row][col] === 0 && this.userGrid[row][col] === 0) {
+                    allFilled = false;
+                    break;
+                }
+            }
+            if (!allFilled) break;
+        }
+
+        // If all filled, check solution automatically
+        if (allFilled) {
+            setTimeout(() => {
+                this.checkSolution();
+            }, 300);
+        }
+    }
+
+    /**
      * Puzzle successfully solved
      */
     puzzleSolved() {
@@ -441,9 +466,19 @@ class SudokuApp {
         // Earn crowns based on difficulty
         const crowns = this.earnCrown();
 
-        // Show celebration
+        // Show celebration with showMilestoneCelebration
         audioManager.playSuccessSound();
-        this.showMessage(`🎉 Geschafft! Super gelöst! +${crowns} 👑`);
+
+        // Use same celebration as Math and German apps
+        if (this.dom.milestoneCelebration) {
+            const crownEmojis = '👑'.repeat(crowns);
+            this.dom.milestoneCelebration.textContent = `🎉 Sudoku gelöst! +${crowns} = ${this.crownsEarned} Kronen! ${crownEmojis}`;
+            this.dom.milestoneCelebration.classList.add('show');
+
+            setTimeout(() => {
+                this.dom.milestoneCelebration.classList.remove('show');
+            }, 3000);
+        }
 
         // Launch fireworks
         setTimeout(() => {
