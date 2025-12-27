@@ -54,6 +54,11 @@ input[type="range"]::-moz-range-thumb {
     border-color: var(--primary);
 }
 
+/* Milestone celebration */
+.milestone-celebration {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
 /* Preview section - CENTERED */
 .preview {
     text-align: center;
