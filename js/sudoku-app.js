@@ -254,22 +254,29 @@ class SudokuApp {
 
         for (let row = 0; row < SudokuApp.GRID_SIZE; row++) {
             for (let col = 0; col < SudokuApp.GRID_SIZE; col++) {
-                const cell = document.createElement('div');
+                const cell = document.createElement('input');
+                cell.type = 'text';
                 cell.className = 'sudoku-cell';
                 cell.dataset.row = row;
                 cell.dataset.col = col;
+                cell.maxLength = 1;
+                cell.inputMode = 'numeric';
 
                 const value = this.userGrid[row][col];
                 const isPrefilled = this.puzzle[row][col] !== 0;
 
                 if (value !== 0) {
-                    cell.textContent = value;
+                    cell.value = value;
                 }
 
                 if (isPrefilled) {
                     cell.classList.add('prefilled');
+                    cell.readOnly = true;
+                    cell.tabIndex = -1;
                 } else {
                     cell.tabIndex = 0;
+                    cell.addEventListener('input', (e) => this.handleInput(e, row, col));
+                    cell.addEventListener('keydown', (e) => this.handleCellKeydown(e, row, col));
                     cell.addEventListener('click', () => this.selectCell(cell));
                     cell.addEventListener('focus', () => this.selectCell(cell));
                 }
@@ -290,37 +297,56 @@ class SudokuApp {
 
         this.selectedCell = cell;
         cell.classList.add('selected');
-        cell.focus();
+
+        if (!cell.readOnly) {
+            cell.focus();
+            cell.select();
+        }
     }
 
     /**
-     * Handle keyboard input
+     * Handle input in a cell
+     */
+    handleInput(e, row, col) {
+        const input = e.target;
+        let value = input.value;
+
+        // Only allow numbers 1-4
+        value = value.replace(/[^1-4]/g, '');
+
+        if (value.length > 1) {
+            value = value.slice(-1); // Keep only last digit
+        }
+
+        input.value = value;
+
+        // Update user grid
+        if (value === '') {
+            this.userGrid[row][col] = 0;
+        } else {
+            this.userGrid[row][col] = parseInt(value);
+        }
+
+        // Clear validation states
+        input.classList.remove('correct', 'incorrect');
+    }
+
+    /**
+     * Handle keydown in a cell
+     */
+    handleCellKeydown(e, row, col) {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            this.navigateGrid(e.key, row, col);
+        }
+    }
+
+    /**
+     * Handle keyboard input (global handler, now mostly for navigation)
      */
     handleKeyboard(e) {
-        if (!this.selectedCell || this.selectedCell.classList.contains('prefilled')) {
-            return;
-        }
-
-        const key = e.key;
-        const row = parseInt(this.selectedCell.dataset.row);
-        const col = parseInt(this.selectedCell.dataset.col);
-
-        if (key >= '1' && key <= '4') {
-            // Input number
-            const num = parseInt(key);
-            this.userGrid[row][col] = num;
-            this.selectedCell.textContent = num;
-            this.selectedCell.classList.remove('incorrect', 'correct');
-        } else if (key === 'Backspace' || key === 'Delete' || key === '0') {
-            // Clear cell
-            this.userGrid[row][col] = 0;
-            this.selectedCell.textContent = '';
-            this.selectedCell.classList.remove('incorrect', 'correct');
-        } else if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight') {
-            // Navigate
-            e.preventDefault();
-            this.navigateGrid(key, row, col);
-        }
+        // Input is now handled by handleInput and handleCellKeydown
+        // This is kept for backward compatibility
     }
 
     /**
@@ -349,8 +375,22 @@ class SudokuApp {
         const index = newRow * SudokuApp.GRID_SIZE + newCol;
         const targetCell = cells[index];
 
-        if (targetCell && !targetCell.classList.contains('prefilled')) {
-            this.selectCell(targetCell);
+        if (targetCell) {
+            // Skip prefilled cells
+            if (targetCell.readOnly) {
+                // Try to continue in the same direction
+                if (key === 'ArrowUp' && newRow > 0) {
+                    this.navigateGrid(key, newRow, newCol);
+                } else if (key === 'ArrowDown' && newRow < SudokuApp.GRID_SIZE - 1) {
+                    this.navigateGrid(key, newRow, newCol);
+                } else if (key === 'ArrowLeft' && newCol > 0) {
+                    this.navigateGrid(key, newRow, newCol);
+                } else if (key === 'ArrowRight' && newCol < SudokuApp.GRID_SIZE - 1) {
+                    this.navigateGrid(key, newRow, newCol);
+                }
+            } else {
+                this.selectCell(targetCell);
+            }
         }
     }
 
@@ -361,11 +401,9 @@ class SudokuApp {
         let allCorrect = true;
         let allFilled = true;
 
-        const cells = this.dom.sudokuGrid.querySelectorAll('.sudoku-cell');
+        const cells = this.dom.sudokuGrid.querySelectorAll('.sudoku-cell:not(.prefilled)');
 
         cells.forEach(cell => {
-            if (cell.classList.contains('prefilled')) return;
-
             const row = parseInt(cell.dataset.row);
             const col = parseInt(cell.dataset.col);
             const userValue = this.userGrid[row][col];
@@ -373,6 +411,7 @@ class SudokuApp {
 
             if (userValue === 0) {
                 allFilled = false;
+                cell.classList.remove('correct', 'incorrect');
             } else if (userValue !== correctValue) {
                 cell.classList.add('incorrect');
                 cell.classList.remove('correct');
@@ -440,7 +479,7 @@ class SudokuApp {
 
         // Fill in the correct number
         this.userGrid[hint.row][hint.col] = this.solution[hint.row][hint.col];
-        hintCell.textContent = this.solution[hint.row][hint.col];
+        hintCell.value = this.solution[hint.row][hint.col];
         hintCell.classList.add('hint');
 
         this.hintsUsed++;

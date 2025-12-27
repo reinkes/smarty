@@ -79,14 +79,17 @@ input[type="range"]::-moz-range-thumb {
 .sudoku-cell {
     aspect-ratio: 1;
     background: white;
-    border: none;
+    border: 2px solid transparent;
     font-size: 2rem;
     font-weight: 700;
     font-family: 'Fredoka', sans-serif;
     text-align: center;
-    cursor: pointer;
+    cursor: text;
     transition: all 0.3s ease;
     color: var(--text-dark);
+    padding: 0;
+    outline: none;
+    caret-color: var(--primary);
 }
 
 /* Add spacing between 2x2 boxes */
@@ -99,23 +102,39 @@ input[type="range"]::-moz-range-thumb {
     margin-bottom: 3px;
 }
 
-.sudoku-cell:hover:not(.prefilled):not(.correct):not(.incorrect) {
+.sudoku-cell:hover:not(.prefilled):not(.correct):not(.incorrect):not([readonly]) {
     background: #E8F5E9;
-    transform: scale(1.05);
+    transform: scale(1.02);
+    border-color: var(--primary);
 }
 
 .sudoku-cell:focus {
-    outline: 3px solid var(--primary);
-    outline-offset: -3px;
+    border-color: var(--primary);
+    border-width: 3px;
     background: #FFF9C4;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.sudoku-cell.selected {
+    border-color: var(--primary);
+    border-width: 3px;
+    background: #FFFDE7;
 }
 
 /* Prefilled cells (nicht editierbar) */
-.sudoku-cell.prefilled {
+.sudoku-cell.prefilled,
+.sudoku-cell[readonly] {
     background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
     color: var(--primary);
     cursor: default;
     font-weight: 800;
+    border-color: transparent;
+}
+
+.sudoku-cell.prefilled:hover,
+.sudoku-cell[readonly]:hover {
+    transform: none;
+    border-color: transparent;
 }
 
 /* Correct/Incorrect states */
