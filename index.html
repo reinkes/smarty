@@ -244,6 +244,11 @@
             --card-color-2: #3498DB;
         }
 
+        .app-card.sudoku {
+            --card-color-1: #4CAF50;
+            --card-color-2: #26A69A;
+        }
+
         .app-card:hover {
             transform: translateY(-15px) scale(1.03);
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
@@ -261,6 +266,10 @@
 
         .app-card.deutsch .app-icon {
             animation-delay: 1.5s;
+        }
+
+        .app-card.sudoku .app-icon {
+            animation-delay: 3s;
         }
 
         @keyframes wiggle {
@@ -477,11 +486,27 @@
                 </p>
                 <ul class="app-features">
                     <li>Anfangssilben erkennen</li>
-                    <li>50+ Wörter mit Emojis</li>
+                    <li>113 Wörter mit Emojis</li>
                     <li>Adaptives Lernen 🚀</li>
                     <li>3 Schwierigkeitsstufen</li>
                 </ul>
                 <span class="app-btn">Lesen lernen!</span>
+            </a>
+
+            <!-- Sudoku App -->
+            <a href="kinder-sudoku.html" class="app-card sudoku">
+                <div class="app-icon">🧩</div>
+                <h2 class="app-title">Sudoku</h2>
+                <p class="app-description">
+                    Knobeln mit Zahlen von 1 bis 4 – perfekt für Einsteiger!
+                </p>
+                <ul class="app-features">
+                    <li>4×4 Kinder-Sudoku</li>
+                    <li>Nur Zahlen 1-4 🔢</li>
+                    <li>Hinweis-Funktion 💡</li>
+                    <li>3 Schwierigkeitsstufen</li>
+                </ul>
+                <span class="app-btn">Rätseln!</span>
             </a>
         </div>
     </div>

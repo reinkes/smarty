@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
+    <title>Kinder-Sudoku</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/theme-sudoku.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
+</head>
+<body>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
+
+    <!-- Crown Counter -->
+    <div class="crown-counter" id="crownCounter" style="display: none;">
+        <span class="crown-icon">👑</span>
+        <span class="crown-count" id="crownCount">0</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🧩 Kinder-Sudoku</h1>
+            <p class="subtitle">Fülle das Rätsel mit Zahlen von 1 bis 4!</p>
+        </header>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="difficultySlider">
+                    🎯 Schwierigkeitsgrad:
+                    <span class="slider-value" id="difficultyValue">Level 1 (Sehr Einfach) 😊</span>
+                </label>
+                <div class="slider-container">
+                    <input type="range" id="difficultySlider" min="1" max="3" value="1" step="1">
+                    <div class="slider-labels">
+                        <span>😊 Sehr Einfach</span>
+                        <span>🤔 Einfach</span>
+                        <span>😎 Mittel</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="startButton" class="btn-start">
+                ✨ Neues Spiel starten
+            </button>
+        </div>
+
+        <div class="card preview" id="preview">
+            <div class="preview-header">
+                <h2 class="preview-title">Sudoku 4×4</h2>
+                <button id="checkButton" class="btn-check">✓ Prüfen</button>
+            </div>
+
+            <div class="sudoku-grid" id="sudokuGrid">
+                <!-- Grid wird von JavaScript generiert -->
+            </div>
+
+            <div class="sudoku-controls">
+                <button id="hintButton" class="btn-hint">💡 Hinweis</button>
+                <button id="newGameButton" class="btn-new">🔄 Neues Spiel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="milestone-celebration" id="milestoneCelebration"></div>
+
+    <script src="js/audio-manager.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/sudoku-app.js"></script>
+
+    <footer style="text-align: center; padding: 2rem 1rem; margin-top: 3rem; border-top: 2px solid rgba(76,175,80,0.2); font-size: 0.9rem; opacity: 0.8;">
+        <p style="margin-bottom: 0.75rem;">© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p style="font-size: 0.85rem;">
+            <a href="impressum.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Impressum</a> |
+            <a href="nutzungsbedingungen.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Datenschutz</a>
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.7;">
+            Die unerlaubte Vervielfältigung oder Verbreitung dieser Software ist untersagt.
+        </p>
+    </footer>
+</body>
+</html>

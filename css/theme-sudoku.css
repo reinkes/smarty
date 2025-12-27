@@ -1,0 +1,267 @@
+/* Sudoku Theme - Green/Teal Colors */
+
+:root {
+    --primary: #4CAF50;
+    --secondary: #26A69A;
+    --tertiary: #66BB6A;
+    --accent: #FFC107;
+}
+
+/* Background gradient */
+body {
+    background: linear-gradient(135deg, #E8F5E9 0%, #B2DFDB 100%);
+}
+
+/* Decorative background circles */
+body::before {
+    background: var(--primary);
+}
+
+body::after {
+    background: var(--secondary);
+}
+
+/* Card styling */
+.card {
+    border-color: var(--primary);
+}
+
+.card::before {
+    content: '🧩';
+}
+
+/* Buttons */
+.btn-start {
+    background: linear-gradient(135deg, var(--primary), var(--tertiary));
+}
+
+.btn-back {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-back:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Slider */
+input[type="range"]::-webkit-slider-thumb {
+    border-color: var(--primary);
+}
+
+input[type="range"]::-moz-range-thumb {
+    border-color: var(--primary);
+}
+
+/* Preview section */
+.preview-header {
+    border-bottom-color: var(--primary);
+}
+
+.preview-title {
+    color: var(--primary);
+}
+
+/* Sudoku Grid Styles */
+.sudoku-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    max-width: 400px;
+    margin: 2rem auto;
+    background: var(--primary);
+    padding: 3px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
+}
+
+.sudoku-cell {
+    aspect-ratio: 1;
+    background: white;
+    border: none;
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Fredoka', sans-serif;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-dark);
+}
+
+/* Add spacing between 2x2 boxes */
+.sudoku-cell:nth-child(4n+1),
+.sudoku-cell:nth-child(4n+2) {
+    margin-right: 3px;
+}
+
+.sudoku-cell:nth-child(-n+8) {
+    margin-bottom: 3px;
+}
+
+.sudoku-cell:hover:not(.prefilled):not(.correct):not(.incorrect) {
+    background: #E8F5E9;
+    transform: scale(1.05);
+}
+
+.sudoku-cell:focus {
+    outline: 3px solid var(--primary);
+    outline-offset: -3px;
+    background: #FFF9C4;
+}
+
+/* Prefilled cells (nicht editierbar) */
+.sudoku-cell.prefilled {
+    background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+    color: var(--primary);
+    cursor: default;
+    font-weight: 800;
+}
+
+/* Correct/Incorrect states */
+.sudoku-cell.correct {
+    background: linear-gradient(135deg, #C8E6C9, #A5D6A7);
+    color: var(--primary);
+    animation: bounceIn 0.5s ease-out;
+}
+
+.sudoku-cell.incorrect {
+    background: linear-gradient(135deg, #FFCDD2, #EF9A9A);
+    color: #C62828;
+    animation: shake 0.5s ease-out;
+}
+
+.sudoku-cell.hint {
+    background: linear-gradient(135deg, #FFF9C4, #FFF59D);
+    animation: pulse 1s ease-in-out;
+}
+
+/* Input number buttons (optional - if we add number pad) */
+.number-pad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    max-width: 300px;
+    margin: 1.5rem auto 0;
+}
+
+.number-btn {
+    padding: 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Fredoka', sans-serif;
+    background: white;
+    border: 3px solid var(--primary);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.number-btn:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.number-btn:active {
+    transform: translateY(0);
+}
+
+/* Control buttons */
+.sudoku-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.btn-check,
+.btn-hint,
+.btn-new {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Fredoka', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.btn-check {
+    background: linear-gradient(135deg, var(--primary), var(--tertiary));
+}
+
+.btn-hint {
+    background: linear-gradient(135deg, var(--accent), #FFD54F);
+    color: var(--text-dark);
+}
+
+.btn-new {
+    background: linear-gradient(135deg, var(--secondary), #4DB6AC);
+}
+
+.btn-check:hover,
+.btn-hint:hover,
+.btn-new:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-check:active,
+.btn-hint:active,
+.btn-new:active {
+    transform: translateY(0);
+}
+
+/* Pulse animation for hints */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .sudoku-grid {
+        max-width: 320px;
+    }
+
+    .sudoku-cell {
+        font-size: 1.5rem;
+    }
+
+    .number-pad {
+        max-width: 250px;
+    }
+
+    .number-btn {
+        padding: 0.75rem;
+        font-size: 1.2rem;
+    }
+
+    .sudoku-controls {
+        flex-direction: column;
+    }
+
+    .btn-check,
+    .btn-hint,
+    .btn-new {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .sudoku-grid {
+        max-width: 280px;
+    }
+
+    .sudoku-cell {
+        font-size: 1.3rem;
+    }
+}
