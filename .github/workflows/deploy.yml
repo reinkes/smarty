@@ -40,6 +40,14 @@ jobs:
           exit 1
         fi
 
+        # Validate kinder-sudoku.html
+        if grep -q "<!DOCTYPE html>" kinder-sudoku.html; then
+          echo "✅ kinder-sudoku.html: DOCTYPE found"
+        else
+          echo "❌ kinder-sudoku.html: DOCTYPE missing"
+          exit 1
+        fi
+
         echo "✅ All HTML files validated"
 
     - name: 🔒 Security scan
@@ -113,6 +121,13 @@ jobs:
           exit 1
         fi
 
+        if curl -f -s http://localhost:8080/kinder-sudoku.html > /dev/null; then
+          echo "✅ kinder-sudoku.html loads"
+        else
+          echo "❌ kinder-sudoku.html failed to load"
+          exit 1
+        fi
+
         # Stop server
         kill $SERVER_PID
 
@@ -138,6 +153,7 @@ jobs:
         # Copy HTML files
         cp mathe-aufgaben.html deploy/beta/
         cp deutsch-silben.html deploy/beta/
+        cp kinder-sudoku.html deploy/beta/
 
         # Copy CSS directory
         if [ -d css ]; then
@@ -280,6 +296,7 @@ jobs:
         # Copy HTML files
         cp mathe-aufgaben.html deploy/
         cp deutsch-silben.html deploy/
+        cp kinder-sudoku.html deploy/
 
         # Copy CSS directory
         if [ -d css ]; then
