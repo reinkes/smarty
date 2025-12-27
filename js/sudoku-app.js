@@ -479,16 +479,39 @@ class SudokuApp {
 
         if (this.dom.milestoneCelebration) {
             console.log('Showing milestone celebration');
+            console.log('Element:', this.dom.milestoneCelebration);
+            console.log('Current classes:', this.dom.milestoneCelebration.className);
+            console.log('Current display:', window.getComputedStyle(this.dom.milestoneCelebration).display);
+            console.log('Current opacity:', window.getComputedStyle(this.dom.milestoneCelebration).opacity);
+            console.log('Current z-index:', window.getComputedStyle(this.dom.milestoneCelebration).zIndex);
+
             this.dom.milestoneCelebration.textContent = message;
-            this.dom.milestoneCelebration.style.display = 'block';
+
+            // Force visibility with inline styles
+            this.dom.milestoneCelebration.style.cssText = `
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) scale(1) !important;
+                background: linear-gradient(135deg, #4CAF50, #26A69A) !important;
+                color: white !important;
+                padding: 2rem 3rem !important;
+                border-radius: 24px !important;
+                font-size: 2rem !important;
+                font-weight: 700 !important;
+                z-index: 999999 !important;
+                opacity: 1 !important;
+                display: block !important;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8) !important;
+            `;
+
             this.dom.milestoneCelebration.classList.add('show');
+            console.log('After adding show - classes:', this.dom.milestoneCelebration.className);
 
             setTimeout(() => {
                 this.dom.milestoneCelebration.classList.remove('show');
-                setTimeout(() => {
-                    this.dom.milestoneCelebration.style.display = '';
-                }, 1500);
-            }, 4000); // Increased from 3000 to 4000ms
+                this.dom.milestoneCelebration.style.cssText = '';
+            }, 4000);
         } else {
             console.error('milestoneCelebration element not found!');
         }
