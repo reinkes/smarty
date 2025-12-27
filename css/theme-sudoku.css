@@ -68,19 +68,19 @@ input[type="range"]::-moz-range-thumb {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 0;
-    max-width: 400px;
-    margin: 2rem auto;
+    max-width: 280px;
+    margin: 1.5rem auto;
     background: var(--primary);
-    padding: 3px;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
+    padding: 2px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
 }
 
 .sudoku-cell {
     aspect-ratio: 1;
     background: white;
     border: 2px solid transparent;
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 700;
     font-family: 'Fredoka', sans-serif;
     text-align: center;
@@ -95,11 +95,11 @@ input[type="range"]::-moz-range-thumb {
 /* Add spacing between 2x2 boxes */
 .sudoku-cell:nth-child(4n+1),
 .sudoku-cell:nth-child(4n+2) {
-    margin-right: 3px;
+    margin-right: 2px;
 }
 
 .sudoku-cell:nth-child(-n+8) {
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 
 .sudoku-cell:hover:not(.prefilled):not(.correct):not(.incorrect):not([readonly]) {
@@ -189,19 +189,19 @@ input[type="range"]::-moz-range-thumb {
 /* Control buttons */
 .sudoku-controls {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     justify-content: center;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     flex-wrap: wrap;
 }
 
 .btn-check,
 .btn-hint,
 .btn-new {
-    padding: 0.75rem 1.5rem;
+    padding: 0.65rem 1.25rem;
     border: none;
-    border-radius: 12px;
-    font-size: 1rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
     font-weight: 700;
     font-family: 'Fredoka', sans-serif;
     cursor: pointer;
@@ -248,39 +248,44 @@ input[type="range"]::-moz-range-thumb {
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .sudoku-grid {
-        max-width: 320px;
+        max-width: 240px;
+        margin: 1rem auto;
     }
 
     .sudoku-cell {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
     }
 
     .number-pad {
-        max-width: 250px;
+        max-width: 220px;
     }
 
     .number-btn {
-        padding: 0.75rem;
-        font-size: 1.2rem;
+        padding: 0.6rem;
+        font-size: 1.1rem;
     }
 
     .sudoku-controls {
         flex-direction: column;
+        gap: 0.75rem;
     }
 
     .btn-check,
     .btn-hint,
     .btn-new {
         width: 100%;
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
     }
 }
 
 @media (max-width: 480px) {
     .sudoku-grid {
-        max-width: 280px;
+        max-width: 220px;
+        margin: 1rem auto;
     }
 
     .sudoku-cell {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
 }
