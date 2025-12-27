@@ -480,11 +480,15 @@ class SudokuApp {
         if (this.dom.milestoneCelebration) {
             console.log('Showing milestone celebration');
             this.dom.milestoneCelebration.textContent = message;
+            this.dom.milestoneCelebration.style.display = 'block';
             this.dom.milestoneCelebration.classList.add('show');
 
             setTimeout(() => {
                 this.dom.milestoneCelebration.classList.remove('show');
-            }, 3000);
+                setTimeout(() => {
+                    this.dom.milestoneCelebration.style.display = '';
+                }, 1500);
+            }, 4000); // Increased from 3000 to 4000ms
         } else {
             console.error('milestoneCelebration element not found!');
         }

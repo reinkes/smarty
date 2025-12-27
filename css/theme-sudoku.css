@@ -56,7 +56,9 @@ input[type="range"]::-moz-range-thumb {
 
 /* Milestone celebration */
 .milestone-celebration {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+    z-index: 99999 !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* Preview section - CENTERED */
