@@ -451,6 +451,7 @@ class SudokuApp {
 
         // If all filled, check solution automatically
         if (allFilled) {
+            console.log('All cells filled, auto-checking solution...');
             setTimeout(() => {
                 this.checkSolution();
             }, 300);
@@ -461,10 +462,12 @@ class SudokuApp {
      * Puzzle successfully solved
      */
     puzzleSolved() {
+        console.log('🎉 Sudoku solved!');
         this.puzzlesSolved++;
 
         // Earn crowns based on difficulty
         const crowns = this.earnCrown();
+        console.log(`Earned ${crowns} crowns, total: ${this.crownsEarned}`);
 
         // Play success sound
         audioManager.playSuccessSound();
@@ -472,20 +475,27 @@ class SudokuApp {
         // Show celebration message like Math and German apps
         const crownEmojis = '👑'.repeat(crowns);
         const message = `🎉 Geschafft! Super gelöst! +${crowns} = ${this.crownsEarned} Kronen! ${crownEmojis}`;
+        console.log('Celebration message:', message);
 
         if (this.dom.milestoneCelebration) {
+            console.log('Showing milestone celebration');
             this.dom.milestoneCelebration.textContent = message;
             this.dom.milestoneCelebration.classList.add('show');
 
             setTimeout(() => {
                 this.dom.milestoneCelebration.classList.remove('show');
             }, 3000);
+        } else {
+            console.error('milestoneCelebration element not found!');
         }
 
         // Launch fireworks using shared function
         setTimeout(() => {
             if (typeof launchFireworks === 'function') {
+                console.log('Launching fireworks');
                 launchFireworks();
+            } else {
+                console.error('launchFireworks function not found!');
             }
         }, 500);
     }
