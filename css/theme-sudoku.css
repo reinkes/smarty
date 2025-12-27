@@ -110,18 +110,20 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* Add darker borders between 2x2 boxes */
+/* Vertical divider after column 2 (cells 2, 6, 10, 14) */
 .sudoku-cell:nth-child(2),
 .sudoku-cell:nth-child(6),
 .sudoku-cell:nth-child(10),
 .sudoku-cell:nth-child(14) {
-    border-right: 2px solid var(--primary);
+    border-right: 3px solid var(--primary);
 }
 
-.sudoku-cell:nth-child(9),
-.sudoku-cell:nth-child(10),
-.sudoku-cell:nth-child(11),
-.sudoku-cell:nth-child(12) {
-    border-bottom: 2px solid var(--primary);
+/* Horizontal divider after row 2 (cells 5, 6, 7, 8) */
+.sudoku-cell:nth-child(5),
+.sudoku-cell:nth-child(6),
+.sudoku-cell:nth-child(7),
+.sudoku-cell:nth-child(8) {
+    border-bottom: 3px solid var(--primary);
 }
 
 .sudoku-cell:hover:not(.prefilled):not(.correct):not(.incorrect):not([readonly]) {

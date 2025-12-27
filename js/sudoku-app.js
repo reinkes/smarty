@@ -466,13 +466,15 @@ class SudokuApp {
         // Earn crowns based on difficulty
         const crowns = this.earnCrown();
 
-        // Show celebration with showMilestoneCelebration
+        // Play success sound
         audioManager.playSuccessSound();
 
-        // Use same celebration as Math and German apps
+        // Show celebration message like Math and German apps
+        const crownEmojis = '👑'.repeat(crowns);
+        const message = `🎉 Geschafft! Super gelöst! +${crowns} = ${this.crownsEarned} Kronen! ${crownEmojis}`;
+
         if (this.dom.milestoneCelebration) {
-            const crownEmojis = '👑'.repeat(crowns);
-            this.dom.milestoneCelebration.textContent = `🎉 Sudoku gelöst! +${crowns} = ${this.crownsEarned} Kronen! ${crownEmojis}`;
+            this.dom.milestoneCelebration.textContent = message;
             this.dom.milestoneCelebration.classList.add('show');
 
             setTimeout(() => {
@@ -480,9 +482,11 @@ class SudokuApp {
             }, 3000);
         }
 
-        // Launch fireworks
+        // Launch fireworks using shared function
         setTimeout(() => {
-            this.launchFireworks(crowns);
+            if (typeof launchFireworks === 'function') {
+                launchFireworks();
+            }
         }, 500);
     }
 
@@ -540,75 +544,7 @@ class SudokuApp {
     /**
      * Launch fireworks
      */
-    launchFireworks(crownsEarned = 0) {
-        if (!this.dom.fireworksContainer) return;
-
-        this.dom.fireworksContainer.classList.add('active');
-
-        const colors = ['#4CAF50', '#26A69A', '#66BB6A', '#FFC107', '#81C784'];
-        let fireworkCount = 0;
-        const maxFireworks = 15;
-
-        const fireworkInterval = setInterval(() => {
-            if (fireworkCount >= maxFireworks) {
-                clearInterval(fireworkInterval);
-                setTimeout(() => {
-                    this.dom.fireworksContainer.classList.remove('active');
-                    this.dom.fireworksContainer.innerHTML = '';
-                }, 2000);
-                return;
-            }
-
-            this.createFirework(colors[fireworkCount % colors.length]);
-            fireworkCount++;
-        }, 200);
-    }
-
-    /**
-     * Create a single firework
-     */
-    createFirework(color) {
-        const x = Math.random() * window.innerWidth;
-        const y = Math.random() * (window.innerHeight * 0.5);
-
-        const firework = document.createElement('div');
-        firework.className = 'firework';
-        firework.style.left = x + 'px';
-        firework.style.top = y + 'px';
-        firework.style.backgroundColor = color;
-        this.dom.fireworksContainer.appendChild(firework);
-
-        setTimeout(() => {
-            firework.remove();
-            this.createExplosion(x, y, color);
-        }, 800);
-    }
-
-    /**
-     * Create explosion
-     */
-    createExplosion(x, y, color) {
-        const particleCount = 30;
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-
-            const angle = (Math.PI * 2 * i) / particleCount;
-            const velocity = 100 + Math.random() * 100;
-            const tx = Math.cos(angle) * velocity;
-            const ty = Math.sin(angle) * velocity;
-
-            particle.style.left = x + 'px';
-            particle.style.top = y + 'px';
-            particle.style.backgroundColor = color;
-            particle.style.setProperty('--tx', tx + 'px');
-            particle.style.setProperty('--ty', ty + 'px');
-
-            this.dom.fireworksContainer.appendChild(particle);
-
-            setTimeout(() => particle.remove(), 1000);
-        }
-    }
+    // Fireworks now handled by shared.js launchFireworks() function
 
     /**
      * Calculate crown reward based on difficulty
