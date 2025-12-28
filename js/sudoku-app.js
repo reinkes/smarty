@@ -478,16 +478,11 @@ class SudokuApp {
         console.log('Celebration message:', message);
 
         if (this.dom.milestoneCelebration) {
-            console.log('Showing milestone celebration');
-            console.log('Element:', this.dom.milestoneCelebration);
-            console.log('Current classes:', this.dom.milestoneCelebration.className);
-            console.log('Current display:', window.getComputedStyle(this.dom.milestoneCelebration).display);
-            console.log('Current opacity:', window.getComputedStyle(this.dom.milestoneCelebration).opacity);
-            console.log('Current z-index:', window.getComputedStyle(this.dom.milestoneCelebration).zIndex);
+            console.log('Showing milestone celebration WITHOUT animation');
 
             this.dom.milestoneCelebration.textContent = message;
 
-            // Force visibility with inline styles
+            // Show directly WITHOUT animation (no .show class)
             this.dom.milestoneCelebration.style.cssText = `
                 position: fixed !important;
                 top: 50% !important;
@@ -503,13 +498,13 @@ class SudokuApp {
                 opacity: 1 !important;
                 display: block !important;
                 box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8) !important;
+                animation: none !important;
             `;
 
-            this.dom.milestoneCelebration.classList.add('show');
-            console.log('After adding show - classes:', this.dom.milestoneCelebration.className);
+            console.log('✅ Celebration should be VISIBLE NOW');
 
             setTimeout(() => {
-                this.dom.milestoneCelebration.classList.remove('show');
+                console.log('Hiding celebration');
                 this.dom.milestoneCelebration.style.cssText = '';
             }, 4000);
         } else {
