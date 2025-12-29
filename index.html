@@ -244,6 +244,11 @@
             --card-color-2: #3498DB;
         }
 
+        .app-card.buchstaben {
+            --card-color-1: #FF9800;
+            --card-color-2: #9B59B6;
+        }
+
         .app-card.sudoku {
             --card-color-1: #4CAF50;
             --card-color-2: #26A69A;
@@ -268,8 +273,12 @@
             animation-delay: 1.5s;
         }
 
-        .app-card.sudoku .app-icon {
+        .app-card.buchstaben .app-icon {
             animation-delay: 3s;
+        }
+
+        .app-card.sudoku .app-icon {
+            animation-delay: 4.5s;
         }
 
         @keyframes wiggle {
@@ -477,10 +486,10 @@
                 <span class="app-btn">Los rechnen!</span>
             </a>
 
-            <!-- Deutsch App -->
+            <!-- Deutsch Silben App -->
             <a href="deutsch-silben.html" class="app-card deutsch">
                 <div class="app-icon">📖</div>
-                <h2 class="app-title">Deutsch</h2>
+                <h2 class="app-title">Silben</h2>
                 <p class="app-description">
                     Silben lernen mit bunten Bildern und interaktiven Aufgaben!
                 </p>
@@ -491,6 +500,22 @@
                     <li>3 Schwierigkeitsstufen</li>
                 </ul>
                 <span class="app-btn">Lesen lernen!</span>
+            </a>
+
+            <!-- Buchstaben App -->
+            <a href="deutsch-buchstaben.html" class="app-card buchstaben">
+                <div class="app-icon">🔤</div>
+                <h2 class="app-title">Buchstaben</h2>
+                <p class="app-description">
+                    Buchstaben erkennen – welche Wörter enthalten den Buchstaben?
+                </p>
+                <ul class="app-features">
+                    <li>Buchstaben in Wörtern finden</li>
+                    <li>75+ Wörter mit Emojis</li>
+                    <li>50/50 Verteilung ✓</li>
+                    <li>10 Schwierigkeitsstufen</li>
+                </ul>
+                <span class="app-btn">ABC lernen!</span>
             </a>
 
             <!-- Sudoku App -->
