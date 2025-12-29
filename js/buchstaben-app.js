@@ -289,6 +289,9 @@ class BuchstabenApp {
             });
 
             if (allCorrectSelected) {
+                // Show success message
+                this.showSuccessMessage();
+
                 // All correct images selected, wait then move to next task
                 setTimeout(() => {
                     this.tasksSolved++;
@@ -298,9 +301,44 @@ class BuchstabenApp {
                     } else {
                         this.generateTask();
                     }
-                }, 1500);
+                }, 2000);
             }
         }, 100);
+    }
+
+    /**
+     * Show success message
+     */
+    showSuccessMessage() {
+        // Create success overlay
+        const overlay = document.createElement('div');
+        overlay.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            z-index: 10000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: bounceIn 0.6s ease-out;
+            text-align: center;
+        `;
+        overlay.innerHTML = '🎉 Super! Alle gefunden! 🎉';
+        document.body.appendChild(overlay);
+
+        // Remove after animation
+        setTimeout(() => {
+            overlay.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => {
+                document.body.removeChild(overlay);
+            }, 300);
+        }, 1500);
     }
 
 
