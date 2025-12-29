@@ -277,13 +277,14 @@ class BuchstabenApp {
             element.classList.add('correct');
             AudioManager.getInstance().playSuccessSound();
 
-            // Check immediately if all correct images have been selected
-            // Use requestAnimationFrame to ensure DOM is updated
-            requestAnimationFrame(() => {
+            // Check if all correct images have been selected (after a brief delay for DOM update)
+            setTimeout(() => {
                 const allCorrectSelected = Array.from(this.currentTask.correctWords).every(correctWord => {
                     const item = this.dom.imageGrid.querySelector(`[data-word="${correctWord}"]`);
                     return item && item.classList.contains('correct');
                 });
+
+                console.log('Checking completion:', allCorrectSelected); // Debug
 
                 if (allCorrectSelected) {
                     // Show success message
@@ -300,7 +301,7 @@ class BuchstabenApp {
                         }
                     }, 2000);
                 }
-            });
+            }, 50);
         } else {
             // Incorrect selection
             element.classList.add('incorrect');
