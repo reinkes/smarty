@@ -281,7 +281,15 @@ class BuchstabenApp {
         if (isCorrect) {
             // Correct selection
             element.classList.add('correct');
-            AudioManager.getInstance().playSuccessSound();
+
+            // Play success sound (with error handling)
+            try {
+                if (typeof AudioManager !== 'undefined' && AudioManager.getInstance) {
+                    AudioManager.getInstance().playSuccessSound();
+                }
+            } catch (error) {
+                console.warn('Audio playback failed:', error);
+            }
 
             // Check if all correct images have been selected (after a brief delay for DOM update)
             setTimeout(() => {
