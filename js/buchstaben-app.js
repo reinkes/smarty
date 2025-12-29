@@ -339,7 +339,7 @@ class BuchstabenApp {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) scale(0.8);
             background: linear-gradient(135deg, #4CAF50, #66BB6A);
             color: white;
             padding: 2rem 3rem;
@@ -349,15 +349,23 @@ class BuchstabenApp {
             font-family: 'Fredoka', sans-serif;
             z-index: 10000;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            animation: bounceIn 0.6s ease-out;
             text-align: center;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         `;
         overlay.innerHTML = '🎉 Super! Alle gefunden! 🎉';
         document.body.appendChild(overlay);
 
-        // Remove after animation
+        // Animate in
+        requestAnimationFrame(() => {
+            overlay.style.opacity = '1';
+            overlay.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+
+        // Remove after display
         setTimeout(() => {
-            overlay.style.animation = 'fadeOut 0.3s ease-out';
+            overlay.style.opacity = '0';
+            overlay.style.transform = 'translate(-50%, -50%) scale(0.8)';
             setTimeout(() => {
                 document.body.removeChild(overlay);
             }, 300);
