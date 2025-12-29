@@ -83,9 +83,6 @@ class BuchstabenApp {
 
         // Start button
         this.dom.startButton.addEventListener('click', () => this.startTraining());
-
-        // Submit button
-        this.dom.submitButton.addEventListener('click', () => this.handleSubmit());
     }
 
     /**
@@ -233,9 +230,6 @@ class BuchstabenApp {
             const imageDiv = this.createImageItem(wordItem, index);
             this.dom.imageGrid.appendChild(imageDiv);
         });
-
-        // Enable submit button
-        this.dom.submitButton.disabled = false;
     }
 
     /**
@@ -252,19 +246,13 @@ class BuchstabenApp {
         emoji.className = 'image-emoji';
         emoji.textContent = wordItem.emoji;
 
-        // Word label
-        const word = document.createElement('div');
-        word.className = 'image-word';
-        word.textContent = wordItem.word;
-
         // Checkbox indicator
         const checkbox = document.createElement('div');
         checkbox.className = 'image-checkbox';
 
         // Append children
-        div.appendChild(checkbox);
         div.appendChild(emoji);
-        div.appendChild(word);
+        div.appendChild(checkbox);
 
         // Click handler
         div.addEventListener('click', () => this.toggleImageSelection(div, wordItem.word));
@@ -281,67 +269,40 @@ class BuchstabenApp {
             return;
         }
 
-        if (this.selectedImages.has(word)) {
-            this.selectedImages.delete(word);
-            element.classList.remove('selected');
-        } else {
-            this.selectedImages.add(word);
-            element.classList.add('selected');
-        }
-    }
+        // Check if this is correct
+        const isCorrect = this.currentTask.correctWords.has(word);
 
-    /**
-     * Handle submit button click
-     */
-    handleSubmit() {
-        // Disable submit button
-        this.dom.submitButton.disabled = true;
-
-        // Check each image
-        let allCorrect = true;
-        const imageItems = this.dom.imageGrid.querySelectorAll('.image-item');
-
-        imageItems.forEach(item => {
-            const word = item.dataset.word;
-            const isCorrect = this.currentTask.correctWords.has(word);
-            const wasSelected = this.selectedImages.has(word);
-
-            if (isCorrect && wasSelected) {
-                // Correctly selected
-                item.classList.add('correct');
-            } else if (!isCorrect && !wasSelected) {
-                // Correctly not selected
-                item.classList.add('correct');
-            } else if (isCorrect && !wasSelected) {
-                // Should have been selected (missed)
-                item.classList.add('incorrect');
-                allCorrect = false;
-            } else {
-                // Incorrectly selected
-                item.classList.add('incorrect');
-                allCorrect = false;
-            }
-        });
-
-        // Play feedback
-        if (allCorrect) {
+        if (isCorrect) {
+            // Correct selection
+            element.classList.add('correct');
             AudioManager.getInstance().playSuccessSound();
         } else {
-            // Play error sound if available
-            console.log('Some selections were incorrect');
+            // Incorrect selection
+            element.classList.add('incorrect');
         }
 
-        // Wait for animation, then proceed
+        // Check if all correct images have been selected
         setTimeout(() => {
-            this.tasksSolved++;
+            const allCorrectSelected = Array.from(this.currentTask.correctWords).every(correctWord => {
+                const item = this.dom.imageGrid.querySelector(`[data-word="${correctWord}"]`);
+                return item && item.classList.contains('correct');
+            });
 
-            if (this.tasksSolved >= this.totalTasksRequired) {
-                this.showCompletion();
-            } else {
-                this.generateTask();
+            if (allCorrectSelected) {
+                // All correct images selected, wait then move to next task
+                setTimeout(() => {
+                    this.tasksSolved++;
+
+                    if (this.tasksSolved >= this.totalTasksRequired) {
+                        this.showCompletion();
+                    } else {
+                        this.generateTask();
+                    }
+                }, 1500);
             }
-        }, 2000);
+        }, 100);
     }
+
 
     /**
      * Calculate crown reward based on difficulty
