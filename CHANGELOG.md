@@ -6,6 +6,75 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ---
 
+## [2.3.0] - 2025-12-29
+
+### 🧩 Kinder-Sudoku App
+
+#### Added
+- **Neue App: Kinder-Sudoku 4×4**
+  - Zahlen 1-4 für Kinder geeignet
+  - 3 Schwierigkeitsgrade (Sehr Einfach, Einfach, Mittel)
+  - Grün-Türkis Theme passend zum Puzzle-Charakter
+  - Automatische Validierung bei vollständigem Grid
+  - Crown-Belohnungen: 1/2/3 Kronen je nach Schwierigkeit
+  - Integriert in gemeinsames Crown-System (`smarty-crowns`)
+
+- **Features:**
+  - 4×4 Grid mit 2×2 Box-Unterteilung (visuell hervorgehoben)
+  - Automatische Prüfung wenn alle Felder ausgefüllt
+  - Kein "Prüfen"-Button nötig
+  - Hinweis-Funktion (💡) zum Aufdecken einzelner Zahlen
+  - "Neues Spiel" Button für schnellen Neustart
+  - Puzzle-Generator mit Shuffle-Algorithmus
+  - Input-Validierung: nur 1-4 erlaubt
+  - Keyboard-Navigation mit Pfeiltasten
+  - Mobile-optimiert mit responsiven Größen
+
+- **Crown-Integration:**
+  - Sehr Einfach (10 Hinweise): 1 Krone 👑
+  - Einfach (8 Hinweise): 2 Kronen 👑👑
+  - Mittel (6 Hinweise): 3 Kronen 👑👑👑
+  - Erfolgsanzeige: "🎉 Geschafft! Super gelöst! +X = Y Kronen!"
+
+#### Changed
+- **Mobile-First Design:**
+  - Base: 130px Grid (32.5px/Zelle)
+  - Tablet (768px+): 200px Grid
+  - Desktop (1024px+): 220px Grid
+  - Progressive Enhancement statt Media-Query Scaling
+
+- **Celebration System:**
+  - Direkte Anzeige ohne Animation (Performance)
+  - 4 Sekunden Sichtbarkeit
+  - Inline Styles für maximale Kompatibilität
+  - Feuerwerk via `shared.js` launchFireworks()
+
+#### Fixed
+- **Grid-Positionierung:**
+  - 2×2 Box-Trennlinien exakt mittig (Row 2 & Column 2)
+  - Border-Width: 3px für bessere Sichtbarkeit
+  - Zell-Borders: 1px solid #C0C0C0 (alle Trennlinien sichtbar)
+
+- **Celebration Display:**
+  - Opacity-Konflikt mit CSS-Animation behoben
+  - Deaktivierte milestoneShow-Animation
+  - Sofortige Sichtbarkeit mit opacity: 1
+  - z-index: 999999 für sichere Überlagerung
+
+- **Input-Handling:**
+  - Tab-Navigation überspringt readonly Zellen
+  - Pfeiltasten-Navigation intelligent
+  - Auto-Check-Trigger bei vollständiger Eingabe
+  - Validierung erlaubt nur 1-4
+
+#### Technical Details
+- **Dateien:** `kinder-sudoku.html`, `js/sudoku-app.js`, `css/theme-sudoku.css`
+- **Zeilen:** ~1.100 Zeilen Code (HTML: 89, JS: 663, CSS: 342)
+- **Deployment:** GitHub Actions Pipeline erweitert
+- **Browser:** Getestet auf Chrome, Firefox, Safari (Desktop & Mobile)
+
+---
+
 ## [2.2.0] - 2025-12-26
 
 ### 🎯 Crown System & German App Enhancements

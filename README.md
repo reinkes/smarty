@@ -1,9 +1,10 @@
 # Smarty Learn - Lern-Apps für Kinder
 
-Interaktive Web-Anwendungen für Grundschulkinder zum Üben von **Mathematik** und **Deutsch**.
+Interaktive Web-Anwendungen für Grundschulkinder zum Üben von **Mathematik**, **Deutsch** und **Logik**.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Browser](https://img.shields.io/badge/browser-Chrome%20%7C%20Firefox%20%7C%20Safari%20%7C%20Edge-green.svg)]()
+[![Version](https://img.shields.io/badge/version-2.3.0-brightgreen.svg)]()
 
 ---
 
@@ -42,6 +43,28 @@ Spielerisches Lernen von Anfangssilben mit Emoji-Visualisierung.
 - ✨ Sofortiges Feedback + Fehlerkorrektur
 - 💾 Progress-Tracking
 
+### 🧩 Kinder-Sudoku
+4×4 Sudoku-Rätsel speziell für Kinder mit Zahlen 1-4.
+
+**Features:**
+- ✅ **4×4 Grid** - perfekt für Einsteiger
+- 🎯 3 Schwierigkeitsgrade (Sehr Einfach, Einfach, Mittel)
+- 🎨 Grün-Türkis Theme mit klarer Visualisierung
+- ⚡ **Automatische Prüfung** - kein Button nötig!
+- 👑 **Kronen-Belohnungen** - 1/2/3 Kronen je nach Schwierigkeit
+- 💡 Hinweis-Funktion zum Aufdecken einzelner Zahlen
+- ⌨️ Keyboard-Navigation mit Pfeiltasten
+- 🔢 Input-Validierung (nur 1-4)
+- 📱 **Mobile-optimiert** - responsive Größen
+- 🎆 Feuerwerk & Celebrations bei Erfolg
+
+**Spielmechanik:**
+- Klare 2×2 Box-Unterteilung mit Trennlinien
+- Vorgefüllte Zellen (grün hinterlegt)
+- Intelligente Navigation (überspringt readonly Felder)
+- Automatische Validierung bei vollständiger Eingabe
+- Shuffle-Algorithmus für Puzzle-Generierung
+
 ---
 
 ## 🚀 Schnellstart
@@ -65,18 +88,21 @@ smarty/
 ├── index.html                  # Startseite
 ├── mathe-aufgaben.html        # Mathe-App
 ├── deutsch-silben.html        # Deutsch-App
+├── kinder-sudoku.html         # Sudoku-App (NEU v2.3.0)
 │
 ├── css/
 │   ├── shared.css             # Gemeinsame Basis-Styles
 │   ├── animations.css         # Animationen (Feuerwerk, Fading)
 │   ├── theme-math.css         # Mathe-Theme (pink/orange)
-│   └── theme-german.css       # Deutsch-Theme (lila/blau)
+│   ├── theme-german.css       # Deutsch-Theme (lila/blau)
+│   └── theme-sudoku.css       # Sudoku-Theme (grün/türkis) ← NEU
 │
 ├── js/
 │   ├── shared.js              # Gemeinsame Utilities
 │   ├── audio-manager.js       # Singleton für Sound-Effekte
 │   ├── mathe-app.js          # Mathe-Logik (900+ Zeilen)
-│   └── deutsch-app.js        # Deutsch-Logik (820+ Zeilen)
+│   ├── deutsch-app.js        # Deutsch-Logik (820+ Zeilen)
+│   └── sudoku-app.js         # Sudoku-Logik (663 Zeilen) ← NEU
 │
 ├── data/
 │   └── deutsch-words.json     # Wort-Datenbank (v1.1.0, 113 Wörter)
