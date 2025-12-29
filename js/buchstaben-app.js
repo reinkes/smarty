@@ -158,6 +158,12 @@ class BuchstabenApp {
             correctWords: new Set(selectedWithLetter.map(w => w.word))
         };
 
+        console.log('=== New Task Generated ===');
+        console.log('Letter:', this.currentLetter);
+        console.log('All words:', allWords.map(w => w.word));
+        console.log('Correct words:', Array.from(this.currentTask.correctWords));
+        console.log('=========================');
+
         // Clear selections
         this.selectedImages.clear();
 
@@ -279,12 +285,19 @@ class BuchstabenApp {
 
             // Check if all correct images have been selected (after a brief delay for DOM update)
             setTimeout(() => {
+                console.log('=== Completion Check ===');
+                console.log('Current letter:', this.currentLetter);
+                console.log('Correct words:', Array.from(this.currentTask.correctWords));
+
                 const allCorrectSelected = Array.from(this.currentTask.correctWords).every(correctWord => {
                     const item = this.dom.imageGrid.querySelector(`[data-word="${correctWord}"]`);
+                    const hasCorrectClass = item && item.classList.contains('correct');
+                    console.log(`  ${correctWord}: found=${!!item}, hasCorrect=${hasCorrectClass}`);
                     return item && item.classList.contains('correct');
                 });
 
-                console.log('Checking completion:', allCorrectSelected); // Debug
+                console.log('All correct selected?', allCorrectSelected);
+                console.log('========================');
 
                 if (allCorrectSelected) {
                     // Show success message
