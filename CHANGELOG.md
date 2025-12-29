@@ -6,6 +6,71 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ---
 
+## [2.4.0] - 2025-12-29
+
+### 🔤 Buchstaben-Trainer App
+
+#### Added
+- **Neue App: Buchstaben-Trainer**
+  - Buchstabenerkennung in deutschen Wörtern
+  - 75+ Wörter mit Emoji-Visualisierung
+  - Orange/Lila Farbschema passend zum Lern-Charakter
+  - Sofortiges visuelles Feedback (grün/rot)
+  - Crown-Belohnungen: 1-5 Kronen je nach Schwierigkeit
+  - Integriert in gemeinsames Crown-System (`smarty-crowns`)
+
+- **Features:**
+  - Zeigt Buchstaben (Groß + Klein): A a, B b, etc.
+  - 6 Bilder pro Aufgabe (50/50 Verteilung richtig/falsch)
+  - Sofortiges Feedback beim Klick:
+    - ✓ Grüner Haken für richtige Auswahl (unten rechts)
+    - ✗ Roter X für falsche Auswahl (unten rechts)
+  - Keine Text-Labels unter Bildern (nur Emojis)
+  - Kein "Prüfen"-Button nötig
+  - Auto-Advance wenn alle richtigen gefunden
+  - Erfolgsmeldung: "🎉 Super! Alle gefunden! 🎉"
+  - 10 Schwierigkeitsstufen (bestimmt Anzahl Aufgaben)
+  - Mobile-optimiert mit responsivem Grid
+
+- **Crown-Integration:**
+  - Level 1-3: 1 Krone 👑
+  - Level 4-6: 2 Kronen 👑👑
+  - Level 7-9: 3 Kronen 👑👑👑
+  - Level 10: 5 Kronen 👑👑👑👑👑
+
+#### Technical Details
+- **Dateien:** `deutsch-buchstaben.html`, `js/buchstaben-app.js`, `css/theme-german.css`, `data/buchstaben-words.json`
+- **Zeilen:** ~870 Zeilen Code (HTML: 103, JS: 467, CSS: 194, JSON: 104)
+- **Wort-Datenbank:** 75+ deutsche Wörter (A-Z Coverage)
+- **Verifizierung:** Prüft tatsächliche Buchstaben im Wort (nicht nur JSON-Kategorisierung)
+  - "Fuchs" enthält: F, U, C, H, **S** ✓
+  - Deutsche Sprache wird korrekt berücksichtigt
+
+#### Changed
+- **Index.html:**
+  - Hinzugefügt: Buchstaben-Trainer Card
+  - Umbenannt: "Deutsch" → "Silben" für Klarheit
+  - 4 Apps jetzt verfügbar (Mathe, Silben, Buchstaben, Sudoku)
+
+- **GitHub Actions Pipeline:**
+  - Validierung für `deutsch-buchstaben.html`
+  - HTTP Server Load Test
+  - Beta & Production Deployment Integration
+
+#### Fixed
+- **Buchstabenerkennung:**
+  - Verifiziert gegen tatsächliches Wort statt JSON `letters` Array
+  - "Fuchs" wird jetzt korrekt als "enthält S" erkannt
+  - Alle Buchstaben im Wort werden korrekt geprüft
+
+- **UX Improvements:**
+  - Erfolgsmeldung zentriert auf Mobile (war rechts unten)
+  - Smooth Scale-Animation statt Slide-Animation
+  - AudioManager Error Handling (verhindert Absturz wenn Audio fehlt)
+  - Completion Check funktioniert sofort nach letzter richtiger Auswahl
+
+---
+
 ## [2.3.0] - 2025-12-29
 
 ### 🧩 Kinder-Sudoku App

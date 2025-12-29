@@ -4,7 +4,7 @@ Interaktive Web-Anwendungen für Grundschulkinder zum Üben von **Mathematik**, 
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Browser](https://img.shields.io/badge/browser-Chrome%20%7C%20Firefox%20%7C%20Safari%20%7C%20Edge-green.svg)]()
-[![Version](https://img.shields.io/badge/version-2.3.0-brightgreen.svg)]()
+[![Version](https://img.shields.io/badge/version-2.4.0-brightgreen.svg)]()
 
 ---
 
@@ -42,6 +42,26 @@ Spielerisches Lernen von Anfangssilben mit Emoji-Visualisierung.
 - 🎨 3 Auswahlmöglichkeiten pro Aufgabe
 - ✨ Sofortiges Feedback + Fehlerkorrektur
 - 💾 Progress-Tracking
+
+### 🔤 Buchstaben-Trainer
+Buchstabenerkennung in deutschen Wörtern mit sofortigem Feedback.
+
+**Features:**
+- ✅ **75+ Wörter** mit bunten Emojis (A-Z Abdeckung)
+- 🎯 10 Schwierigkeitsstufen (bestimmt Anzahl Aufgaben)
+- 👑 **Kronen-Belohnungssystem** - 1-5 Kronen je nach Schwierigkeit
+- 🔍 **Deutsche Sprache** - erkennt alle Buchstaben im Wort ("Fuchs" enthält "S" ✓)
+- ⚡ **Sofortiges Feedback** - grüner Haken (✓) oder roter X (✗)
+- 🎉 **Auto-Advance** - keine "Prüfen"-Button nötig
+- 🖼️ **Nur Emojis** - keine Text-Labels unter Bildern
+- 📱 **Mobile-optimiert** - responsive Grid-Layout
+
+**Spielmechanik:**
+- Zeigt Buchstaben (Groß + Klein): A a, B b, etc.
+- 6 Bilder pro Aufgabe (50/50 richtig/falsch Verteilung)
+- Klick auf Bild → sofortiges Feedback
+- Alle richtigen gefunden → "🎉 Super! Alle gefunden! 🎉"
+- Automatisch zur nächsten Aufgabe
 
 ### 🧩 Kinder-Sudoku
 4×4 Sudoku-Rätsel speziell für Kinder mit Zahlen 1-4.
@@ -87,25 +107,28 @@ Spielerisches Lernen von Anfangssilben mit Emoji-Visualisierung.
 smarty/
 ├── index.html                  # Startseite
 ├── mathe-aufgaben.html        # Mathe-App
-├── deutsch-silben.html        # Deutsch-App
-├── kinder-sudoku.html         # Sudoku-App (NEU v2.3.0)
+├── deutsch-silben.html        # Silben-Trainer App
+├── deutsch-buchstaben.html    # Buchstaben-Trainer App (NEU v2.4.0)
+├── kinder-sudoku.html         # Sudoku-App
 │
 ├── css/
 │   ├── shared.css             # Gemeinsame Basis-Styles
 │   ├── animations.css         # Animationen (Feuerwerk, Fading)
 │   ├── theme-math.css         # Mathe-Theme (pink/orange)
-│   ├── theme-german.css       # Deutsch-Theme (lila/blau)
-│   └── theme-sudoku.css       # Sudoku-Theme (grün/türkis) ← NEU
+│   ├── theme-german.css       # Deutsch-Theme (lila/blau + Buchstaben-Styles) ← UPDATED
+│   └── theme-sudoku.css       # Sudoku-Theme (grün/türkis)
 │
 ├── js/
 │   ├── shared.js              # Gemeinsame Utilities
 │   ├── audio-manager.js       # Singleton für Sound-Effekte
 │   ├── mathe-app.js          # Mathe-Logik (900+ Zeilen)
-│   ├── deutsch-app.js        # Deutsch-Logik (820+ Zeilen)
-│   └── sudoku-app.js         # Sudoku-Logik (663 Zeilen) ← NEU
+│   ├── deutsch-app.js        # Silben-Trainer Logik (820+ Zeilen)
+│   ├── buchstaben-app.js     # Buchstaben-Trainer Logik (467 Zeilen) ← NEU
+│   └── sudoku-app.js         # Sudoku-Logik (663 Zeilen)
 │
 ├── data/
-│   └── deutsch-words.json     # Wort-Datenbank (v1.1.0, 113 Wörter)
+│   ├── deutsch-words.json     # Silben-Wort-Datenbank (v1.1.0, 113 Wörter)
+│   └── buchstaben-words.json  # Buchstaben-Wort-Datenbank (v1.0.0, 75+ Wörter) ← NEU
 │
 └── .github/
     └── workflows/
