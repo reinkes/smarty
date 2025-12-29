@@ -1,0 +1,104 @@
+{
+  "version": "1.0.0",
+  "description": "Wort-Datenbank für Buchstaben-Trainer mit Emoji-Visualisierung",
+  "words": [
+    {"word": "Apfel", "emoji": "🍎", "letters": ["A"]},
+    {"word": "Auto", "emoji": "🚗", "letters": ["A"]},
+    {"word": "Affe", "emoji": "🐵", "letters": ["A"]},
+    {"word": "Ameise", "emoji": "🐜", "letters": ["A"]},
+    {"word": "Ananas", "emoji": "🍍", "letters": ["A"]},
+
+    {"word": "Ball", "emoji": "⚽", "letters": ["B"]},
+    {"word": "Buch", "emoji": "📖", "letters": ["B"]},
+    {"word": "Baum", "emoji": "🌳", "letters": ["B"]},
+    {"word": "Biene", "emoji": "🐝", "letters": ["B"]},
+    {"word": "Blume", "emoji": "🌸", "letters": ["B"]},
+    {"word": "Banane", "emoji": "🍌", "letters": ["B"]},
+    {"word": "Bus", "emoji": "🚌", "letters": ["B"]},
+    {"word": "Bär", "emoji": "🐻", "letters": ["B"]},
+
+    {"word": "Computer", "emoji": "💻", "letters": ["C"]},
+    {"word": "Cola", "emoji": "🥤", "letters": ["C"]},
+
+    {"word": "Dino", "emoji": "🦕", "letters": ["D"]},
+    {"word": "Dose", "emoji": "🥫", "letters": ["D"]},
+    {"word": "Drache", "emoji": "🐉", "letters": ["D"]},
+    {"word": "Delphin", "emoji": "🐬", "letters": ["D"]},
+
+    {"word": "Elefant", "emoji": "🐘", "letters": ["E"]},
+    {"word": "Eis", "emoji": "🍦", "letters": ["E"]},
+    {"word": "Eule", "emoji": "🦉", "letters": ["E"]},
+    {"word": "Erdbeere", "emoji": "🍓", "letters": ["E"]},
+    {"word": "Esel", "emoji": "🫏", "letters": ["E"]},
+
+    {"word": "Fisch", "emoji": "🐟", "letters": ["F"]},
+    {"word": "Frosch", "emoji": "🐸", "letters": ["F"]},
+    {"word": "Fuchs", "emoji": "🦊", "letters": ["F"]},
+    {"word": "Flugzeug", "emoji": "✈️", "letters": ["F"]},
+    {"word": "Feuer", "emoji": "🔥", "letters": ["F"]},
+
+    {"word": "Giraffe", "emoji": "🦒", "letters": ["G"]},
+    {"word": "Gans", "emoji": "🦆", "letters": ["G"]},
+    {"word": "Gitarre", "emoji": "🎸", "letters": ["G"]},
+
+    {"word": "Hund", "emoji": "🐕", "letters": ["H"]},
+    {"word": "Haus", "emoji": "🏠", "letters": ["H"]},
+    {"word": "Hase", "emoji": "🐰", "letters": ["H"]},
+    {"word": "Herz", "emoji": "❤️", "letters": ["H"]},
+    {"word": "Hubschrauber", "emoji": "🚁", "letters": ["H"]},
+
+    {"word": "Igel", "emoji": "🦔", "letters": ["I"]},
+    {"word": "Insel", "emoji": "🏝️", "letters": ["I"]},
+
+    {"word": "Jacke", "emoji": "🧥", "letters": ["J"]},
+
+    {"word": "Katze", "emoji": "🐱", "letters": ["K"]},
+    {"word": "Kuchen", "emoji": "🍰", "letters": ["K"]},
+    {"word": "Krone", "emoji": "👑", "letters": ["K"]},
+    {"word": "Kirsche", "emoji": "🍒", "letters": ["K"]},
+
+    {"word": "Löwe", "emoji": "🦁", "letters": ["L"]},
+    {"word": "Lampe", "emoji": "💡", "letters": ["L"]},
+    {"word": "Luftballon", "emoji": "🎈", "letters": ["L"]},
+
+    {"word": "Maus", "emoji": "🐭", "letters": ["M"]},
+    {"word": "Mond", "emoji": "🌙", "letters": ["M"]},
+    {"word": "Musik", "emoji": "🎵", "letters": ["M"]},
+
+    {"word": "Nase", "emoji": "👃", "letters": ["N"]},
+
+    {"word": "Obst", "emoji": "🍏", "letters": ["O"]},
+    {"word": "Ofen", "emoji": "🔥", "letters": ["O"]},
+
+    {"word": "Pinguin", "emoji": "🐧", "letters": ["P"]},
+    {"word": "Pizza", "emoji": "🍕", "letters": ["P"]},
+    {"word": "Polizei", "emoji": "🚓", "letters": ["P"]},
+
+    {"word": "Rakete", "emoji": "🚀", "letters": ["R"]},
+    {"word": "Regenbogen", "emoji": "🌈", "letters": ["R"]},
+    {"word": "Rose", "emoji": "🌹", "letters": ["R"]},
+
+    {"word": "Sonne", "emoji": "☀️", "letters": ["S"]},
+    {"word": "Stern", "emoji": "⭐", "letters": ["S"]},
+    {"word": "Schiff", "emoji": "🚢", "letters": ["S"]},
+    {"word": "Schlange", "emoji": "🐍", "letters": ["S"]},
+
+    {"word": "Tasse", "emoji": "☕", "letters": ["T"]},
+    {"word": "Tiger", "emoji": "🐯", "letters": ["T"]},
+    {"word": "Telefon", "emoji": "📱", "letters": ["T"]},
+    {"word": "Torte", "emoji": "🎂", "letters": ["T"]},
+
+    {"word": "Uhr", "emoji": "⏰", "letters": ["U"]},
+    {"word": "Ufo", "emoji": "🛸", "letters": ["U"]},
+
+    {"word": "Vogel", "emoji": "🐦", "letters": ["V"]},
+
+    {"word": "Wasser", "emoji": "💧", "letters": ["W"]},
+    {"word": "Wolke", "emoji": "☁️", "letters": ["W"]},
+    {"word": "Wal", "emoji": "🐋", "letters": ["W"]},
+
+    {"word": "Zebra", "emoji": "🦓", "letters": ["Z"]},
+    {"word": "Zug", "emoji": "🚂", "letters": ["Z"]},
+    {"word": "Zitrone", "emoji": "🍋", "letters": ["Z"]}
+  ]
+}

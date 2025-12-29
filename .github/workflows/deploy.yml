@@ -48,6 +48,14 @@ jobs:
           exit 1
         fi
 
+        # Validate deutsch-buchstaben.html
+        if grep -q "<!DOCTYPE html>" deutsch-buchstaben.html; then
+          echo "✅ deutsch-buchstaben.html: DOCTYPE found"
+        else
+          echo "❌ deutsch-buchstaben.html: DOCTYPE missing"
+          exit 1
+        fi
+
         echo "✅ All HTML files validated"
 
     - name: 🔒 Security scan
@@ -128,6 +136,13 @@ jobs:
           exit 1
         fi
 
+        if curl -f -s http://localhost:8080/deutsch-buchstaben.html > /dev/null; then
+          echo "✅ deutsch-buchstaben.html loads"
+        else
+          echo "❌ deutsch-buchstaben.html failed to load"
+          exit 1
+        fi
+
         # Stop server
         kill $SERVER_PID
 
@@ -153,6 +168,7 @@ jobs:
         # Copy HTML files
         cp mathe-aufgaben.html deploy/beta/
         cp deutsch-silben.html deploy/beta/
+        cp deutsch-buchstaben.html deploy/beta/
         cp kinder-sudoku.html deploy/beta/
 
         # Copy CSS directory
@@ -296,6 +312,7 @@ jobs:
         # Copy HTML files
         cp mathe-aufgaben.html deploy/
         cp deutsch-silben.html deploy/
+        cp deutsch-buchstaben.html deploy/
         cp kinder-sudoku.html deploy/
 
         # Copy CSS directory
