@@ -276,34 +276,35 @@ class BuchstabenApp {
             // Correct selection
             element.classList.add('correct');
             AudioManager.getInstance().playSuccessSound();
+
+            // Check immediately if all correct images have been selected
+            // Use requestAnimationFrame to ensure DOM is updated
+            requestAnimationFrame(() => {
+                const allCorrectSelected = Array.from(this.currentTask.correctWords).every(correctWord => {
+                    const item = this.dom.imageGrid.querySelector(`[data-word="${correctWord}"]`);
+                    return item && item.classList.contains('correct');
+                });
+
+                if (allCorrectSelected) {
+                    // Show success message
+                    this.showSuccessMessage();
+
+                    // All correct images selected, wait then move to next task
+                    setTimeout(() => {
+                        this.tasksSolved++;
+
+                        if (this.tasksSolved >= this.totalTasksRequired) {
+                            this.showCompletion();
+                        } else {
+                            this.generateTask();
+                        }
+                    }, 2000);
+                }
+            });
         } else {
             // Incorrect selection
             element.classList.add('incorrect');
         }
-
-        // Check if all correct images have been selected
-        setTimeout(() => {
-            const allCorrectSelected = Array.from(this.currentTask.correctWords).every(correctWord => {
-                const item = this.dom.imageGrid.querySelector(`[data-word="${correctWord}"]`);
-                return item && item.classList.contains('correct');
-            });
-
-            if (allCorrectSelected) {
-                // Show success message
-                this.showSuccessMessage();
-
-                // All correct images selected, wait then move to next task
-                setTimeout(() => {
-                    this.tasksSolved++;
-
-                    if (this.tasksSolved >= this.totalTasksRequired) {
-                        this.showCompletion();
-                    } else {
-                        this.generateTask();
-                    }
-                }, 2000);
-            }
-        }, 100);
     }
 
     /**
