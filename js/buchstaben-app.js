@@ -174,20 +174,20 @@ class BuchstabenApp {
     }
 
     /**
-     * Get words containing the letter
+     * Get words containing the letter (checks actual word string)
      */
     getWordsWithLetter(letter) {
         return this.wordDatabase.filter(item =>
-            item.letters.includes(letter.toUpperCase())
+            item.word.toUpperCase().includes(letter.toUpperCase())
         );
     }
 
     /**
-     * Get words NOT containing the letter
+     * Get words NOT containing the letter (checks actual word string)
      */
     getWordsWithoutLetter(letter) {
         return this.wordDatabase.filter(item =>
-            !item.letters.includes(letter.toUpperCase())
+            !item.word.toUpperCase().includes(letter.toUpperCase())
         );
     }
 
@@ -269,8 +269,8 @@ class BuchstabenApp {
             return;
         }
 
-        // Check if this is correct
-        const isCorrect = this.currentTask.correctWords.has(word);
+        // Check if this is correct by checking if the word actually contains the letter
+        const isCorrect = word.toUpperCase().includes(this.currentLetter.toUpperCase());
 
         if (isCorrect) {
             // Correct selection
