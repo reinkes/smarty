@@ -1,8 +1,8 @@
 {
-  "version": "1.1.0",
-  "lastUpdated": "2025-12-26",
+  "version": "1.2.0",
+  "lastUpdated": "2025-12-29",
   "description": "German syllable training word database",
-  "totalWords": 113,
+  "totalWords": 114,
   "words": [
     {
       "word": "Katze",
@@ -107,6 +107,14 @@
       "image": "images/generated/buch.png",
       "difficulty": "easy",
       "category": "Schule"
+    },
+    {
+      "word": "Bus",
+      "syllable": "Bu",
+      "emoji": "🚌",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Fahrzeuge"
     },
     {
       "word": "Lampe",
