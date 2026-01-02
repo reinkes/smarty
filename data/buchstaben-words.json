@@ -1,6 +1,8 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "lastUpdated": "2025-12-29",
   "description": "Wort-Datenbank für Buchstaben-Trainer mit Emoji-Visualisierung",
+  "totalWords": 125,
   "words": [
     {"word": "Apfel", "emoji": "🍎", "letters": ["A"]},
     {"word": "Auto", "emoji": "🚗", "letters": ["A"]},
@@ -16,6 +18,8 @@
     {"word": "Banane", "emoji": "🍌", "letters": ["B"]},
     {"word": "Bus", "emoji": "🚌", "letters": ["B"]},
     {"word": "Bär", "emoji": "🐻", "letters": ["B"]},
+    {"word": "Baby", "emoji": "👶", "letters": ["B"]},
+    {"word": "Brot", "emoji": "🍞", "letters": ["B"]},
 
     {"word": "Computer", "emoji": "💻", "letters": ["C"]},
     {"word": "Cola", "emoji": "🥤", "letters": ["C"]},
@@ -36,8 +40,14 @@
     {"word": "Fuchs", "emoji": "🦊", "letters": ["F"]},
     {"word": "Flugzeug", "emoji": "✈️", "letters": ["F"]},
     {"word": "Feuer", "emoji": "🔥", "letters": ["F"]},
+    {"word": "Flöte", "emoji": "🎺", "letters": ["F"]},
+    {"word": "Foto", "emoji": "📷", "letters": ["F"]},
 
     {"word": "Giraffe", "emoji": "🦒", "letters": ["G"]},
+    {"word": "Geist", "emoji": "👻", "letters": ["G"]},
+    {"word": "Glas", "emoji": "🥛", "letters": ["G"]},
+    {"word": "Gorilla", "emoji": "🦍", "letters": ["G"]},
+    {"word": "Gurke", "emoji": "🥒", "letters": ["G"]},
     {"word": "Gans", "emoji": "🦆", "letters": ["G"]},
     {"word": "Gitarre", "emoji": "🎸", "letters": ["G"]},
 
@@ -46,13 +56,20 @@
     {"word": "Hase", "emoji": "🐰", "letters": ["H"]},
     {"word": "Herz", "emoji": "❤️", "letters": ["H"]},
     {"word": "Hubschrauber", "emoji": "🚁", "letters": ["H"]},
+    {"word": "Hose", "emoji": "👖", "letters": ["H"]},
+    {"word": "Huhn", "emoji": "🐔", "letters": ["H"]},
 
     {"word": "Igel", "emoji": "🦔", "letters": ["I"]},
     {"word": "Insel", "emoji": "🏝️", "letters": ["I"]},
 
     {"word": "Jacke", "emoji": "🧥", "letters": ["J"]},
+    {"word": "Jojo", "emoji": "🪀", "letters": ["J"]},
 
     {"word": "Katze", "emoji": "🐱", "letters": ["K"]},
+    {"word": "Keks", "emoji": "🍪", "letters": ["K"]},
+    {"word": "Klavier", "emoji": "🎹", "letters": ["K"]},
+    {"word": "Kranwagen", "emoji": "🏗️", "letters": ["K"]},
+    {"word": "Kreis", "emoji": "⭕", "letters": ["K"]},
     {"word": "Kuchen", "emoji": "🍰", "letters": ["K"]},
     {"word": "Krone", "emoji": "👑", "letters": ["K"]},
     {"word": "Kirsche", "emoji": "🍒", "letters": ["K"]},
@@ -60,12 +77,20 @@
     {"word": "Löwe", "emoji": "🦁", "letters": ["L"]},
     {"word": "Lampe", "emoji": "💡", "letters": ["L"]},
     {"word": "Luftballon", "emoji": "🎈", "letters": ["L"]},
+    {"word": "Lied", "emoji": "🎵", "letters": ["L"]},
+    {"word": "Lolli", "emoji": "🍭", "letters": ["L"]},
 
     {"word": "Maus", "emoji": "🐭", "letters": ["M"]},
     {"word": "Mond", "emoji": "🌙", "letters": ["M"]},
     {"word": "Musik", "emoji": "🎵", "letters": ["M"]},
+    {"word": "Mama", "emoji": "👩", "letters": ["M"]},
+    {"word": "Messer", "emoji": "🔪", "letters": ["M"]},
+    {"word": "Milch", "emoji": "🥛", "letters": ["M"]},
 
     {"word": "Nase", "emoji": "👃", "letters": ["N"]},
+    {"word": "Nest", "emoji": "🪹", "letters": ["N"]},
+    {"word": "Nilpferd", "emoji": "🦛", "letters": ["N"]},
+    {"word": "Nuss", "emoji": "🥜", "letters": ["N"]},
 
     {"word": "Obst", "emoji": "🍏", "letters": ["O"]},
     {"word": "Ofen", "emoji": "🔥", "letters": ["O"]},
@@ -73,12 +98,33 @@
     {"word": "Pinguin", "emoji": "🐧", "letters": ["P"]},
     {"word": "Pizza", "emoji": "🍕", "letters": ["P"]},
     {"word": "Polizei", "emoji": "🚓", "letters": ["P"]},
+    {"word": "Panda", "emoji": "🐼", "letters": ["P"]},
+    {"word": "Papa", "emoji": "👨", "letters": ["P"]},
+    {"word": "Pferd", "emoji": "🐴", "letters": ["P"]},
+    {"word": "Pflanze", "emoji": "🌱", "letters": ["P"]},
+    {"word": "Prinzessin", "emoji": "👸", "letters": ["P"]},
+    {"word": "Puppe", "emoji": "🪆", "letters": ["P"]},
 
     {"word": "Rakete", "emoji": "🚀", "letters": ["R"]},
     {"word": "Regenbogen", "emoji": "🌈", "letters": ["R"]},
     {"word": "Rose", "emoji": "🌹", "letters": ["R"]},
+    {"word": "Regen", "emoji": "🌧️", "letters": ["R"]},
+    {"word": "Ring", "emoji": "💍", "letters": ["R"]},
 
     {"word": "Sonne", "emoji": "☀️", "letters": ["S"]},
+    {"word": "Schmetterling", "emoji": "🦋", "letters": ["S"]},
+    {"word": "Schnee", "emoji": "❄️", "letters": ["S"]},
+    {"word": "Schokolade", "emoji": "🍫", "letters": ["S"]},
+    {"word": "Schraubenzieher", "emoji": "🔧", "letters": ["S"]},
+    {"word": "Schule", "emoji": "🏫", "letters": ["S"]},
+    {"word": "Schwein", "emoji": "🐷", "letters": ["S"]},
+    {"word": "Schwimmbad", "emoji": "🏊", "letters": ["S"]},
+    {"word": "Spielplatz", "emoji": "🛝", "letters": ["S"]},
+    {"word": "Sprung", "emoji": "🦘", "letters": ["S"]},
+    {"word": "Strand", "emoji": "🏖️", "letters": ["S"]},
+    {"word": "Strumpf", "emoji": "🧦", "letters": ["S"]},
+    {"word": "Stuhl", "emoji": "🪑", "letters": ["S"]},
+    {"word": "Suppe", "emoji": "🍲", "letters": ["S"]},
     {"word": "Stern", "emoji": "⭐", "letters": ["S"]},
     {"word": "Schiff", "emoji": "🚢", "letters": ["S"]},
     {"word": "Schlange", "emoji": "🐍", "letters": ["S"]},
@@ -87,6 +133,9 @@
     {"word": "Tiger", "emoji": "🐯", "letters": ["T"]},
     {"word": "Telefon", "emoji": "📱", "letters": ["T"]},
     {"word": "Torte", "emoji": "🎂", "letters": ["T"]},
+    {"word": "Tisch", "emoji": "🪑", "letters": ["T"]},
+    {"word": "Traktor", "emoji": "🚜", "letters": ["T"]},
+    {"word": "Trommel", "emoji": "🥁", "letters": ["T"]},
 
     {"word": "Uhr", "emoji": "⏰", "letters": ["U"]},
     {"word": "Ufo", "emoji": "🛸", "letters": ["U"]},
@@ -99,6 +148,7 @@
 
     {"word": "Zebra", "emoji": "🦓", "letters": ["Z"]},
     {"word": "Zug", "emoji": "🚂", "letters": ["Z"]},
-    {"word": "Zitrone", "emoji": "🍋", "letters": ["Z"]}
+    {"word": "Zitrone", "emoji": "🍋", "letters": ["Z"]},
+    {"word": "Zwiebel", "emoji": "🧅", "letters": ["Z"]}
   ]
 }

@@ -1,8 +1,8 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "lastUpdated": "2025-12-29",
   "description": "German syllable training word database",
-  "totalWords": 114,
+  "totalWords": 145,
   "words": [
     {
       "word": "Katze",
@@ -491,6 +491,254 @@
       "image": null,
       "difficulty": "easy",
       "category": "Fahrzeuge"
+    },
+    {
+      "word": "Ameise",
+      "syllable": "Am",
+      "emoji": "🐜",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Ananas",
+      "syllable": "An",
+      "emoji": "🍍",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Essen"
+    },
+    {
+      "word": "Biene",
+      "syllable": "Bie",
+      "emoji": "🐝",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Bär",
+      "syllable": "Bä",
+      "emoji": "🐻",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Cola",
+      "syllable": "Co",
+      "emoji": "🥤",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Getränke"
+    },
+    {
+      "word": "Computer",
+      "syllable": "Com",
+      "emoji": "💻",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Elektronik"
+    },
+    {
+      "word": "Delphin",
+      "syllable": "Del",
+      "emoji": "🐬",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Drache",
+      "syllable": "Dra",
+      "emoji": "🐉",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Fantasy"
+    },
+    {
+      "word": "Erdbeere",
+      "syllable": "Erd",
+      "emoji": "🍓",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Essen"
+    },
+    {
+      "word": "Esel",
+      "syllable": "E",
+      "emoji": "🫏",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Eule",
+      "syllable": "Eu",
+      "emoji": "🦉",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Feuer",
+      "syllable": "Feu",
+      "emoji": "🔥",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Natur"
+    },
+    {
+      "word": "Gitarre",
+      "syllable": "Gi",
+      "emoji": "🎸",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Musik"
+    },
+    {
+      "word": "Igel",
+      "syllable": "I",
+      "emoji": "🦔",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Insel",
+      "syllable": "In",
+      "emoji": "🏝️",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Orte"
+    },
+    {
+      "word": "Kirsche",
+      "syllable": "Kir",
+      "emoji": "🍒",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Essen"
+    },
+    {
+      "word": "Luftballon",
+      "syllable": "Luft",
+      "emoji": "🎈",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Spielzeug"
+    },
+    {
+      "word": "Musik",
+      "syllable": "Mu",
+      "emoji": "🎵",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Musik"
+    },
+    {
+      "word": "Obst",
+      "syllable": "Ob",
+      "emoji": "🍏",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Essen"
+    },
+    {
+      "word": "Ofen",
+      "syllable": "O",
+      "emoji": "🔥",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Haushalt"
+    },
+    {
+      "word": "Pinguin",
+      "syllable": "Pin",
+      "emoji": "🐧",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Polizei",
+      "syllable": "Po",
+      "emoji": "🚓",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Fahrzeuge"
+    },
+    {
+      "word": "Regenbogen",
+      "syllable": "Re",
+      "emoji": "🌈",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Natur"
+    },
+    {
+      "word": "Schlange",
+      "syllable": "Schla",
+      "emoji": "🐍",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Torte",
+      "syllable": "Tor",
+      "emoji": "🎂",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Essen"
+    },
+    {
+      "word": "Ufo",
+      "syllable": "U",
+      "emoji": "🛸",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Fantasy"
+    },
+    {
+      "word": "Uhr",
+      "syllable": "U",
+      "emoji": "⏰",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Gegenstände"
+    },
+    {
+      "word": "Wal",
+      "syllable": "Wal",
+      "emoji": "🐋",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Tiere"
+    },
+    {
+      "word": "Wasser",
+      "syllable": "Was",
+      "emoji": "💧",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Getränke"
+    },
+    {
+      "word": "Wolke",
+      "syllable": "Wol",
+      "emoji": "☁️",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Natur"
+    },
+    {
+      "word": "Zitrone",
+      "syllable": "Zi",
+      "emoji": "🍋",
+      "image": null,
+      "difficulty": "easy",
+      "category": "Essen"
     },
     {
       "word": "Schule",
