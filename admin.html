@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smarty Learn - Wörterbuch Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            background: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #667eea;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .emoji-cell {
+            font-size: 2rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-easy { background: #d4edda; color: #155724; }
+        .badge-medium { background: #fff3cd; color: #856404; }
+        .badge-hard { background: #f8d7da; color: #721c24; }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 Wörterbuch Admin</h1>
+            <p class="subtitle">Verwaltung der Smarty Learn Wörterbücher</p>
+            <div class="stats" id="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="silbenCount">-</div>
+                    <div class="stat-label">Silben-Trainer Wörter</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="buchstabenCount">-</div>
+                    <div class="stat-label">Buchstaben-Trainer Wörter</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCount">-</div>
+                    <div class="stat-label">Gesamt Wörter</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('silben')">📖 Silben-Trainer</button>
+            <button class="tab" onclick="switchTab('buchstaben')">🔤 Buchstaben-Trainer</button>
+        </div>
+
+        <!-- Silben-Trainer Tab -->
+        <div id="silben-tab" class="tab-content active">
+            <div class="toolbar">
+                <button class="btn" onclick="addWord('silben')">➕ Neues Wort</button>
+                <button class="btn btn-success" onclick="downloadJSON('silben')">💾 JSON Herunterladen</button>
+                <button class="btn btn-secondary" onclick="loadData()">🔄 Neu Laden</button>
+                <div class="search-box">
+                    <input type="text" id="silben-search" placeholder="🔍 Suche..." oninput="filterTable('silben')">
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="silben-table">
+                    <thead>
+                        <tr>
+                            <th>Emoji</th>
+                            <th>Wort</th>
+                            <th>Silbe</th>
+                            <th>Kategorie</th>
+                            <th>Schwierigkeit</th>
+                            <th>Bild</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="silben-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Buchstaben-Trainer Tab -->
+        <div id="buchstaben-tab" class="tab-content">
+            <div class="toolbar">
+                <button class="btn" onclick="addWord('buchstaben')">➕ Neues Wort</button>
+                <button class="btn btn-success" onclick="downloadJSON('buchstaben')">💾 JSON Herunterladen</button>
+                <button class="btn btn-secondary" onclick="loadData()">🔄 Neu Laden</button>
+                <div class="search-box">
+                    <input type="text" id="buchstaben-search" placeholder="🔍 Suche..." oninput="filterTable('buchstaben')">
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="buchstaben-table">
+                    <thead>
+                        <tr>
+                            <th>Emoji</th>
+                            <th>Wort</th>
+                            <th>Buchstabe</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="buchstaben-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Wort Bearbeiten</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="editForm" onsubmit="saveWord(event)">
+                <input type="hidden" id="editType">
+                <input type="hidden" id="editIndex">
+
+                <div class="form-group">
+                    <label for="editWord">Wort *</label>
+                    <input type="text" id="editWord" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editEmoji">Emoji *</label>
+                    <input type="text" id="editEmoji" placeholder="🎨" required>
+                </div>
+
+                <div class="form-group" id="syllableGroup">
+                    <label for="editSyllable">Silbe *</label>
+                    <input type="text" id="editSyllable">
+                </div>
+
+                <div class="form-group" id="letterGroup" style="display: none;">
+                    <label for="editLetter">Buchstabe *</label>
+                    <input type="text" id="editLetter" maxlength="1">
+                </div>
+
+                <div class="form-group" id="categoryGroup">
+                    <label for="editCategory">Kategorie</label>
+                    <select id="editCategory">
+                        <option value="Tiere">Tiere</option>
+                        <option value="Essen">Essen</option>
+                        <option value="Fahrzeuge">Fahrzeuge</option>
+                        <option value="Natur">Natur</option>
+                        <option value="Gegenstände">Gegenstände</option>
+                        <option value="Familie">Familie</option>
+                        <option value="Kleidung">Kleidung</option>
+                        <option value="Haushalt">Haushalt</option>
+                        <option value="Musik">Musik</option>
+                        <option value="Spielzeug">Spielzeug</option>
+                        <option value="Gebäude">Gebäude</option>
+                        <option value="Orte">Orte</option>
+                        <option value="Fantasy">Fantasy</option>
+                        <option value="Elektronik">Elektronik</option>
+                        <option value="Andere">Andere</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="difficultyGroup">
+                    <label for="editDifficulty">Schwierigkeit</label>
+                    <select id="editDifficulty">
+                        <option value="easy">Einfach</option>
+                        <option value="medium">Mittel</option>
+                        <option value="hard">Schwer</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="imageGroup">
+                    <label for="editImage">Bild Pfad (optional)</label>
+                    <input type="text" id="editImage" placeholder="images/generated/wort.png">
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn" style="flex: 1;">💾 Speichern</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">Abbrechen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let silbenData = null;
+        let buchstabenData = null;
+        let currentTab = 'silben';
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', loadData);
+
+        async function loadData() {
+            try {
+                // Load Silben-Trainer data
+                const silbenResponse = await fetch('data/deutsch-words.json');
+                silbenData = await silbenResponse.json();
+
+                // Load Buchstaben-Trainer data
+                const buchstabenResponse = await fetch('data/buchstaben-words.json');
+                buchstabenData = await buchstabenResponse.json();
+
+                updateStats();
+                renderTables();
+            } catch (error) {
+                console.error('Fehler beim Laden der Daten:', error);
+                alert('Fehler beim Laden der Wörterbücher!');
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('silbenCount').textContent = silbenData.totalWords || silbenData.words.length;
+            document.getElementById('buchstabenCount').textContent = buchstabenData.totalWords || buchstabenData.words.length;
+            document.getElementById('totalCount').textContent = (silbenData.words.length + buchstabenData.words.length);
+        }
+
+        function renderTables() {
+            renderSilbenTable();
+            renderBuchstabenTable();
+        }
+
+        function renderSilbenTable() {
+            const tbody = document.getElementById('silben-tbody');
+            tbody.innerHTML = '';
+
+            silbenData.words.forEach((word, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td class="emoji-cell">${word.emoji}</td>
+                    <td><strong>${word.word}</strong></td>
+                    <td>${word.syllable}</td>
+                    <td>${word.category || '-'}</td>
+                    <td><span class="badge badge-${word.difficulty}">${word.difficulty}</span></td>
+                    <td>${word.image || '-'}</td>
+                    <td class="actions">
+                        <button class="btn btn-small" onclick="editWord('silben', ${index})">✏️ Bearbeiten</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteWord('silben', ${index})">🗑️ Löschen</button>
+                    </td>
+                `;
+            });
+        }
+
+        function renderBuchstabenTable() {
+            const tbody = document.getElementById('buchstaben-tbody');
+            tbody.innerHTML = '';
+
+            buchstabenData.words.forEach((word, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td class="emoji-cell">${word.emoji}</td>
+                    <td><strong>${word.word}</strong></td>
+                    <td>${word.letters.join(', ')}</td>
+                    <td class="actions">
+                        <button class="btn btn-small" onclick="editWord('buchstaben', ${index})">✏️ Bearbeiten</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteWord('buchstaben', ${index})">🗑️ Löschen</button>
+                    </td>
+                `;
+            });
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`${tab}-tab`).classList.add('active');
+        }
+
+        function filterTable(type) {
+            const searchValue = document.getElementById(`${type}-search`).value.toLowerCase();
+            const tbody = document.getElementById(`${type}-tbody`);
+            const rows = tbody.getElementsByTagName('tr');
+
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            }
+        }
+
+        function addWord(type) {
+            document.getElementById('modalTitle').textContent = 'Neues Wort Hinzufügen';
+            document.getElementById('editType').value = type;
+            document.getElementById('editIndex').value = '-1';
+
+            // Reset form
+            document.getElementById('editForm').reset();
+
+            // Show/hide fields based on type
+            if (type === 'silben') {
+                document.getElementById('syllableGroup').style.display = 'block';
+                document.getElementById('categoryGroup').style.display = 'block';
+                document.getElementById('difficultyGroup').style.display = 'block';
+                document.getElementById('imageGroup').style.display = 'block';
+                document.getElementById('letterGroup').style.display = 'none';
+            } else {
+                document.getElementById('syllableGroup').style.display = 'none';
+                document.getElementById('categoryGroup').style.display = 'none';
+                document.getElementById('difficultyGroup').style.display = 'none';
+                document.getElementById('imageGroup').style.display = 'none';
+                document.getElementById('letterGroup').style.display = 'block';
+            }
+
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function editWord(type, index) {
+            const data = type === 'silben' ? silbenData : buchstabenData;
+            const word = data.words[index];
+
+            document.getElementById('modalTitle').textContent = 'Wort Bearbeiten';
+            document.getElementById('editType').value = type;
+            document.getElementById('editIndex').value = index;
+
+            document.getElementById('editWord').value = word.word;
+            document.getElementById('editEmoji').value = word.emoji;
+
+            if (type === 'silben') {
+                document.getElementById('editSyllable').value = word.syllable;
+                document.getElementById('editCategory').value = word.category || '';
+                document.getElementById('editDifficulty').value = word.difficulty || 'easy';
+                document.getElementById('editImage').value = word.image || '';
+
+                document.getElementById('syllableGroup').style.display = 'block';
+                document.getElementById('categoryGroup').style.display = 'block';
+                document.getElementById('difficultyGroup').style.display = 'block';
+                document.getElementById('imageGroup').style.display = 'block';
+                document.getElementById('letterGroup').style.display = 'none';
+            } else {
+                document.getElementById('editLetter').value = word.letters[0] || '';
+
+                document.getElementById('syllableGroup').style.display = 'none';
+                document.getElementById('categoryGroup').style.display = 'none';
+                document.getElementById('difficultyGroup').style.display = 'none';
+                document.getElementById('imageGroup').style.display = 'none';
+                document.getElementById('letterGroup').style.display = 'block';
+            }
+
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function saveWord(event) {
+            event.preventDefault();
+
+            const type = document.getElementById('editType').value;
+            const index = parseInt(document.getElementById('editIndex').value);
+            const data = type === 'silben' ? silbenData : buchstabenData;
+
+            const wordData = {
+                word: document.getElementById('editWord').value,
+                emoji: document.getElementById('editEmoji').value
+            };
+
+            if (type === 'silben') {
+                wordData.syllable = document.getElementById('editSyllable').value;
+                wordData.category = document.getElementById('editCategory').value;
+                wordData.difficulty = document.getElementById('editDifficulty').value;
+                const imagePath = document.getElementById('editImage').value.trim();
+                wordData.image = imagePath || null;
+            } else {
+                wordData.letters = [document.getElementById('editLetter').value.toUpperCase()];
+            }
+
+            if (index === -1) {
+                // Add new word
+                data.words.push(wordData);
+            } else {
+                // Update existing word
+                data.words[index] = wordData;
+            }
+
+            // Update total count
+            if (type === 'silben') {
+                silbenData.totalWords = silbenData.words.length;
+            } else {
+                buchstabenData.totalWords = buchstabenData.words.length;
+            }
+
+            updateStats();
+            renderTables();
+            closeModal();
+        }
+
+        function deleteWord(type, index) {
+            if (!confirm('Möchten Sie dieses Wort wirklich löschen?')) {
+                return;
+            }
+
+            const data = type === 'silben' ? silbenData : buchstabenData;
+            data.words.splice(index, 1);
+
+            // Update total count
+            if (type === 'silben') {
+                silbenData.totalWords = silbenData.words.length;
+            } else {
+                buchstabenData.totalWords = buchstabenData.words.length;
+            }
+
+            updateStats();
+            renderTables();
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        function downloadJSON(type) {
+            const data = type === 'silben' ? silbenData : buchstabenData;
+            const filename = type === 'silben' ? 'deutsch-words.json' : 'buchstaben-words.json';
+
+            const jsonStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+
+            URL.revokeObjectURL(url);
+
+            alert(`📥 ${filename} wurde heruntergeladen!\n\nBitte ersetzen Sie die Datei in data/${filename} und committen Sie die Änderungen.`);
+        }
+
+        // Close modal on outside click
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

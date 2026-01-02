@@ -101,11 +101,93 @@ Buchstabenerkennung in deutschen Wörtern mit sofortigem Feedback.
 
 ---
 
+## 🔧 Admin-Bereich (Wörterbuch-Verwaltung)
+
+**Zugriff:** `admin.html` (Link im Footer der Startseite)
+
+### Features
+
+Die Admin-Seite ermöglicht die einfache Verwaltung der Wörterbücher:
+
+**📊 Übersicht:**
+- Live-Statistiken für beide Wörterbücher
+- Anzahl Wörter pro Datenbank
+- Gesamtanzahl aller Wörter
+
+**📖 Silben-Trainer Verwaltung:**
+- Alle Wörter in übersichtlicher Tabelle
+- Spalten: Emoji, Wort, Silbe, Kategorie, Schwierigkeit, Bild
+- Filtern via Suchfeld
+- Sortierung nach allen Spalten
+
+**🔤 Buchstaben-Trainer Verwaltung:**
+- Alle Wörter in übersichtlicher Tabelle
+- Spalten: Emoji, Wort, Buchstabe
+- Filtern via Suchfeld
+
+**✏️ CRUD Operationen:**
+- ➕ **Neu:** Wort hinzufügen mit allen Feldern
+- ✏️ **Bearbeiten:** Bestehende Wörter ändern
+- 🗑️ **Löschen:** Wörter entfernen (mit Bestätigung)
+- 💾 **Export:** Modifizierte JSON herunterladen
+
+### Workflow
+
+1. **Öffnen:** `admin.html` im Browser öffnen
+2. **Bearbeiten:** Wörter hinzufügen, ändern oder löschen
+3. **Download:** "JSON Herunterladen" klicken
+4. **Ersetzen:** Heruntergeladene Datei nach `data/` kopieren:
+   - `deutsch-words.json` → Silben-Trainer
+   - `buchstaben-words.json` → Buchstaben-Trainer
+5. **Commit:** Änderungen mit git einchecken:
+   ```bash
+   git add data/
+   git commit -m "feat: Update word database"
+   git push
+   ```
+
+### Felder-Referenz
+
+**Silben-Trainer (`deutsch-words.json`):**
+```json
+{
+  "word": "Bus",           // Pflicht: Das Wort
+  "syllable": "Bu",        // Pflicht: Anfangssilbe
+  "emoji": "🚌",          // Pflicht: Emoji-Darstellung
+  "category": "Fahrzeuge", // Optional: Kategorie
+  "difficulty": "easy",    // Optional: easy/medium/hard
+  "image": null            // Optional: Pfad zum Bild
+}
+```
+
+**Buchstaben-Trainer (`buchstaben-words.json`):**
+```json
+{
+  "word": "Bus",      // Pflicht: Das Wort
+  "emoji": "🚌",     // Pflicht: Emoji-Darstellung
+  "letters": ["B"]    // Pflicht: Anfangsbuchstabe(n)
+}
+```
+
+### Kategorien
+
+Verfügbare Kategorien für Silben-Trainer:
+- Tiere, Essen, Fahrzeuge, Natur, Gegenstände
+- Familie, Kleidung, Haushalt, Musik, Spielzeug
+- Gebäude, Orte, Fantasy, Elektronik, Andere
+
+### Wichtig
+
+⚠️ **Lokales Tool:** Die Admin-Seite läuft komplett im Browser und kann Dateien nicht direkt speichern. Sie müssen die heruntergeladene JSON manuell in das `data/` Verzeichnis kopieren und committen.
+
+---
+
 ## 💻 Projekt-Struktur
 
 ```
 smarty/
 ├── index.html                  # Startseite
+├── admin.html                 # Wörterbuch-Verwaltung (Admin-Tool) ← NEU
 ├── mathe-aufgaben.html        # Mathe-App
 ├── deutsch-silben.html        # Silben-Trainer App
 ├── deutsch-buchstaben.html    # Buchstaben-Trainer App (NEU v2.4.0)
