@@ -299,6 +299,36 @@
         <header>
             <h1>🔧 Wörterbuch Admin</h1>
             <p class="subtitle">Verwaltung der Smarty Learn Wörterbücher</p>
+
+            <!-- CORS Warning -->
+            <div id="corsWarning" class="alert alert-warning" style="display: none;">
+                <strong>⚠️ Dateien konnten nicht automatisch geladen werden</strong><br>
+                Bitte laden Sie die JSON-Dateien manuell hoch oder starten Sie einen lokalen Server.<br>
+                <strong>Einfachste Lösung:</strong> Öffnen Sie ein Terminal im Projekt-Verzeichnis und führen Sie aus:<br>
+                <code style="background: #fff; padding: 0.25rem 0.5rem; border-radius: 4px; margin: 0.5rem 0; display: inline-block;">python -m http.server 8080</code><br>
+                Dann öffnen Sie: <code style="background: #fff; padding: 0.25rem 0.5rem; border-radius: 4px;">http://localhost:8080/admin.html</code>
+            </div>
+
+            <!-- Manual File Upload -->
+            <div id="manualUpload" class="alert alert-warning" style="display: none;">
+                <strong>📁 Manuelle Datei-Upload</strong><br>
+                Wählen Sie die JSON-Dateien aus dem <code>data/</code> Verzeichnis:
+                <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                    <div>
+                        <label for="uploadSilben" style="cursor: pointer;">
+                            <strong>Silben-Trainer:</strong>
+                            <input type="file" id="uploadSilben" accept=".json" style="margin-left: 0.5rem;">
+                        </label>
+                    </div>
+                    <div>
+                        <label for="uploadBuchstaben" style="cursor: pointer;">
+                            <strong>Buchstaben-Trainer:</strong>
+                            <input type="file" id="uploadBuchstaben" accept=".json" style="margin-left: 0.5rem;">
+                        </label>
+                    </div>
+                </div>
+            </div>
+
             <div class="stats" id="stats">
                 <div class="stat-card">
                     <div class="stat-value" id="silbenCount">-</div>
@@ -460,17 +490,81 @@
             try {
                 // Load Silben-Trainer data
                 const silbenResponse = await fetch('data/deutsch-words.json');
+                if (!silbenResponse.ok) throw new Error('Silben fetch failed');
                 silbenData = await silbenResponse.json();
 
                 // Load Buchstaben-Trainer data
                 const buchstabenResponse = await fetch('data/buchstaben-words.json');
+                if (!buchstabenResponse.ok) throw new Error('Buchstaben fetch failed');
                 buchstabenData = await buchstabenResponse.json();
 
                 updateStats();
                 renderTables();
+
+                // Hide warnings on success
+                document.getElementById('corsWarning').style.display = 'none';
+                document.getElementById('manualUpload').style.display = 'none';
             } catch (error) {
                 console.error('Fehler beim Laden der Daten:', error);
-                alert('Fehler beim Laden der Wörterbücher!');
+                // Show CORS warning and manual upload option
+                document.getElementById('corsWarning').style.display = 'block';
+                document.getElementById('manualUpload').style.display = 'block';
+
+                // Initialize manual upload handlers
+                initFileUpload();
+            }
+        }
+
+        function initFileUpload() {
+            document.getElementById('uploadSilben').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        try {
+                            silbenData = JSON.parse(event.target.result);
+                            console.log('✅ Silben-Trainer Daten geladen');
+                            checkBothLoaded();
+                        } catch (err) {
+                            alert('Fehler beim Parsen der Silben-Trainer Datei!');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            });
+
+            document.getElementById('uploadBuchstaben').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        try {
+                            buchstabenData = JSON.parse(event.target.result);
+                            console.log('✅ Buchstaben-Trainer Daten geladen');
+                            checkBothLoaded();
+                        } catch (err) {
+                            alert('Fehler beim Parsen der Buchstaben-Trainer Datei!');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            });
+        }
+
+        function checkBothLoaded() {
+            if (silbenData && buchstabenData) {
+                updateStats();
+                renderTables();
+                document.getElementById('manualUpload').style.display = 'none';
+
+                // Show success message
+                const successMsg = document.createElement('div');
+                successMsg.className = 'alert alert-success';
+                successMsg.innerHTML = '✅ Beide Wörterbücher erfolgreich geladen!';
+                successMsg.style.marginTop = '1rem';
+                document.querySelector('header').appendChild(successMsg);
+
+                setTimeout(() => successMsg.remove(), 3000);
             }
         }
 
