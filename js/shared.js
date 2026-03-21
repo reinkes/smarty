@@ -131,32 +131,6 @@ function createExplosion(container, x, y, color) {
     }
 }
 
-// Add firework fly animation dynamically
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes fireworkFly {
-        0% {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-        }
-        100% {
-            transform: translateY(-300px) scale(0);
-            opacity: 0;
-        }
-    }
-
-    @keyframes particleExplode {
-        0% {
-            transform: translate(0, 0) scale(1);
-            opacity: 1;
-        }
-        100% {
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
 // ============================================
 // PROGRESS TRACKING
 // ============================================

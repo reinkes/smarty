@@ -312,7 +312,7 @@ class MatheApp {
         }
 
         // Get existing task keys to avoid duplicates
-        const existingKeys = this.currentTasks.map(t => t.key);
+        const existingKeys = new Set(this.currentTasks.map(t => t.key));
 
         // Check if recent tasks had +0/-0 (last 3 tasks)
         const recentTasks = this.currentTasks.slice(-3);
@@ -353,7 +353,7 @@ class MatheApp {
         } while (
             attempts < maxAttempts &&
             (
-                existingKeys.includes(key) ||
+                existingKeys.has(key) ||
                 (num2 === 0 && (hasRecentZero || Math.random() < 0.98))
             )
         );
@@ -421,7 +421,7 @@ class MatheApp {
         }
 
         // Get existing task keys to avoid duplicates
-        const existingKeys = this.currentTasks.map(t => t.key);
+        const existingKeys = new Set(this.currentTasks.map(t => t.key));
 
         // Check if recent tasks had +0/-0 (last 3 tasks)
         const recentTasks = this.currentTasks.slice(-3);
@@ -462,7 +462,7 @@ class MatheApp {
         } while (
             attempts < maxAttempts &&
             (
-                existingKeys.includes(key) ||
+                existingKeys.has(key) ||
                 (num2 === 0 && (hasRecentZero || Math.random() < 0.98))
             )
         );
@@ -531,14 +531,14 @@ class MatheApp {
 
             const equation = document.createElement('span');
             equation.className = 'equation';
-            equation.textContent = task.num3 != null ? `${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3} =` : `${task.num1} ${task.operator} ${task.num2} =`;
+            equation.textContent = this.getEquationText(task);
 
             const input = document.createElement('input');
             input.type = 'number';
             input.placeholder = '?';
             input.dataset.result = task.result;
             input.dataset.taskIndex = index;
-            input.setAttribute('aria-label', task.num3 != null ? `Lösung für ${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3}` : `Lösung für ${task.num1} ${task.operator} ${task.num2}`);
+            input.setAttribute('aria-label', this.getAriaLabel(task));
 
             input.addEventListener('input', (e) => this.handleAdaptiveInput(e.target, taskDiv));
             input.addEventListener('focus', this.handleInputFocus.bind(this));
@@ -672,7 +672,7 @@ class MatheApp {
 
         const equation = document.createElement('span');
         equation.className = 'equation';
-        equation.textContent = newTask.num3 != null ? `${newTask.num1} ${newTask.operator} ${newTask.num2} ${newTask.operator} ${newTask.num3} =` : `${newTask.num1} ${newTask.operator} ${newTask.num2} =`;
+        equation.textContent = this.getEquationText(newTask);
 
         const input = document.createElement('input');
         input.type = 'number';
@@ -681,7 +681,7 @@ class MatheApp {
         input.dataset.taskIndex = this.currentTasks.length - 1;
         input.inputMode = 'numeric';
         input.pattern = '[0-9]*';
-        input.setAttribute('aria-label', newTask.num3 != null ? `Lösung für ${newTask.num1} ${newTask.operator} ${newTask.num2} ${newTask.operator} ${newTask.num3}` : `Lösung für ${newTask.num1} ${newTask.operator} ${newTask.num2}`);
+        input.setAttribute('aria-label', this.getAriaLabel(newTask));
 
         input.addEventListener('input', (e) => this.handleAdaptiveInput(e.target, newTaskDiv));
         input.addEventListener('focus', this.handleInputFocus.bind(this));
@@ -748,6 +748,18 @@ class MatheApp {
         });
     }
 
+    getEquationText(task) {
+        return task.num3 != null
+            ? `${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3} =`
+            : `${task.num1} ${task.operator} ${task.num2} =`;
+    }
+
+    getAriaLabel(task) {
+        return task.num3 != null
+            ? `Lösung für ${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3}`
+            : `Lösung für ${task.num1} ${task.operator} ${task.num2}`;
+    }
+
     /**
      * Generate a single task for fixed mode
      */
@@ -788,7 +800,7 @@ class MatheApp {
             key = `${num1}-${num2}`;
         }
 
-        return { num1, num2, num3: num3 || null, operator, result, key };
+        return { num1, num2, num3: num3 ?? null, operator, result, key };
     }
 
     /**
@@ -809,10 +821,10 @@ class MatheApp {
             'add10': 'Addition Zahlenraum 10',
             'add20': 'Addition Zahlenraum 20',
             'sub10': 'Subtraktion Zahlenraum 10',
-            'add': '3-Zahlen Addition bis 20'
+            'add3': '3-Zahlen Addition (bis 20)'
         };
 
-        this.dom.previewTitle.textContent = this.currentOperator === 'add3' ? '3-Zahlen Addition (bis 20)' : (typeNames[this.currentType] || this.currentType);
+        this.dom.previewTitle.textContent = typeNames[this.currentType] || this.currentType;
         this.dom.taskCountDisplay.textContent = `${this.currentTasks.length} Aufgaben`;
 
         this.dom.tasksContainer.innerHTML = '';
@@ -823,13 +835,13 @@ class MatheApp {
 
             const equation = document.createElement('span');
             equation.className = 'equation';
-            equation.textContent = task.num3 != null ? `${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3} =` : `${task.num1} ${task.operator} ${task.num2} =`;
+            equation.textContent = this.getEquationText(task);
 
             const input = document.createElement('input');
             input.type = 'number';
             input.placeholder = '?';
             input.dataset.result = task.result;
-            input.setAttribute('aria-label', task.num3 != null ? `Lösung für ${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3}` : `Lösung für ${task.num1} ${task.operator} ${task.num2}`);
+            input.setAttribute('aria-label', this.getAriaLabel(task));
 
             input.addEventListener('input', (e) => this.handleFixedInput(e.target, taskDiv));
             input.addEventListener('keydown', (e) => this.handleKeyDown(e, this.dom.tasksContainer));
@@ -1062,7 +1074,7 @@ class MatheApp {
             'add10': 'Addition Zahlenraum 10',
             'add20': 'Addition Zahlenraum 20',
             'sub10': 'Subtraktion Zahlenraum 10',
-            'add': '3-Zahlen Addition bis 20'
+            'add3': '3-Zahlen Addition (bis 20)'
         };
 
         // Title
@@ -1072,7 +1084,7 @@ class MatheApp {
 
         doc.setFontSize(12);
         doc.setFont(undefined, 'normal');
-        doc.text(typeNames[this.currentType], 105, 30, { align: 'center' });
+        doc.text(typeNames[this.currentType] || this.currentType, 105, 30, { align: 'center' });
         doc.text('Datum: ' + new Date().toLocaleDateString('de-DE'), 105, 37, { align: 'center' });
 
         // Add name field
@@ -1093,7 +1105,9 @@ class MatheApp {
             // Use standard ASCII characters for operators
             let operator = task.operator === '−' ? '-' : task.operator;
 
-            const equation = task.num3 != null ? task.num1 + ' ' + operator + ' ' + task.num2 + ' ' + operator + ' ' + task.num3 + ' =' : task.num1 + ' ' + operator + ' ' + task.num2 + ' =';
+            const equation = task.num3 != null
+                ? `${task.num1} ${operator} ${task.num2} ${operator} ${task.num3} =`
+                : `${task.num1} ${operator} ${task.num2} =`;
             const answer = '__________';
 
             // Draw equation
@@ -1123,7 +1137,7 @@ class MatheApp {
         });
 
         // Save PDF
-        const fileName = 'Mathe_' + typeNames[this.currentType].replace(/ /g, '_') + '_' + new Date().toISOString().split('T')[0] + '.pdf';
+        const fileName = 'Mathe_' + (typeNames[this.currentType] || this.currentType).replace(/ /g, '_') + '_' + new Date().toISOString().split('T')[0] + '.pdf';
         doc.save(fileName);
     }
 
@@ -1251,82 +1265,49 @@ class MatheApp {
      * Show completion screen with crown count and retry button
      */
     showCompletionScreen(crownsEarned) {
-        // Create wrapper
         const wrapper = document.createElement('div');
-        wrapper.style.cssText = 'text-align: center; padding: 4rem 2rem; animation: fadeIn 1s ease-out; margin-top: 2rem;';
+        wrapper.className = 'completion-screen';
 
-        // Create emoji
         const emoji = document.createElement('div');
+        emoji.className = 'completion-emoji';
         emoji.textContent = '🎉';
-        emoji.style.cssText = 'font-size: 8rem; margin-bottom: 2rem; animation: bounce 1s ease-in-out infinite;';
 
-        // Create heading
         const heading = document.createElement('h2');
+        heading.className = 'completion-heading';
         heading.textContent = 'Geschafft!';
-        heading.style.cssText = 'font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; font-family: "Fredoka", sans-serif;';
 
-        // Create message
         const message = document.createElement('p');
+        message.className = 'completion-message';
         message.textContent = `Alle ${this.currentTasks.length} Aufgaben richtig gelöst! 🌟`;
-        message.style.cssText = 'font-size: 1.3rem; color: var(--text-dark); margin-bottom: 1rem;';
 
         // Create crown display (if not in adaptive mode)
         let crownDisplay = null;
         if (!this.adaptiveMode && this.crownsEarned > 0) {
             crownDisplay = document.createElement('div');
-            crownDisplay.style.cssText = `
-                display: inline-block;
-                background: linear-gradient(135deg, #FFD700, #FFA500);
-                padding: 1rem 2rem;
-                border-radius: 20px;
-                margin-bottom: 2rem;
-                box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-                animation: bounceIn 0.8s ease-out 0.5s both;
-            `;
+            crownDisplay.className = 'completion-crown-display';
 
             const crownIcon = document.createElement('span');
+            crownIcon.className = 'crown-icon';
             crownIcon.textContent = '👑';
-            crownIcon.style.cssText = 'font-size: 2rem; margin-right: 0.5rem;';
 
             const crownText = document.createElement('span');
-            if (crownsEarned > 0) {
-                crownText.textContent = `+${crownsEarned} = ${this.crownsEarned} Kronen!`;
-            } else {
-                crownText.textContent = `${this.crownsEarned} Kronen gesammelt!`;
-            }
-            crownText.style.cssText = 'font-size: 1.5rem; font-weight: 700; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);';
+            crownText.className = 'crown-text';
+            crownText.textContent = crownsEarned > 0
+                ? `+${crownsEarned} = ${this.crownsEarned} Kronen!`
+                : `${this.crownsEarned} Kronen gesammelt!`;
 
             crownDisplay.appendChild(crownIcon);
             crownDisplay.appendChild(crownText);
         }
 
-        // Create restart button
         const restartButton = document.createElement('button');
         restartButton.id = 'restartButton';
+        restartButton.className = 'completion-restart-btn';
         restartButton.textContent = 'Nochmal üben! 🔄';
-        restartButton.style.cssText = `
-            background: linear-gradient(135deg, var(--primary), #FF8DC7);
-            color: white;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
-            transition: all 0.3s ease;
-        `;
 
-        // Add event listeners
         restartButton.addEventListener('click', () => {
             wrapper.remove();
-            this.generateTasks(); // Generate new tasks with same difficulty
-        });
-        restartButton.addEventListener('mouseover', function() {
-            this.style.transform = 'scale(1.05)';
-        });
-        restartButton.addEventListener('mouseout', function() {
-            this.style.transform = 'scale(1)';
+            this.generateTasks();
         });
 
         // Assemble DOM

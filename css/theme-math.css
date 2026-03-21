@@ -154,8 +154,17 @@ button {
     transform: translateY(-5px) rotate(-2deg);
 }
 
+.task-item.correct:hover,
+.task-item.incorrect:hover {
+    transform: translateY(-5px);
+}
+
 .milestone-celebration {
     background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
+}
+
+footer {
+    border-top-color: rgba(255, 107, 157, 0.2);
 }
 
 footer a {
@@ -292,6 +301,75 @@ footer a {
         opacity: 0;
         transform: translate(-50%, -50%) scale(0.8);
     }
+}
+
+/* === Completion Screen === */
+.completion-screen {
+    text-align: center;
+    padding: 4rem 2rem;
+    animation: fadeIn 1s ease-out;
+    margin-top: 2rem;
+}
+
+.completion-emoji {
+    font-size: 8rem;
+    margin-bottom: 2rem;
+    animation: bounce 1s ease-in-out infinite;
+}
+
+.completion-heading {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-family: 'Fredoka', sans-serif;
+}
+
+.completion-message {
+    font-size: 1.3rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.completion-crown-display {
+    display: inline-block;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    padding: 1rem 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    animation: bounceIn 0.8s ease-out 0.5s both;
+}
+
+.completion-crown-display .crown-icon {
+    font-size: 2rem;
+    margin-right: 0.5rem;
+    animation: none;
+}
+
+.completion-crown-display .crown-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.completion-restart-btn {
+    background: linear-gradient(135deg, var(--primary), #FF8DC7);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+    transition: all 0.3s ease;
+    width: auto;
+    margin-top: 0;
+}
+
+.completion-restart-btn:hover {
+    transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
