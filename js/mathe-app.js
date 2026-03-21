@@ -531,14 +531,14 @@ class MatheApp {
 
             const equation = document.createElement('span');
             equation.className = 'equation';
-            equation.textContent = `${task.num1} ${task.operator} ${task.num2} =`;
+            equation.textContent = task.num3 != null ? `${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3} =` : `${task.num1} ${task.operator} ${task.num2} =`;
 
             const input = document.createElement('input');
             input.type = 'number';
             input.placeholder = '?';
             input.dataset.result = task.result;
             input.dataset.taskIndex = index;
-            input.setAttribute('aria-label', `Lösung für ${task.num1} ${task.operator} ${task.num2}`);
+            input.setAttribute('aria-label', task.num3 != null ? `Lösung für ${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3}` : `Lösung für ${task.num1} ${task.operator} ${task.num2}`);
 
             input.addEventListener('input', (e) => this.handleAdaptiveInput(e.target, taskDiv));
             input.addEventListener('focus', this.handleInputFocus.bind(this));
@@ -672,7 +672,7 @@ class MatheApp {
 
         const equation = document.createElement('span');
         equation.className = 'equation';
-        equation.textContent = `${newTask.num1} ${newTask.operator} ${newTask.num2} =`;
+        equation.textContent = newTask.num3 != null ? `${newTask.num1} ${newTask.operator} ${newTask.num2} ${newTask.operator} ${newTask.num3} =` : `${newTask.num1} ${newTask.operator} ${newTask.num2} =`;
 
         const input = document.createElement('input');
         input.type = 'number';
@@ -681,7 +681,7 @@ class MatheApp {
         input.dataset.taskIndex = this.currentTasks.length - 1;
         input.inputMode = 'numeric';
         input.pattern = '[0-9]*';
-        input.setAttribute('aria-label', `Lösung für ${newTask.num1} ${newTask.operator} ${newTask.num2}`);
+        input.setAttribute('aria-label', newTask.num3 != null ? `Lösung für ${newTask.num1} ${newTask.operator} ${newTask.num2} ${newTask.operator} ${newTask.num3}` : `Lösung für ${newTask.num1} ${newTask.operator} ${newTask.num2}`);
 
         input.addEventListener('input', (e) => this.handleAdaptiveInput(e.target, newTaskDiv));
         input.addEventListener('focus', this.handleInputFocus.bind(this));
@@ -752,10 +752,21 @@ class MatheApp {
      * Generate a single task for fixed mode
      */
     generateSingleTask(type, maxValue = null) {
-        let num1, num2, operator, result, key;
+        let num1, num2, num3, operator, result, key;
         const max = maxValue || (type === 'add10' || type === 'sub10' ? 10 : type === 'add20' ? 20 : 50);
 
-        if (this.currentOperator === 'add') {
+        if (this.currentOperator === 'add3') {
+            // 3-number addition, result <= 20
+            const maxResult = 20;
+            do {
+                num1 = Math.floor(Math.random() * (maxResult - 2)) + 1; // 1 to 18
+                num2 = Math.floor(Math.random() * (maxResult - num1 - 1)) + 1; // 1 to remainder-1
+                num3 = Math.floor(Math.random() * (maxResult - num1 - num2)) + 1; // 1 to remainder
+            } while (num1 + num2 + num3 > maxResult || num1 + num2 + num3 < 3);
+            operator = '+';
+            result = num1 + num2 + num3;
+            key = `${num1}+${num2}+${num3}`;
+        } else if (this.currentOperator === 'add') {
             // Addition with dynamic max
             do {
                 num1 = Math.floor(Math.random() * (max + 1));
@@ -777,7 +788,7 @@ class MatheApp {
             key = `${num1}-${num2}`;
         }
 
-        return { num1, num2, operator, result, key };
+        return { num1, num2, num3: num3 || null, operator, result, key };
     }
 
     /**
@@ -797,10 +808,11 @@ class MatheApp {
         const typeNames = {
             'add10': 'Addition Zahlenraum 10',
             'add20': 'Addition Zahlenraum 20',
-            'sub10': 'Subtraktion Zahlenraum 10'
+            'sub10': 'Subtraktion Zahlenraum 10',
+            'add': '3-Zahlen Addition bis 20'
         };
 
-        this.dom.previewTitle.textContent = typeNames[this.currentType];
+        this.dom.previewTitle.textContent = this.currentOperator === 'add3' ? '3-Zahlen Addition (bis 20)' : (typeNames[this.currentType] || this.currentType);
         this.dom.taskCountDisplay.textContent = `${this.currentTasks.length} Aufgaben`;
 
         this.dom.tasksContainer.innerHTML = '';
@@ -811,13 +823,13 @@ class MatheApp {
 
             const equation = document.createElement('span');
             equation.className = 'equation';
-            equation.textContent = `${task.num1} ${task.operator} ${task.num2} =`;
+            equation.textContent = task.num3 != null ? `${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3} =` : `${task.num1} ${task.operator} ${task.num2} =`;
 
             const input = document.createElement('input');
             input.type = 'number';
             input.placeholder = '?';
             input.dataset.result = task.result;
-            input.setAttribute('aria-label', `Lösung für ${task.num1} ${task.operator} ${task.num2}`);
+            input.setAttribute('aria-label', task.num3 != null ? `Lösung für ${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3}` : `Lösung für ${task.num1} ${task.operator} ${task.num2}`);
 
             input.addEventListener('input', (e) => this.handleFixedInput(e.target, taskDiv));
             input.addEventListener('keydown', (e) => this.handleKeyDown(e, this.dom.tasksContainer));
@@ -1049,7 +1061,8 @@ class MatheApp {
         const typeNames = {
             'add10': 'Addition Zahlenraum 10',
             'add20': 'Addition Zahlenraum 20',
-            'sub10': 'Subtraktion Zahlenraum 10'
+            'sub10': 'Subtraktion Zahlenraum 10',
+            'add': '3-Zahlen Addition bis 20'
         };
 
         // Title
@@ -1080,7 +1093,7 @@ class MatheApp {
             // Use standard ASCII characters for operators
             let operator = task.operator === '−' ? '-' : task.operator;
 
-            const equation = task.num1 + ' ' + operator + ' ' + task.num2 + ' =';
+            const equation = task.num3 != null ? task.num1 + ' ' + operator + ' ' + task.num2 + ' ' + operator + ' ' + task.num3 + ' =' : task.num1 + ' ' + operator + ' ' + task.num2 + ' =';
             const answer = '__________';
 
             // Draw equation
