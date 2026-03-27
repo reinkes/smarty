@@ -318,8 +318,10 @@ class MatheApp {
         const recentTasks = this.currentTasks.slice(-3);
         const hasRecentZero = recentTasks.some(t => t.num2 === 0);
 
+        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5);
+
         do {
-            if (this.currentOperator === 'add') {
+            if (useAdd) {
                 // Generate numbers that add up to targetResult
                 if (shouldFocusOnMax && targetResult <= this.maxUnlockedNumber) {
                     num1 = Math.floor(Math.random() * (targetResult + 1));
@@ -427,8 +429,10 @@ class MatheApp {
         const recentTasks = this.currentTasks.slice(-3);
         const hasRecentZero = recentTasks.some(t => t.num2 === 0);
 
+        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5);
+
         do {
-            if (this.currentOperator === 'add') {
+            if (useAdd) {
                 // Generate numbers that add up to targetResult
                 if (shouldFocusOnMax && targetResult <= this.maxUnlockedNumber) {
                     num1 = Math.floor(Math.random() * (targetResult + 1));
@@ -778,7 +782,7 @@ class MatheApp {
             operator = '+';
             result = num1 + num2 + num3;
             key = `${num1}+${num2}+${num3}`;
-        } else if (this.currentOperator === 'add') {
+        } else if (this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5)) {
             // Addition with dynamic max
             do {
                 num1 = Math.floor(Math.random() * (max + 1));
@@ -821,7 +825,8 @@ class MatheApp {
             'add10': 'Addition Zahlenraum 10',
             'add20': 'Addition Zahlenraum 20',
             'sub10': 'Subtraktion Zahlenraum 10',
-            'add3': '3-Zahlen Addition (bis 20)'
+            'add3': '3-Zahlen Addition (bis 20)',
+            'mix': 'Mix (Addition & Subtraktion)'
         };
 
         this.dom.previewTitle.textContent = typeNames[this.currentType] || this.currentType;
@@ -1074,7 +1079,8 @@ class MatheApp {
             'add10': 'Addition Zahlenraum 10',
             'add20': 'Addition Zahlenraum 20',
             'sub10': 'Subtraktion Zahlenraum 10',
-            'add3': '3-Zahlen Addition (bis 20)'
+            'add3': '3-Zahlen Addition (bis 20)',
+            'mix': 'Mix (Addition & Subtraktion)'
         };
 
         // Title
