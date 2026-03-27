@@ -6,6 +6,20 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ---
 
+## [2.5.0] - 2026-03-27
+
+### 🔢 Mathe-Aufgaben Generator
+
+#### Added
+- **3-Zahlen Addition** (`add3`): Drei Zahlen addieren, Ergebnis bis 20
+- **Mix-Modus** (`mix`): Zufällig Addition und Subtraktion gemischt, Zahlenraum bis 20
+
+#### Fixed
+- Mix-Modus generierte nur Subtraktionsaufgaben (zufällige Operator-Wahl nun korrekt vor der Aufgabengenerierung bestimmt)
+- Titelzeile im Mix-Modus zeigte fälschlicherweise "Addition Zahlenraum 20" statt "Mix (Addition & Subtraktion)"
+
+---
+
 ## [2.4.0] - 2025-12-29
 
 ### 🔤 Buchstaben-Trainer App

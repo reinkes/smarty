@@ -196,8 +196,10 @@ class MatheApp {
                 return;
             }
 
-            // Fixed mode - use level to determine range
-            const range = this.getMathRangeFromLevel(level);
+            // Fixed mode - use level to determine range (mix mode always uses max 20)
+            const range = this.currentOperator === 'mix'
+                ? { max: 20, type: 'mix' }
+                : this.getMathRangeFromLevel(level);
             this.adaptiveMode = false;
             this.currentType = range.type;
             this.currentTasks = [];
@@ -771,6 +773,8 @@ class MatheApp {
         let num1, num2, num3, operator, result, key;
         const max = maxValue || (type === 'add10' || type === 'sub10' ? 10 : type === 'add20' ? 20 : 50);
 
+        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5);
+
         if (this.currentOperator === 'add3') {
             // 3-number addition, result <= 20
             const maxResult = 20;
@@ -782,7 +786,7 @@ class MatheApp {
             operator = '+';
             result = num1 + num2 + num3;
             key = `${num1}+${num2}+${num3}`;
-        } else if (this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5)) {
+        } else if (useAdd) {
             // Addition with dynamic max
             do {
                 num1 = Math.floor(Math.random() * (max + 1));

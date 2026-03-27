@@ -4,7 +4,7 @@ Interaktive Web-Anwendungen für Grundschulkinder zum Üben von **Mathematik**, 
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Browser](https://img.shields.io/badge/browser-Chrome%20%7C%20Firefox%20%7C%20Safari%20%7C%20Edge-green.svg)]()
-[![Version](https://img.shields.io/badge/version-2.4.0-brightgreen.svg)]()
+[![Version](https://img.shields.io/badge/version-2.5.0-brightgreen.svg)]()
 
 ---
 
@@ -13,8 +13,13 @@ Interaktive Web-Anwendungen für Grundschulkinder zum Üben von **Mathematik**, 
 ### 🔢 Mathe-Aufgaben Generator
 Interaktive Rechenübungen mit automatischer Korrektur und Motivations-Features.
 
+**Aufgabentypen:**
+- ➕ **Addition** (Zahlenraum abhängig von Schwierigkeit, bis 50)
+- ➖ **Subtraktion** (Zahlenraum abhängig von Schwierigkeit, bis 50)
+- ➕➖ **Mix** - zufällig Addition & Subtraktion gemischt (Zahlenraum bis 20)
+- ➕➕ **3-Zahlen Addition** - drei Zahlen addieren (Zahlenraum bis 20)
+
 **Features:**
-- ✅ Addition & Subtraktion (Zahlenraum 1-50)
 - 🚀 **Adaptiver Trainingsmodus** - passt sich automatisch an
 - 📊 10 Schwierigkeitsstufen (Level 1-10 via Slider)
 - 👑 **Kronen-Belohnungssystem** - verdiene Kronen basierend auf Schwierigkeit
