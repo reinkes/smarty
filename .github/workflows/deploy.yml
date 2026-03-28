@@ -165,11 +165,8 @@ jobs:
         # Create deployment directory
         mkdir -p deploy/beta
 
-        # Copy HTML files
-        cp mathe-aufgaben.html deploy/beta/
-        cp deutsch-silben.html deploy/beta/
-        cp deutsch-buchstaben.html deploy/beta/
-        cp kinder-sudoku.html deploy/beta/
+        # Copy all HTML files
+        cp *.html deploy/beta/
 
         # Copy CSS directory
         if [ -d css ]; then
@@ -309,11 +306,8 @@ jobs:
         # Create deployment directory
         mkdir -p deploy
 
-        # Copy HTML files
-        cp mathe-aufgaben.html deploy/
-        cp deutsch-silben.html deploy/
-        cp deutsch-buchstaben.html deploy/
-        cp kinder-sudoku.html deploy/
+        # Copy all HTML files
+        cp *.html deploy/
 
         # Copy CSS directory
         if [ -d css ]; then
