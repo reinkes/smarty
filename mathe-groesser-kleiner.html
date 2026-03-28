@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none';">
+    <title>Größer / Kleiner – Smarty Learn</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/theme-math.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
+    <style>
+        .level-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 18px;
+            background: #E8E8E8;
+            border-radius: 9px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--math-primary), var(--math-secondary));
+            border-radius: 9px;
+            transition: width 0.4s ease-out;
+        }
+
+        .progress-label {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        .numbers-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3rem;
+            margin: 2.5rem 0;
+        }
+
+        .number-box {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #FFF9F0, #FFE5F1);
+            border: 3px solid var(--math-secondary);
+            border-radius: 20px;
+            width: 110px;
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255,107,157,0.15);
+        }
+
+        .question-mark {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #BBBBBB;
+        }
+
+        .comparison-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-comparison {
+            min-width: 90px;
+            min-height: 90px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.2rem;
+            padding: 0.5rem 1rem;
+            width: auto;
+            margin-top: 0;
+        }
+
+        .btn-comparison:hover:not(:disabled) {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        }
+
+        .btn-comparison:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .btn-comparison:disabled {
+            opacity: 0.6;
+            cursor: default;
+            transform: none;
+        }
+
+        .btn-comparison.correct {
+            box-shadow: 0 0 0 4px #27AE60, 0 6px 18px rgba(39,174,96,0.3);
+        }
+
+        .btn-comparison.incorrect {
+            box-shadow: 0 0 0 4px #E74C3C, 0 6px 18px rgba(231,76,60,0.3);
+        }
+
+        #btnLess {
+            background: linear-gradient(135deg, #5DADE2, #3498DB);
+        }
+
+        #btnEqual {
+            background: linear-gradient(135deg, #9B59B6, #8E44AD);
+        }
+
+        #btnGreater {
+            background: linear-gradient(135deg, #FF6B9D, #E74C3C);
+        }
+
+        .btn-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .feedback {
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            min-height: 2.4rem;
+            transition: color 0.2s;
+        }
+
+        .feedback.correct {
+            color: #27AE60;
+        }
+
+        .feedback.incorrect {
+            color: #E74C3C;
+        }
+
+        .instruction {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .completion-screen {
+            display: none;
+            text-align: center;
+            padding: 3rem 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .completion-emoji {
+            font-size: 6rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .completion-heading {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5rem;
+            color: var(--math-primary);
+            margin-bottom: 1rem;
+        }
+
+        .completion-crowns {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, var(--math-primary), #FF8CB4);
+            color: white;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255,107,157,0.4);
+            transition: transform 0.2s ease;
+            display: inline-block;
+            width: auto;
+            margin-top: 1rem;
+        }
+
+        .btn-restart:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 480px) {
+            .number-box {
+                width: 85px;
+                height: 85px;
+                font-size: 3.8rem;
+            }
+
+            .numbers-display {
+                gap: 1.5rem;
+            }
+
+            .btn-comparison {
+                min-width: 80px;
+                min-height: 80px;
+                font-size: 1.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
+
+    <div class="crown-counter" id="crownCounter" style="display: none;">
+        <span class="crown-icon">👑</span>
+        <span class="crown-count" id="crownCount">0</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>⚖️ Größer / Kleiner</h1>
+            <p class="subtitle">Wähle das richtige Zeichen!</p>
+        </header>
+
+        <div class="card">
+            <div style="text-align: center;">
+                <span class="level-badge" id="levelDisplay">Level 1</span>
+            </div>
+
+            <div class="progress-row">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-label" id="progressText">0 / 20</span>
+            </div>
+
+            <div id="taskArea">
+                <p class="instruction">Welches Zeichen passt?</p>
+
+                <div class="numbers-display">
+                    <div class="number-box" id="num1">?</div>
+                    <div class="question-mark">?</div>
+                    <div class="number-box" id="num2">?</div>
+                </div>
+
+                <div class="comparison-buttons">
+                    <button class="btn-comparison" id="btnLess" aria-label="Kleiner als">
+                        <span>&lt;</span>
+                        <span class="btn-label">Kleiner</span>
+                    </button>
+                    <button class="btn-comparison" id="btnEqual" aria-label="Gleich">
+                        <span>=</span>
+                        <span class="btn-label">Gleich</span>
+                    </button>
+                    <button class="btn-comparison" id="btnGreater" aria-label="Größer als">
+                        <span>&gt;</span>
+                        <span class="btn-label">Größer</span>
+                    </button>
+                </div>
+
+                <div class="feedback" id="feedback"></div>
+            </div>
+
+            <div class="completion-screen" id="completionScreen">
+                <span class="completion-emoji">🎉</span>
+                <h2 class="completion-heading">Super gemacht!</h2>
+                <p style="font-size: 1.2rem; color: #666; margin-bottom: 0.5rem;">Du hast alle 20 Aufgaben geschafft!</p>
+                <div class="completion-crowns" id="completionCrowns">👑 0 Kronen</div>
+                <br>
+                <button class="btn-restart" id="restartBtn">🔄 Nochmal spielen</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="milestone-celebration" id="milestoneCelebration"></div>
+
+    <script src="js/audio-manager.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/groesser-kleiner-app.js"></script>
+
+    <footer>
+        <p>© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p>
+            <a href="impressum.html">Impressum</a> |
+            <a href="nutzungsbedingungen.html">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html">Datenschutz</a>
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.7;">
+            Die unerlaubte Vervielfältigung oder Verbreitung dieser Software ist untersagt.
+        </p>
+    </footer>
+</body>
+</html>

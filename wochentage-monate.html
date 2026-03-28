@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
+    <title>Wochentage & Monate</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/theme-german.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
+    <style>
+        .wt-task {
+            text-align: center;
+            padding: 2rem 1rem;
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        .wt-question {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--german-primary);
+            margin-bottom: 2.5rem;
+            line-height: 1.4;
+            white-space: pre-line;
+        }
+
+        .wt-options {
+            display: flex;
+            justify-content: center;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .answer-btn {
+            padding: 1.25rem 2rem;
+            border: 3px solid var(--german-secondary);
+            border-radius: 16px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            background: white;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+            margin-top: 0;
+        }
+
+        .answer-btn:hover:not(:disabled) {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+            border-color: var(--german-primary);
+        }
+
+        .answer-btn.correct {
+            background: linear-gradient(135deg, #D5F4E6 0%, #ABEBC6 100%);
+            border-color: var(--success);
+            animation: celebrate 0.6s ease-in-out;
+        }
+
+        .answer-btn.incorrect {
+            background: linear-gradient(135deg, #FADBD8 0%, #F5B7B1 100%);
+            border-color: var(--german-tertiary);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .wt-completion {
+            text-align: center;
+            padding: 4rem 2rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .wt-completion-emoji {
+            font-size: 8rem;
+            margin-bottom: 1.5rem;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .wt-completion h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5rem;
+            color: var(--german-primary);
+            margin-bottom: 1rem;
+        }
+
+        .wt-completion p {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .wt-crown-reward {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            padding: 1rem 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            animation: bounceIn 0.8s ease-out 0.5s both;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .wt-crown-reward span:first-child {
+            font-size: 2rem;
+        }
+
+        .wt-restart-btn {
+            background: linear-gradient(135deg, var(--german-primary), #C39BD3);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+            transition: all 0.3s ease;
+            display: inline-block;
+            width: auto;
+        }
+
+        .wt-restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .task-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            min-height: 280px;
+        }
+
+        @media (max-width: 768px) {
+            .wt-question {
+                font-size: 1.6rem;
+            }
+
+            .answer-btn {
+                font-size: 1.3rem;
+                padding: 1rem 1.5rem;
+                min-width: 110px;
+            }
+
+            .wt-completion-emoji {
+                font-size: 6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wt-question {
+                font-size: 1.3rem;
+            }
+
+            .answer-btn {
+                font-size: 1.1rem;
+                padding: 0.9rem 1.2rem;
+                min-width: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
+
+    <div class="crown-counter" id="crownCounter" style="display: none;">
+        <span class="crown-icon">👑</span>
+        <span class="crown-count" id="crownCount">0</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>📅 Wochentage & Monate</h1>
+            <p class="subtitle">Tage und Monate kennenlernen!</p>
+        </header>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="difficultySlider">
+                    🎯 Schwierigkeitsgrad:
+                    <span class="slider-value" id="difficultyValue">Level 1 (Einfach) 😊</span>
+                </label>
+                <div class="slider-container">
+                    <input type="range" id="difficultySlider" min="1" max="10" value="1" step="1">
+                    <div class="slider-labels">
+                        <span>😊 Wochentage</span>
+                        <span>🤔 Monate</span>
+                        <span>🔥 Mix</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="adaptiveMode">
+                    <label for="adaptiveMode" class="checkbox-label">
+                        🚀 Automatisch anpassen (adaptiv)
+                    </label>
+                </div>
+                <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                    Wenn aktiviert, passt sich die Schwierigkeit automatisch an deine Leistung an!
+                </p>
+            </div>
+
+            <button id="startButton" class="btn-start">
+                ✨ Training starten
+            </button>
+        </div>
+
+        <div class="card preview" id="preview">
+            <div class="preview-header">
+                <h2 class="preview-title" id="previewTitle">Wochentage-Training</h2>
+                <span class="task-count" id="taskCountDisplay">0 / 20</span>
+            </div>
+            <div class="task-container" id="taskContainer"></div>
+        </div>
+    </div>
+
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="milestone-celebration" id="milestoneCelebration"></div>
+
+    <script src="js/audio-manager.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/wochentage-app.js"></script>
+
+    <footer style="text-align: center; padding: 2rem 1rem; margin-top: 3rem; border-top: 2px solid rgba(155,89,182,0.2); font-size: 0.9rem; opacity: 0.8;">
+        <p style="margin-bottom: 0.75rem;">© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p style="font-size: 0.85rem;">
+            <a href="impressum.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Impressum</a> |
+            <a href="nutzungsbedingungen.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html" style="color: var(--primary); text-decoration: none; margin: 0 0.5rem;">Datenschutz</a>
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.7;">
+            Die unerlaubte Vervielfältigung oder Verbreitung dieser Software ist untersagt.
+        </p>
+    </footer>
+</body>
+</html>

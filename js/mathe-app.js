@@ -196,10 +196,16 @@ class MatheApp {
                 return;
             }
 
-            // Fixed mode - use level to determine range (mix mode always uses max 20)
-            const range = this.currentOperator === 'mix'
-                ? { max: 20, type: 'mix' }
-                : this.getMathRangeFromLevel(level);
+            // Fixed mode - use level to determine range
+            let range;
+            if (this.currentOperator === 'mix') {
+                range = { max: 20, type: 'mix' };
+            } else if (this.currentOperator === 'ergaenzen') {
+                const ergMax = level <= 3 ? 5 : level <= 6 ? 7 : 10;
+                range = { max: ergMax, type: 'ergaenzen' };
+            } else {
+                range = this.getMathRangeFromLevel(level);
+            }
             this.adaptiveMode = false;
             this.currentType = range.type;
             this.currentTasks = [];
@@ -236,8 +242,8 @@ class MatheApp {
             const range = this.getMathRangeFromLevel(level);
 
             this.adaptiveMode = true;
-            this.adaptiveMaxResult = range.max;
-            this.adaptiveLevel = Math.min(Math.floor(range.max / 2), range.max);
+            this.adaptiveMaxResult = this.currentOperator === 'ergaenzen' ? 10 : range.max;
+            this.adaptiveLevel = Math.min(Math.floor(this.adaptiveMaxResult / 2), this.adaptiveMaxResult);
             this.adaptiveCorrectStreak = 0;
             this.adaptiveIncorrectCount = 0;
             this.adaptiveTasksShown = 0;
@@ -311,6 +317,22 @@ class MatheApp {
         } else {
             // At starting level (10), generate any result from 1-10
             targetResult = Math.floor(Math.random() * this.maxUnlockedNumber) + 1;
+        }
+
+        if (this.currentOperator === 'ergaenzen') {
+            const ergMax = Math.min(effectiveMax, 10);
+            const useAddVariant = Math.random() < 0.5;
+            let a, missing, total;
+            do {
+                total = Math.floor(Math.random() * ergMax) + 1;
+                a = Math.floor(Math.random() * total);
+                missing = total - a;
+            } while (missing < 1);
+            if (useAddVariant) {
+                return { num1: a, num2: total, num3: null, operator: '+', result: missing, key: `erg+${a}+${missing}`, level: effectiveMax, ergaenzen: true };
+            } else {
+                return { num1: total, num2: a, num3: null, operator: '−', result: missing, key: `erg-${total}-${a}`, level: effectiveMax };
+            }
         }
 
         // Get existing task keys to avoid duplicates
@@ -422,6 +444,22 @@ class MatheApp {
         } else {
             // At starting level (10), generate any result from 1-10
             targetResult = Math.floor(Math.random() * this.maxUnlockedNumber) + 1;
+        }
+
+        if (this.currentOperator === 'ergaenzen') {
+            const ergMax = Math.min(effectiveMax, 10);
+            const useAddVariant = Math.random() < 0.5;
+            let a, missing, total;
+            do {
+                total = Math.floor(Math.random() * ergMax) + 1;
+                a = Math.floor(Math.random() * total);
+                missing = total - a;
+            } while (missing < 1);
+            if (useAddVariant) {
+                return { num1: a, num2: total, num3: null, operator: '+', result: missing, key: `erg+${a}+${missing}`, level: effectiveMax, ergaenzen: true };
+            } else {
+                return { num1: total, num2: a, num3: null, operator: '−', result: missing, key: `erg-${total}-${a}`, level: effectiveMax };
+            }
         }
 
         // Get existing task keys to avoid duplicates
@@ -552,6 +590,15 @@ class MatheApp {
 
             taskDiv.appendChild(equation);
             taskDiv.appendChild(input);
+
+            const suffix = this.getEquationSuffix(task);
+            if (suffix) {
+                const suffixSpan = document.createElement('span');
+                suffixSpan.className = 'equation';
+                suffixSpan.textContent = suffix;
+                taskDiv.appendChild(suffixSpan);
+            }
+
             this.dom.tasksContainer.appendChild(taskDiv);
         });
 
@@ -696,6 +743,14 @@ class MatheApp {
         newTaskDiv.appendChild(equation);
         newTaskDiv.appendChild(input);
 
+        const newSuffix = this.getEquationSuffix(newTask);
+        if (newSuffix) {
+            const newSuffixSpan = document.createElement('span');
+            newSuffixSpan.className = 'equation';
+            newSuffixSpan.textContent = newSuffix;
+            newTaskDiv.appendChild(newSuffixSpan);
+        }
+
         // Add to bottom
         this.dom.tasksContainer.appendChild(newTaskDiv);
 
@@ -755,12 +810,25 @@ class MatheApp {
     }
 
     getEquationText(task) {
+        if (task.ergaenzen) {
+            return `${task.num1} +`;
+        }
         return task.num3 != null
             ? `${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3} =`
             : `${task.num1} ${task.operator} ${task.num2} =`;
     }
 
+    getEquationSuffix(task) {
+        if (task.ergaenzen) {
+            return `= ${task.num2}`;
+        }
+        return '';
+    }
+
     getAriaLabel(task) {
+        if (task.ergaenzen) {
+            return `Ergänze: ${task.num1} plus wie viel ergibt ${task.num2}`;
+        }
         return task.num3 != null
             ? `Lösung für ${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3}`
             : `Lösung für ${task.num1} ${task.operator} ${task.num2}`;
@@ -775,7 +843,30 @@ class MatheApp {
 
         const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5);
 
-        if (this.currentOperator === 'add3') {
+        if (this.currentOperator === 'ergaenzen') {
+            const useAddVariant = Math.random() < 0.5;
+            let a, missing, total;
+            do {
+                total = Math.floor(Math.random() * max) + 1;
+                a = Math.floor(Math.random() * total);
+                missing = total - a;
+            } while (missing < 1 || missing > 10 || total > max);
+
+            if (useAddVariant) {
+                num1 = a;
+                num2 = total;
+                result = missing;
+                key = `erg+${a}+${missing}`;
+                return { num1, num2, num3: null, operator: '+', result, key, ergaenzen: true };
+            } else {
+                num1 = total;
+                num2 = a;
+                result = missing;
+                operator = '−';
+                key = `erg-${total}-${a}`;
+                return { num1, num2, num3: null, operator, result, key };
+            }
+        } else if (this.currentOperator === 'add3') {
             // 3-number addition, result <= 20
             const maxResult = 20;
             do {
@@ -830,7 +921,8 @@ class MatheApp {
             'add20': 'Addition Zahlenraum 20',
             'sub10': 'Subtraktion Zahlenraum 10',
             'add3': '3-Zahlen Addition (bis 20)',
-            'mix': 'Mix (Addition & Subtraktion)'
+            'mix': 'Mix (Addition & Subtraktion)',
+            'ergaenzen': 'Ergänzen bis 10'
         };
 
         this.dom.previewTitle.textContent = typeNames[this.currentType] || this.currentType;
@@ -857,6 +949,15 @@ class MatheApp {
 
             taskDiv.appendChild(equation);
             taskDiv.appendChild(input);
+
+            const suffix = this.getEquationSuffix(task);
+            if (suffix) {
+                const suffixSpan = document.createElement('span');
+                suffixSpan.className = 'equation';
+                suffixSpan.textContent = suffix;
+                taskDiv.appendChild(suffixSpan);
+            }
+
             this.dom.tasksContainer.appendChild(taskDiv);
         });
 
@@ -1084,7 +1185,8 @@ class MatheApp {
             'add20': 'Addition Zahlenraum 20',
             'sub10': 'Subtraktion Zahlenraum 10',
             'add3': '3-Zahlen Addition (bis 20)',
-            'mix': 'Mix (Addition & Subtraktion)'
+            'mix': 'Mix (Addition & Subtraktion)',
+            'ergaenzen': 'Ergänzen bis 10'
         };
 
         // Title
@@ -1115,15 +1217,21 @@ class MatheApp {
             // Use standard ASCII characters for operators
             let operator = task.operator === '−' ? '-' : task.operator;
 
-            const equation = task.num3 != null
-                ? `${task.num1} ${operator} ${task.num2} ${operator} ${task.num3} =`
-                : `${task.num1} ${operator} ${task.num2} =`;
-            const answer = '__________';
+            let equation, answer;
+            if (task.ergaenzen) {
+                equation = `${task.num1} + _____ = ${task.num2}`;
+                answer = '';
+            } else {
+                equation = task.num3 != null
+                    ? `${task.num1} ${operator} ${task.num2} ${operator} ${task.num3} =`
+                    : `${task.num1} ${operator} ${task.num2} =`;
+                answer = '__________';
+            }
 
             // Draw equation
             doc.text(equation, x, y);
             // Draw answer line
-            doc.text(answer, x + 28, y);
+            if (answer) doc.text(answer, x + 28, y);
 
             x += columnWidth;
             if ((index + 1) % tasksPerRow === 0) {
