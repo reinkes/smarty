@@ -170,7 +170,7 @@ class WochentageApp {
 
     generateTask() {
         const list = this.getActiveList();
-        const taskTypes = ['nach', 'vor', 'fehlt', 'vergleich'];
+        const taskTypes = ['nach', 'vor', 'fehlt'];
         const type = taskTypes[Math.floor(Math.random() * taskTypes.length)];
         const name = this.getListName(list);
         const id = this.taskIdCounter++;
@@ -203,16 +203,6 @@ class WochentageApp {
             return { id, type, question: `Was fehlt dazwischen?`, correct, options, list, strip: { contextIdx: null, answerIdx: idx, showNeighbors: [idx - 1, idx + 1] } };
         }
 
-        const idxA = Math.floor(Math.random() * list.length);
-        let idxB = Math.floor(Math.random() * list.length);
-        while (idxB === idxA) {
-            idxB = Math.floor(Math.random() * list.length);
-        }
-        const itemA = list[idxA];
-        const itemB = list[idxB];
-        const correct = idxA < idxB ? 'Davor' : 'Danach';
-        const options = ['Davor', 'Danach'];
-        return { id, type: 'vergleich', question: `Ist ${itemA} vor oder nach ${itemB}?`, correct, options, list, strip: { contextIdx: idxA, compareIdx: idxB } };
     }
 
     getWrongOptions(list, correct, count) {
