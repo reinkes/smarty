@@ -6,6 +6,10 @@ class WochentageApp {
 
     static WOCHENTAGE = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
     static MONATE = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+    static WOCHENTAGE_EMOJIS = ['🌙', '📚', '⭐', '⛈️', '🎉', '🎮', '☀️'];
+    static MONATE_EMOJIS = ['❄️', '💝', '🌱', '🌧️', '🌸', '☀️', '🏖️', '🌻', '🍂', '🎃', '🍁', '🎄'];
+    static WOCHENTAGE_SHORT = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+    static MONATE_SHORT = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
 
     constructor() {
         this.level = 1;
@@ -149,6 +153,21 @@ class WochentageApp {
         return list === WochentageApp.WOCHENTAGE ? 'Wochentage' : 'Monate';
     }
 
+    getEmoji(list, idx) {
+        const emojis = list === WochentageApp.WOCHENTAGE ? WochentageApp.WOCHENTAGE_EMOJIS : WochentageApp.MONATE_EMOJIS;
+        return emojis[idx] ?? '';
+    }
+
+    getEmojiForItem(list, item) {
+        const idx = list.indexOf(item);
+        return idx >= 0 ? this.getEmoji(list, idx) : '';
+    }
+
+    getShort(list, idx) {
+        const shorts = list === WochentageApp.WOCHENTAGE ? WochentageApp.WOCHENTAGE_SHORT : WochentageApp.MONATE_SHORT;
+        return shorts[idx] ?? list[idx];
+    }
+
     generateTask() {
         const list = this.getActiveList();
         const taskTypes = ['nach', 'vor', 'fehlt', 'vergleich'];
@@ -162,7 +181,7 @@ class WochentageApp {
             const correct = list[idx + 1];
             const wrong = this.getWrongOptions(list, correct, 2);
             const options = this.shuffle([correct, ...wrong]);
-            return { id, type, question: `Was kommt nach ${item}?`, correct, options, list };
+            return { id, type, question: `Was kommt nach ${item}?`, correct, options, list, strip: { contextIdx: idx, answerIdx: idx + 1 } };
         }
 
         if (type === 'vor') {
@@ -171,7 +190,7 @@ class WochentageApp {
             const correct = list[idx - 1];
             const wrong = this.getWrongOptions(list, correct, 2);
             const options = this.shuffle([correct, ...wrong]);
-            return { id, type, question: `Was kommt vor ${item}?`, correct, options, list };
+            return { id, type, question: `Was kommt vor ${item}?`, correct, options, list, strip: { contextIdx: idx, answerIdx: idx - 1 } };
         }
 
         if (type === 'fehlt') {
@@ -181,7 +200,7 @@ class WochentageApp {
             const after = list[idx + 1];
             const wrong = this.getWrongOptions(list, correct, 2);
             const options = this.shuffle([correct, ...wrong]);
-            return { id, type, question: `Welcher ${name} fehlt?\n${before} → ___ → ${after}`, correct, options, list };
+            return { id, type, question: `Was fehlt dazwischen?`, correct, options, list, strip: { contextIdx: null, answerIdx: idx, showNeighbors: [idx - 1, idx + 1] } };
         }
 
         const idxA = Math.floor(Math.random() * list.length);
@@ -193,7 +212,7 @@ class WochentageApp {
         const itemB = list[idxB];
         const correct = idxA < idxB ? 'Davor' : 'Danach';
         const options = ['Davor', 'Danach'];
-        return { id, type: 'vergleich', question: `Ist ${itemA} vor oder nach ${itemB}?`, correct, options, list };
+        return { id, type: 'vergleich', question: `Ist ${itemA} vor oder nach ${itemB}?`, correct, options, list, strip: { contextIdx: idxA, compareIdx: idxB } };
     }
 
     getWrongOptions(list, correct, count) {
@@ -234,10 +253,46 @@ class WochentageApp {
         this.renderTask(this.currentTaskData);
     }
 
+    renderSequenceStrip(task) {
+        const { list, strip } = task;
+        const stripEl = document.createElement('div');
+        stripEl.className = 'wt-strip';
+
+        list.forEach((item, idx) => {
+            const cell = document.createElement('div');
+            cell.className = 'wt-strip-cell';
+
+            const isAnswer = idx === strip.answerIdx;
+            const isContext = idx === strip.contextIdx || idx === strip.compareIdx;
+            const isNeighbor = strip.showNeighbors && strip.showNeighbors.includes(idx);
+
+            if (isAnswer) cell.classList.add('wt-strip-answer');
+            else if (isContext) cell.classList.add('wt-strip-context');
+            else if (isNeighbor) cell.classList.add('wt-strip-neighbor');
+            else cell.classList.add('wt-strip-dim');
+
+            const emojiSpan = document.createElement('div');
+            emojiSpan.className = 'wt-strip-emoji';
+            emojiSpan.textContent = isAnswer ? '❓' : this.getEmoji(list, idx);
+
+            const labelSpan = document.createElement('div');
+            labelSpan.className = 'wt-strip-label';
+            labelSpan.textContent = this.getShort(list, idx);
+
+            cell.appendChild(emojiSpan);
+            cell.appendChild(labelSpan);
+            stripEl.appendChild(cell);
+        });
+
+        return stripEl;
+    }
+
     renderTask(task) {
         const wrapper = document.createElement('div');
         wrapper.className = 'wt-task';
         wrapper.dataset.taskId = task.id;
+
+        wrapper.appendChild(this.renderSequenceStrip(task));
 
         const questionEl = document.createElement('div');
         questionEl.className = 'wt-question';
@@ -249,8 +304,21 @@ class WochentageApp {
         task.options.forEach(option => {
             const btn = document.createElement('button');
             btn.className = 'answer-btn';
-            btn.textContent = option;
             btn.dataset.value = option;
+
+            const emoji = this.getEmojiForItem(task.list, option);
+            if (emoji) {
+                const emojiEl = document.createElement('span');
+                emojiEl.className = 'btn-emoji';
+                emojiEl.textContent = emoji;
+                btn.appendChild(emojiEl);
+                const textEl = document.createElement('span');
+                textEl.textContent = option;
+                btn.appendChild(textEl);
+            } else {
+                btn.textContent = option;
+            }
+
             optionsEl.appendChild(btn);
         });
 

@@ -16,8 +16,83 @@
     <style>
         .wt-task {
             text-align: center;
-            padding: 2rem 1rem;
+            padding: 1.5rem 1rem 2rem;
             animation: bounceIn 0.5s ease-out;
+            width: 100%;
+        }
+
+        .wt-strip {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1.75rem;
+            padding: 0.75rem;
+            background: rgba(52, 152, 219, 0.06);
+            border-radius: 16px;
+        }
+
+        .wt-strip-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+            padding: 0.4rem 0.5rem;
+            border-radius: 10px;
+            min-width: 44px;
+            transition: transform 0.2s;
+        }
+
+        .wt-strip-emoji {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+
+        .wt-strip-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .wt-strip-context {
+            background: linear-gradient(135deg, #3498DB22, #9B59B622);
+            border: 2px solid #3498DB;
+            transform: scale(1.12);
+        }
+
+        .wt-strip-context .wt-strip-label { color: #2471A3; }
+
+        .wt-strip-neighbor {
+            background: rgba(52,152,219,0.1);
+            border: 2px solid transparent;
+        }
+
+        .wt-strip-neighbor .wt-strip-label { color: var(--text-dark); }
+
+        .wt-strip-answer {
+            background: linear-gradient(135deg, #F9E79F, #F8C471);
+            border: 2px dashed #E67E22;
+            transform: scale(1.15);
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+
+        .wt-strip-answer .wt-strip-label { color: #935116; }
+
+        .wt-strip-dim {
+            opacity: 0.35;
+        }
+
+        .wt-strip-dim .wt-strip-label { color: #888; }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1.15); }
+            50% { transform: scale(1.22); }
+        }
+
+        .btn-emoji {
+            display: block;
+            font-size: 1.8rem;
+            margin-bottom: 0.2rem;
         }
 
         .wt-question {
@@ -38,18 +113,20 @@
         }
 
         .answer-btn {
-            padding: 1.25rem 2rem;
+            padding: 1rem 1.5rem;
             border: 3px solid var(--german-secondary);
             border-radius: 16px;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: 700;
             font-family: 'Fredoka', sans-serif;
             background: white;
             color: var(--text-dark);
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 140px;
-            margin-top: 0;
+            min-width: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .answer-btn:hover:not(:disabled) {
