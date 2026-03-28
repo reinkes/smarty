@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
+    <title>Uhr lesen – Smarty Learn</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/theme-clock.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
+    <style>
+        /* ---- Clock task layout ---- */
+        .clock-task {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            width: 100%;
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        .clock-question {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--clock-primary);
+            text-align: center;
+        }
+
+        /* ---- Analog clock face ---- */
+        .clock-face {
+            width: 220px;
+            height: 220px;
+            filter: drop-shadow(0 6px 18px rgba(41, 128, 185, 0.25));
+            flex-shrink: 0;
+        }
+
+        .clock-face svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ---- Answer buttons (2x2 grid) ---- */
+        .clock-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.9rem;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .clock-answer-btn {
+            padding: 1rem 0.75rem;
+            border: 3px solid var(--clock-secondary);
+            border-radius: 16px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            background: white;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .clock-answer-btn:hover:not(:disabled) {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(41, 128, 185, 0.25);
+            border-color: var(--clock-primary);
+        }
+
+        .clock-answer-btn.correct {
+            background: linear-gradient(135deg, #D5F4E6 0%, #ABEBC6 100%);
+            border-color: var(--success);
+            animation: celebrate 0.6s ease-in-out;
+        }
+
+        .clock-answer-btn.incorrect {
+            background: linear-gradient(135deg, #FADBD8 0%, #F5B7B1 100%);
+            border-color: var(--clock-tertiary);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* ---- Completion screen ---- */
+        .clock-completion {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .clock-completion-emoji {
+            font-size: 7rem;
+            margin-bottom: 1.25rem;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .clock-completion h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5rem;
+            color: var(--clock-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .clock-completion p {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .clock-crown-reward {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            padding: 0.9rem 1.75rem;
+            border-radius: 20px;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            animation: bounceIn 0.8s ease-out 0.5s both;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .clock-crown-reward span:first-child {
+            font-size: 2rem;
+        }
+
+        .clock-restart-btn {
+            background: linear-gradient(135deg, var(--clock-primary), #5DADE2);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(41, 128, 185, 0.4);
+            transition: all 0.3s ease;
+            display: inline-block;
+            width: auto;
+            margin-top: 0;
+        }
+
+        .clock-restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .task-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            min-height: 350px;
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 480px) {
+            .clock-face {
+                width: 180px;
+                height: 180px;
+            }
+
+            .clock-question {
+                font-size: 1.6rem;
+            }
+
+            .clock-answer-btn {
+                font-size: 1.2rem;
+                padding: 0.85rem 0.5rem;
+            }
+
+            .clock-completion-emoji {
+                font-size: 5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
+
+    <div class="crown-counter" id="crownCounter" style="display: none;">
+        <span class="crown-icon">👑</span>
+        <span class="crown-count" id="crownCount">0</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>⏰ Uhr lesen</h1>
+            <p class="subtitle">Lerne die Uhrzeit ablesen!</p>
+        </header>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="difficultySlider">
+                    🎯 Schwierigkeitsgrad:
+                    <span class="slider-value" id="difficultyValue">Level 1 (Ganze Stunden) 😊</span>
+                </label>
+                <div class="slider-container">
+                    <input type="range" id="difficultySlider" min="1" max="10" value="1" step="1">
+                    <div class="slider-labels">
+                        <span>😊 Ganze Stunden</span>
+                        <span>🤔 Viertelstunden</span>
+                        <span>🔥 Jede Minute</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="adaptiveMode">
+                    <label for="adaptiveMode" class="checkbox-label">
+                        🚀 Automatisch anpassen (adaptiv)
+                    </label>
+                </div>
+                <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                    Wenn aktiviert, passt sich die Schwierigkeit automatisch an deine Leistung an!
+                </p>
+            </div>
+
+            <button id="startButton" class="btn-start">
+                ✨ Training starten
+            </button>
+        </div>
+
+        <div class="card preview" id="preview">
+            <div class="preview-header">
+                <h2 class="preview-title" id="previewTitle">Uhr lesen</h2>
+                <span class="task-count" id="taskCountDisplay">0 / 20</span>
+            </div>
+            <div class="task-container" id="taskContainer"></div>
+        </div>
+    </div>
+
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="milestone-celebration" id="milestoneCelebration"></div>
+
+    <script src="js/audio-manager.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/uhr-lesen-app.js"></script>
+
+    <footer>
+        <p>© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p style="font-size: 0.85rem;">
+            <a href="impressum.html">Impressum</a> |
+            <a href="nutzungsbedingungen.html">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html">Datenschutz</a>
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.7;">
+            Die unerlaubte Vervielfältigung oder Verbreitung dieser Software ist untersagt.
+        </p>
+    </footer>
+</body>
+</html>

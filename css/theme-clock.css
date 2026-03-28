@@ -1,0 +1,82 @@
+/* === Clock Trainer Theme === */
+
+:root {
+    --clock-primary: #2980B9;
+    --clock-secondary: #E67E22;
+    --clock-tertiary: #E74C3C;
+    --primary: var(--clock-primary);
+    --secondary: var(--clock-secondary);
+    --tertiary: var(--clock-tertiary);
+}
+
+body {
+    background: linear-gradient(135deg, #EBF5FB 0%, #FEF9E7 100%);
+}
+
+body::before {
+    background: var(--clock-primary);
+}
+
+body::after {
+    background: var(--clock-secondary);
+}
+
+h1 {
+    color: var(--clock-primary);
+    text-shadow: 3px 3px 0px var(--clock-secondary);
+}
+
+.card {
+    border-color: var(--clock-primary);
+    box-shadow: 0 8px 32px rgba(41, 128, 185, 0.15);
+}
+
+.card::before {
+    content: '⏰';
+}
+
+select, input[type="number"] {
+    border-color: var(--clock-secondary);
+}
+
+select:focus, input:focus {
+    border-color: var(--clock-primary);
+    box-shadow: 0 0 0 4px rgba(41, 128, 185, 0.1);
+}
+
+.btn-back {
+    color: var(--clock-primary);
+    border-color: var(--clock-primary);
+    box-shadow: 0 4px 15px rgba(41, 128, 185, 0.2);
+}
+
+.btn-back:hover {
+    background: var(--clock-primary);
+    color: white;
+    box-shadow: 0 6px 20px rgba(41, 128, 185, 0.3);
+}
+
+button {
+    background: linear-gradient(135deg, var(--clock-primary), #5DADE2);
+    box-shadow: 0 4px 15px rgba(41, 128, 185, 0.4);
+}
+
+button:hover {
+    box-shadow: 0 6px 25px rgba(41, 128, 185, 0.5);
+}
+
+.preview-header {
+    border-bottom-color: var(--clock-secondary);
+}
+
+.preview-title {
+    color: var(--clock-primary);
+}
+
+.milestone-celebration {
+    background: linear-gradient(135deg, var(--clock-primary), var(--clock-secondary));
+}
+
+footer a {
+    color: var(--clock-primary);
+}
