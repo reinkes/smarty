@@ -18,14 +18,14 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .progress-track {
             flex: 1;
-            height: 18px;
+            height: 14px;
             background: #E8E8E8;
-            border-radius: 9px;
+            border-radius: 7px;
             overflow: hidden;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
@@ -34,13 +34,13 @@
             height: 100%;
             width: 0%;
             background: linear-gradient(90deg, var(--german-primary), var(--german-secondary));
-            border-radius: 9px;
+            border-radius: 7px;
             transition: width 0.4s ease-out;
         }
 
         .progress-label {
             font-family: 'Fredoka', sans-serif;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--text-dark);
             white-space: nowrap;
@@ -48,46 +48,52 @@
 
         .instruction {
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #888;
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
 
-        /* Article buttons — match btn-comparison from groesser-kleiner */
+        .emoji-display {
+            font-size: 3.5rem !important;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        /* Article buttons */
         .article-buttons {
             display: flex;
             justify-content: center;
-            gap: 1.2rem;
-            margin-bottom: 1.5rem;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
             flex-wrap: wrap;
         }
 
         .btn-article {
-            min-width: 90px;
-            min-height: 90px;
+            min-width: 70px;
+            min-height: 70px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 700;
             border: none;
-            border-radius: 20px;
+            border-radius: 16px;
             cursor: pointer;
             color: white;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             width: auto;
             margin-top: 0;
-            padding: 0.5rem 1.5rem;
+            padding: 0.4rem 1.2rem;
         }
 
         .btn-article::before { display: none; }
 
         .btn-article:hover:not(:disabled) {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
         }
 
         .btn-article:active:not(:disabled) { transform: scale(0.95); }
@@ -103,77 +109,72 @@
         .btn-article[data-article="das"] { background: linear-gradient(135deg, #9B59B6, #8E44AD); }
 
         .btn-article.selected {
-            box-shadow: 0 0 0 4px white, 0 0 0 7px currentColor, 0 6px 18px rgba(0,0,0,0.3);
+            box-shadow: 0 0 0 3px white, 0 0 0 6px currentColor, 0 4px 12px rgba(0,0,0,0.3);
         }
 
         .btn-article.correct {
-            box-shadow: 0 0 0 4px #27AE60, 0 6px 18px rgba(39,174,96,0.3);
+            box-shadow: 0 0 0 3px #27AE60, 0 4px 12px rgba(39,174,96,0.3);
         }
 
         .btn-article.incorrect {
-            box-shadow: 0 0 0 4px #E74C3C, 0 6px 18px rgba(231,76,60,0.3);
+            box-shadow: 0 0 0 3px #E74C3C, 0 4px 12px rgba(231,76,60,0.3);
             opacity: 0.7;
         }
 
-        /* Word input */
-        .word-input-row {
+        /* Letter boxes */
+        .letter-boxes {
             display: flex;
-            gap: 0.7rem;
-            margin-bottom: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
         }
 
-        .word-input {
-            flex: 1;
+        .letter-box {
+            width: 40px;
+            height: 48px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 600;
-            padding: 0.75rem 1rem;
-            border: 3px solid var(--german-secondary);
-            border-radius: 16px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            border: 2px solid var(--german-secondary);
+            border-radius: 10px;
             outline: none;
             color: var(--text-dark);
+            background: white;
             transition: border-color 0.2s, box-shadow 0.2s;
-            width: auto;
+            caret-color: transparent;
+            text-transform: uppercase;
         }
 
-        .word-input:focus {
+        .letter-box:focus {
             border-color: var(--german-primary);
-            box-shadow: 0 0 0 4px rgba(155,89,182,0.1);
-            transform: none;
+            box-shadow: 0 0 0 3px rgba(155,89,182,0.15);
         }
 
-        .word-input:disabled { background: #F9F9F9; color: #AAA; }
-
-        .btn-check {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 16px;
-            color: white;
-            cursor: pointer;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            white-space: nowrap;
-            width: auto;
-            margin-top: 0;
+        .letter-box:disabled {
+            background: #F5F5F5;
+            color: #AAA;
         }
 
-        .btn-check::before { display: none; }
-
-        .btn-check:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(155,89,182,0.4);
+        .letter-box.correct {
+            border-color: #27AE60;
+            background: #EAFAF1;
+            color: #27AE60;
         }
 
-        .btn-check:disabled { opacity: 0.5; cursor: default; transform: none; }
+        .letter-box.incorrect {
+            border-color: #E74C3C;
+            background: #FDEDEC;
+            color: #E74C3C;
+        }
 
         .feedback {
             text-align: center;
             font-family: 'Fredoka', sans-serif;
-            font-size: 1.6rem;
+            font-size: 1.3rem;
             font-weight: 700;
-            min-height: 2.4rem;
+            min-height: 2rem;
             transition: color 0.2s;
         }
 
@@ -184,59 +185,58 @@
         .completion-screen {
             display: none;
             text-align: center;
-            padding: 3rem 2rem;
+            padding: 2rem 1.5rem;
             animation: fadeIn 0.8s ease-out;
         }
 
         .completion-emoji {
-            font-size: 6rem;
+            font-size: 5rem;
             display: block;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             animation: bounce 1s ease-in-out infinite;
         }
 
         .completion-heading {
             font-family: 'Fredoka', sans-serif;
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--german-primary);
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
         }
 
         .completion-crowns {
             display: inline-block;
             background: linear-gradient(135deg, #FFD700, #FFA500);
             color: white;
-            padding: 0.8rem 2rem;
-            border-radius: 20px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 16px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
-            margin: 1.5rem 0;
+            margin: 1rem 0;
             box-shadow: 0 4px 15px rgba(255,215,0,0.4);
         }
 
         .btn-restart {
             color: white;
-            padding: 1rem 2.5rem;
+            padding: 0.8rem 2rem;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(155,89,182,0.4);
             transition: transform 0.2s ease;
             display: inline-block;
             width: auto;
-            margin-top: 1rem;
+            margin-top: 0.8rem;
         }
 
         .btn-restart:hover { transform: scale(1.05); }
 
         @media (max-width: 480px) {
-            .btn-article { min-width: 75px; min-height: 75px; font-size: 1.7rem; }
-            .word-input  { font-size: 1.3rem; }
-            .btn-check   { font-size: 1.1rem; padding: 0.6rem 1rem; }
+            .btn-article { min-width: 60px; min-height: 60px; font-size: 1.3rem; }
+            .letter-box  { width: 34px; height: 42px; font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -273,19 +273,9 @@
                     <button class="btn-article" data-article="das">das</button>
                 </div>
 
-                <div class="word-input-row">
-                    <input
-                        type="text"
-                        id="wordInput"
-                        class="word-input"
-                        placeholder="Wort eingeben…"
-                        autocomplete="off"
-                        autocorrect="off"
-                        autocapitalize="off"
-                        spellcheck="false"
-                    >
-                    <button class="btn-check" id="checkBtn">✓ Prüfen</button>
-                </div>
+                <p class="instruction">Schreib das Wort Buchstabe für Buchstabe:</p>
+
+                <div class="letter-boxes" id="letterBoxes"></div>
 
                 <div class="feedback" id="feedback"></div>
             </div>
@@ -293,7 +283,7 @@
             <div class="completion-screen" id="completionScreen">
                 <span class="completion-emoji">🎉</span>
                 <h2 class="completion-heading">Super gemacht!</h2>
-                <p style="font-size: 1.2rem; color: #666; margin-bottom: 0.5rem;" id="completionCorrect"></p>
+                <p style="font-size: 1.1rem; color: #666; margin-bottom: 0.5rem;" id="completionCorrect"></p>
                 <div class="completion-crowns" id="completionCrowns">👑 0 Kronen</div>
                 <br>
                 <button class="btn-restart" id="restartBtn">🔄 Nochmal spielen</button>

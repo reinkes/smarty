@@ -331,7 +331,7 @@ class MatheApp {
             if (useAddVariant) {
                 return { num1: a, num2: total, num3: null, operator: '+', result: missing, key: `erg+${a}+${missing}`, level: effectiveMax, ergaenzen: true };
             } else {
-                return { num1: total, num2: a, num3: null, operator: '−', result: missing, key: `erg-${total}-${a}`, level: effectiveMax };
+                return { num1: total, num2: a, num3: null, operator: '−', result: missing, key: `erg-${total}-${a}`, level: effectiveMax, ergaenzen: true };
             }
         }
 
@@ -458,7 +458,7 @@ class MatheApp {
             if (useAddVariant) {
                 return { num1: a, num2: total, num3: null, operator: '+', result: missing, key: `erg+${a}+${missing}`, level: effectiveMax, ergaenzen: true };
             } else {
-                return { num1: total, num2: a, num3: null, operator: '−', result: missing, key: `erg-${total}-${a}`, level: effectiveMax };
+                return { num1: total, num2: a, num3: null, operator: '−', result: missing, key: `erg-${total}-${a}`, level: effectiveMax, ergaenzen: true };
             }
         }
 
@@ -811,7 +811,7 @@ class MatheApp {
 
     getEquationText(task) {
         if (task.ergaenzen) {
-            return `${task.num1} +`;
+            return `${task.num1} ${task.operator}`;
         }
         return task.num3 != null
             ? `${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3} =`
@@ -864,7 +864,7 @@ class MatheApp {
                 result = missing;
                 operator = '−';
                 key = `erg-${total}-${a}`;
-                return { num1, num2, num3: null, operator, result, key };
+                return { num1, num2, num3: null, operator, result, key, ergaenzen: true };
             }
         } else if (this.currentOperator === 'add3') {
             // 3-number addition, result <= 20
@@ -1231,7 +1231,7 @@ class MatheApp {
 
             let equation, answer;
             if (task.ergaenzen) {
-                equation = `${task.num1} + _____ = ${task.num2}`;
+                equation = `${task.num1} ${operator} _____ = ${task.num2}`;
                 answer = '';
             } else {
                 equation = task.num3 != null
