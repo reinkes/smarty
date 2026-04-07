@@ -26,7 +26,6 @@ class WoerterApp {
 
     cacheDOMElements() {
         this.dom.emoji = document.getElementById('wordEmoji');
-        this.dom.category = document.getElementById('wordCategory');
         this.dom.articleBtns = document.querySelectorAll('.btn-article');
         this.dom.wordInput = document.getElementById('wordInput');
         this.dom.checkBtn = document.getElementById('checkBtn');
@@ -90,7 +89,6 @@ class WoerterApp {
         this.currentWord = this.queue[this.tasksCompleted];
 
         this.dom.emoji.textContent = this.currentWord.emoji;
-        this.dom.category.textContent = this.currentWord.category;
         this.dom.wordInput.value = '';
         this.dom.wordInput.disabled = false;
         this.dom.wordInput.focus();

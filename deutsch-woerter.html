@@ -18,7 +18,7 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .progress-track {
@@ -46,92 +46,80 @@
             white-space: nowrap;
         }
 
-        /* Emoji display — matches .emoji-display from theme-german.css */
-        .word-emoji {
-            font-size: 8rem;
+        .instruction {
             text-align: center;
-            display: block;
-            margin: 1rem 0 2rem 0;
-            animation: bounceIn 0.6s ease-out;
-        }
-
-        .word-category {
-            text-align: center;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1rem;
-            color: #999;
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 0.5rem;
             font-weight: 600;
-            margin-top: -1.5rem;
-            margin-bottom: 1.2rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
         }
 
-        /* Article buttons — match .syllable-btn from theme-german.css */
-        .article-row {
+        /* Article buttons — match btn-comparison from groesser-kleiner */
+        .article-buttons {
             display: flex;
             justify-content: center;
-            gap: 1rem;
+            gap: 1.2rem;
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
         }
 
         .btn-article {
+            min-width: 90px;
+            min-height: 90px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 700;
-            padding: 1.25rem 2rem;
-            border: 3px solid var(--german-secondary);
-            border-radius: 16px;
-            background: white;
-            color: var(--text-dark);
+            border: none;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 100px;
+            color: white;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: auto;
             margin-top: 0;
-            box-shadow: none;
+            padding: 0.5rem 1.5rem;
         }
 
         .btn-article::before { display: none; }
 
         .btn-article:hover:not(:disabled) {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
-            border-color: var(--german-primary);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
         }
 
+        .btn-article:active:not(:disabled) { transform: scale(0.95); }
+
+        .btn-article:disabled {
+            opacity: 0.6;
+            cursor: default;
+            transform: none;
+        }
+
+        .btn-article[data-article="der"] { background: linear-gradient(135deg, #5DADE2, #3498DB); }
+        .btn-article[data-article="die"] { background: linear-gradient(135deg, #FF6B9D, #E74C3C); }
+        .btn-article[data-article="das"] { background: linear-gradient(135deg, #9B59B6, #8E44AD); }
+
         .btn-article.selected {
-            background: linear-gradient(135deg, var(--german-primary), var(--german-secondary));
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 6px 18px rgba(155,89,182,0.4);
+            box-shadow: 0 0 0 4px white, 0 0 0 7px currentColor, 0 6px 18px rgba(0,0,0,0.3);
         }
 
         .btn-article.correct {
-            background: linear-gradient(135deg, #D5F4E6, #ABEBC6);
-            color: var(--text-dark);
-            border-color: var(--success);
-            box-shadow: 0 0 0 3px var(--success);
+            box-shadow: 0 0 0 4px #27AE60, 0 6px 18px rgba(39,174,96,0.3);
         }
 
         .btn-article.incorrect {
-            background: linear-gradient(135deg, #FADBD8, #F5B7B1);
-            color: var(--text-dark);
-            border-color: #E74C3C;
-            box-shadow: 0 0 0 3px #E74C3C;
-        }
-
-        .btn-article:disabled {
-            cursor: default;
-            transform: none;
+            box-shadow: 0 0 0 4px #E74C3C, 0 6px 18px rgba(231,76,60,0.3);
+            opacity: 0.7;
         }
 
         /* Word input */
         .word-input-row {
             display: flex;
             gap: 0.7rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .word-input {
@@ -154,10 +142,7 @@
             transform: none;
         }
 
-        .word-input:disabled {
-            background: #F9F9F9;
-            color: #AAA;
-        }
+        .word-input:disabled { background: #F9F9F9; color: #AAA; }
 
         .btn-check {
             font-family: 'Fredoka', sans-serif;
@@ -181,27 +166,21 @@
             box-shadow: 0 8px 20px rgba(155,89,182,0.4);
         }
 
-        .btn-check:disabled {
-            opacity: 0.5;
-            cursor: default;
-            transform: none;
-        }
+        .btn-check:disabled { opacity: 0.5; cursor: default; transform: none; }
 
-        /* Feedback */
         .feedback {
             text-align: center;
             font-family: 'Fredoka', sans-serif;
             font-size: 1.6rem;
             font-weight: 700;
             min-height: 2.4rem;
-            margin-top: 0.3rem;
+            transition: color 0.2s;
         }
 
-        .feedback.correct  { color: #27AE60; }
+        .feedback.correct   { color: #27AE60; }
         .feedback.incorrect { color: #E74C3C; }
-        .feedback.hint     { color: #F39C12; }
+        .feedback.hint      { color: #F39C12; }
 
-        /* Completion — matches groesser-kleiner pattern */
         .completion-screen {
             display: none;
             text-align: center;
@@ -236,12 +215,6 @@
             box-shadow: 0 4px 15px rgba(255,215,0,0.4);
         }
 
-        .completion-score {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.2rem;
-            color: #666;
-        }
-
         .btn-restart {
             color: white;
             padding: 1rem 2.5rem;
@@ -258,15 +231,12 @@
             margin-top: 1rem;
         }
 
-        .btn-restart:hover {
-            transform: scale(1.05);
-        }
+        .btn-restart:hover { transform: scale(1.05); }
 
         @media (max-width: 480px) {
-            .word-emoji { font-size: 6rem; }
-            .btn-article { font-size: 1.5rem; padding: 1rem 1.5rem; min-width: 80px; }
-            .word-input { font-size: 1.3rem; }
-            .btn-check { font-size: 1.1rem; padding: 0.6rem 1rem; }
+            .btn-article { min-width: 75px; min-height: 75px; font-size: 1.7rem; }
+            .word-input  { font-size: 1.3rem; }
+            .btn-check   { font-size: 1.1rem; padding: 0.6rem 1rem; }
         }
     </style>
 </head>
@@ -285,18 +255,19 @@
         </header>
 
         <div class="card">
-            <div id="taskArea">
-                <div class="progress-row">
-                    <div class="progress-track">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <span class="progress-label" id="progressText">0 / 20</span>
+            <div class="progress-row">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
                 </div>
+                <span class="progress-label" id="progressText">0 / 20</span>
+            </div>
 
-                <span class="word-emoji" id="wordEmoji">?</span>
-                <div class="word-category" id="wordCategory"></div>
+            <div id="taskArea">
+                <p class="instruction">Welcher Artikel passt?</p>
 
-                <div class="article-row">
+                <div class="emoji-display" id="wordEmoji">?</div>
+
+                <div class="article-buttons">
                     <button class="btn-article" data-article="der">der</button>
                     <button class="btn-article" data-article="die">die</button>
                     <button class="btn-article" data-article="das">das</button>
@@ -322,7 +293,7 @@
             <div class="completion-screen" id="completionScreen">
                 <span class="completion-emoji">🎉</span>
                 <h2 class="completion-heading">Super gemacht!</h2>
-                <p class="completion-score" id="completionCorrect"></p>
+                <p style="font-size: 1.2rem; color: #666; margin-bottom: 0.5rem;" id="completionCorrect"></p>
                 <div class="completion-crowns" id="completionCrowns">👑 0 Kronen</div>
                 <br>
                 <button class="btn-restart" id="restartBtn">🔄 Nochmal spielen</button>
