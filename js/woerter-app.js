@@ -74,11 +74,16 @@ class WoerterApp {
     }
 
     buildQueue() {
-        // Shuffle and take TOTAL_TASKS words (cycle if fewer words than tasks)
-        const shuffled = [...this.words].sort(() => Math.random() - 0.5);
+        const pool = [...this.words];
+        // Fisher-Yates shuffle
+        for (let i = pool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+        // Cycle through shuffled pool until we have enough tasks
         this.queue = [];
         while (this.queue.length < WoerterApp.TOTAL_TASKS) {
-            this.queue.push(...shuffled);
+            this.queue.push(...pool);
         }
         this.queue = this.queue.slice(0, WoerterApp.TOTAL_TASKS);
     }
@@ -137,9 +142,6 @@ class WoerterApp {
             this.dom.feedback.innerHTML = `✓ ${article} ${word}`;
             this.dom.feedback.className = 'feedback correct';
         } else {
-            const parts = [];
-            if (!articleOk) parts.push(`Artikel: <em>${article}</em>`);
-            if (!wordOk) parts.push(`Wort: <em>${word}</em>`);
             this.dom.feedback.innerHTML = `✗ Es heißt: <strong>${article} ${word}</strong>`;
             this.dom.feedback.className = 'feedback incorrect';
         }
@@ -187,12 +189,12 @@ class WoerterApp {
     }
 
     loadCrowns() {
-        this.crownsEarned = parseInt(localStorage.getItem('woerter-crowns') || '0', 10);
+        this.crownsEarned = parseInt(localStorage.getItem('smarty-crowns') || '0', 10);
         this.updateCrownDisplay();
     }
 
     saveCrowns() {
-        localStorage.setItem('woerter-crowns', this.crownsEarned);
+        localStorage.setItem('smarty-crowns', this.crownsEarned);
     }
 
     updateCrownDisplay() {

@@ -55,8 +55,8 @@ class ErgaenzenApp {
         });
 
         this.dom.answerInput.addEventListener('input', () => {
-            const val = this.dom.answerInput.value;
-            if (val !== '' && val >= 0 && val <= 10) this.checkAnswer();
+            const num = parseInt(this.dom.answerInput.value, 10);
+            if (!isNaN(num) && num >= 0 && num <= 10) this.checkAnswer();
         });
 
         this.dom.restartBtn.addEventListener('click', () => this.restart());
@@ -161,12 +161,12 @@ class ErgaenzenApp {
     }
 
     loadCrowns() {
-        this.crownsEarned = parseInt(localStorage.getItem('ergaenzen-crowns') || '0', 10);
+        this.crownsEarned = parseInt(localStorage.getItem('smarty-crowns') || '0', 10);
         this.updateCrownDisplay();
     }
 
     saveCrowns() {
-        localStorage.setItem('ergaenzen-crowns', this.crownsEarned);
+        localStorage.setItem('smarty-crowns', this.crownsEarned);
     }
 
     updateCrownDisplay() {
