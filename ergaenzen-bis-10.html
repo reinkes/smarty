@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none';">
+    <title>Ergänzen bis 10 – Smarty Learn</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/theme-math.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
+    <style>
+        .operator-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-operator {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.5rem 1.4rem;
+            border: 2px solid var(--math-primary);
+            border-radius: 20px;
+            background: white;
+            color: var(--math-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-operator.active,
+        .btn-operator:hover {
+            background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
+            color: white;
+            border-color: transparent;
+        }
+
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 18px;
+            background: #E8E8E8;
+            border-radius: 9px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--math-primary), var(--math-secondary));
+            border-radius: 9px;
+            transition: width 0.4s ease-out;
+        }
+
+        .progress-label {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        /* Equation display */
+        .equation-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .eq-num {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #FFF9F0, #FFE5F1);
+            border: 3px solid var(--math-secondary);
+            border-radius: 20px;
+            width: 100px;
+            height: 100px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255,107,157,0.15);
+        }
+
+        .eq-op {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--math-primary);
+            width: 50px;
+            text-align: center;
+        }
+
+        .eq-blank {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #CCC;
+            width: 100px;
+            height: 100px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px dashed #CCC;
+            border-radius: 20px;
+            background: #FAFAFA;
+        }
+
+        /* Number pad */
+        .num-pad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.7rem;
+            max-width: 360px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .btn-num {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            height: 70px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #FF6B9D, #FFC837);
+            color: white;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-num:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-num:active:not(:disabled) {
+            transform: scale(0.93);
+        }
+
+        .btn-num:disabled {
+            opacity: 0.55;
+            cursor: default;
+            transform: none;
+        }
+
+        .btn-num.correct {
+            background: linear-gradient(135deg, #27AE60, #2ECC71);
+            box-shadow: 0 0 0 4px #27AE60, 0 4px 12px rgba(39,174,96,0.3);
+        }
+
+        .btn-num.incorrect {
+            background: linear-gradient(135deg, #E74C3C, #C0392B);
+            box-shadow: 0 0 0 4px #E74C3C, 0 4px 12px rgba(231,76,60,0.3);
+        }
+
+        /* Feedback */
+        .feedback {
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            min-height: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback.correct { color: #27AE60; }
+        .feedback.incorrect { color: #E74C3C; }
+
+        /* Completion */
+        .completion-screen {
+            display: none;
+            text-align: center;
+            padding: 3rem 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .completion-emoji {
+            font-size: 6rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .completion-heading {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5rem;
+            color: var(--math-primary);
+            margin-bottom: 1rem;
+        }
+
+        .completion-crowns {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 1rem 0 0.5rem;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+        }
+
+        .completion-score {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, var(--math-primary), #FF8CB4);
+            color: white;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255,107,157,0.4);
+            transition: transform 0.2s ease;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        .btn-restart:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 480px) {
+            .eq-num {
+                width: 78px;
+                height: 78px;
+                font-size: 3.2rem;
+            }
+
+            .eq-blank {
+                width: 78px;
+                height: 78px;
+                font-size: 2.5rem;
+            }
+
+            .eq-op {
+                font-size: 2.4rem;
+                width: 38px;
+            }
+
+            .num-pad {
+                gap: 0.5rem;
+            }
+
+            .btn-num {
+                height: 60px;
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
+
+    <div class="crown-counter" id="crownCounter" style="display: none;">
+        <span class="crown-icon">👑</span>
+        <span class="crown-count" id="crownCount">0</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🔢 Ergänzen bis 10</h1>
+            <p class="subtitle">Welche Zahl fehlt in der Mitte?</p>
+        </header>
+
+        <div class="card">
+            <!-- Operator selector -->
+            <div class="operator-row">
+                <button class="btn-operator" data-op="add">➕ Addition</button>
+                <button class="btn-operator active" data-op="mix">➕➖ Mix</button>
+                <button class="btn-operator" data-op="sub">➖ Subtraktion</button>
+            </div>
+
+            <div id="taskArea">
+                <div class="progress-row">
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span class="progress-label" id="progressText">0 / 20</span>
+                </div>
+
+                <div class="equation-display" id="equation">
+                    <!-- rendered by JS -->
+                </div>
+
+                <div class="feedback" id="feedback"></div>
+
+                <div class="num-pad" id="numPad">
+                    <button class="btn-num" data-value="0">0</button>
+                    <button class="btn-num" data-value="1">1</button>
+                    <button class="btn-num" data-value="2">2</button>
+                    <button class="btn-num" data-value="3">3</button>
+                    <button class="btn-num" data-value="4">4</button>
+                    <button class="btn-num" data-value="5">5</button>
+                    <button class="btn-num" data-value="6">6</button>
+                    <button class="btn-num" data-value="7">7</button>
+                    <button class="btn-num" data-value="8">8</button>
+                    <button class="btn-num" data-value="9">9</button>
+                    <button class="btn-num" data-value="10" style="grid-column: span 2;">10</button>
+                </div>
+            </div>
+
+            <div class="completion-screen" id="completionScreen">
+                <span class="completion-emoji">🎉</span>
+                <h2 class="completion-heading">Super gemacht!</h2>
+                <p class="completion-score" id="completionCorrect"></p>
+                <div class="completion-crowns" id="completionCrowns">👑 0 Kronen</div>
+                <br>
+                <button class="btn-restart" id="restartBtn">🔄 Nochmal spielen</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="milestone-celebration" id="milestoneCelebration"></div>
+
+    <script src="js/audio-manager.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/ergaenzen-app.js"></script>
+
+    <footer>
+        <p>© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p>
+            <a href="impressum.html">Impressum</a> |
+            <a href="nutzungsbedingungen.html">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html">Datenschutz</a>
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.7;">
+            Die unerlaubte Vervielfältigung oder Verbreitung dieser Software ist untersagt.
+        </p>
+    </footer>
+</body>
+</html>

@@ -342,7 +342,7 @@ class MatheApp {
         const recentTasks = this.currentTasks.slice(-3);
         const hasRecentZero = recentTasks.some(t => t.num2 === 0);
 
-        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5);
+        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.65);
 
         do {
             if (useAdd) {
@@ -469,7 +469,7 @@ class MatheApp {
         const recentTasks = this.currentTasks.slice(-3);
         const hasRecentZero = recentTasks.some(t => t.num2 === 0);
 
-        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5);
+        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.65);
 
         do {
             if (useAdd) {
@@ -841,7 +841,7 @@ class MatheApp {
         let num1, num2, num3, operator, result, key;
         const max = maxValue || (type === 'add10' || type === 'sub10' ? 10 : type === 'add20' ? 20 : 50);
 
-        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5);
+        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.65);
 
         if (this.currentOperator === 'ergaenzen') {
             const useAddVariant = Math.random() < 0.5;
@@ -877,6 +877,16 @@ class MatheApp {
             operator = '+';
             result = num1 + num2 + num3;
             key = `${num1}+${num2}+${num3}`;
+        } else if (this.currentOperator === 'sub3') {
+            // 3-number subtraction: num1 <= 20, result >= 0
+            do {
+                num1 = Math.floor(Math.random() * 18) + 3; // 3 to 20
+                num2 = Math.floor(Math.random() * (num1 - 1)) + 1; // 1 to num1-1
+                num3 = Math.floor(Math.random() * (num1 - num2)) + 1; // 1 to num1-num2
+            } while (num1 - num2 - num3 < 0);
+            operator = '−';
+            result = num1 - num2 - num3;
+            key = `${num1}-${num2}-${num3}`;
         } else if (useAdd) {
             // Addition with dynamic max
             do {
@@ -921,6 +931,7 @@ class MatheApp {
             'add20': 'Addition Zahlenraum 20',
             'sub10': 'Subtraktion Zahlenraum 10',
             'add3': '3-Zahlen Addition (bis 20)',
+            'sub3': '3-Zahlen Subtraktion (bis 20)',
             'mix': 'Mix (Addition & Subtraktion)',
             'ergaenzen': 'Ergänzen bis 10'
         };
@@ -1185,6 +1196,7 @@ class MatheApp {
             'add20': 'Addition Zahlenraum 20',
             'sub10': 'Subtraktion Zahlenraum 10',
             'add3': '3-Zahlen Addition (bis 20)',
+            'sub3': '3-Zahlen Subtraktion (bis 20)',
             'mix': 'Mix (Addition & Subtraktion)',
             'ergaenzen': 'Ergänzen bis 10'
         };
