@@ -33,13 +33,20 @@
             color: var(--math-primary);
             cursor: pointer;
             transition: all 0.2s ease;
+            width: auto;
+            margin-top: 0;
+            box-shadow: none;
         }
+
+        .btn-operator::before { display: none; }
 
         .btn-operator.active,
         .btn-operator:hover {
             background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
             color: white;
             border-color: transparent;
+            box-shadow: 0 4px 12px rgba(255,107,157,0.35);
+            transform: translateY(-2px);
         }
 
         .progress-row {
@@ -140,16 +147,24 @@
             height: 70px;
             border: none;
             border-radius: 16px;
-            background: linear-gradient(135deg, #FF6B9D, #FFC837);
+            background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
             color: white;
             cursor: pointer;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(255,107,157,0.3);
+            width: auto;
+            margin-top: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        .btn-num::before { display: none; }
 
         .btn-num:hover:not(:disabled) {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 20px rgba(255,107,157,0.4);
         }
 
         .btn-num:active:not(:disabled) {
@@ -176,9 +191,9 @@
         .feedback {
             text-align: center;
             font-family: 'Fredoka', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            min-height: 2.2rem;
+            min-height: 2.4rem;
             margin-bottom: 0.5rem;
         }
 
@@ -240,6 +255,7 @@
             box-shadow: 0 4px 15px rgba(255,107,157,0.4);
             transition: transform 0.2s ease;
             display: inline-block;
+            width: auto;
             margin-top: 1rem;
         }
 
