@@ -883,7 +883,7 @@ class MatheApp {
                 num1 = Math.floor(Math.random() * 18) + 3; // 3 to 20
                 num2 = Math.floor(Math.random() * (num1 - 1)) + 1; // 1 to num1-1
                 num3 = Math.floor(Math.random() * (num1 - num2)) + 1; // 1 to num1-num2
-            } while (num1 - num2 - num3 < 0);
+            } while (num1 - num2 - num3 <= 0);
             operator = '−';
             result = num1 - num2 - num3;
             key = `${num1}-${num2}-${num3}`;
