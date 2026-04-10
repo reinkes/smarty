@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
-    <title>Wort-Puzzle – Smarty Learn</title>
+    <title>Buchstaben-Puzzle – Smarty Learn</title>
     <link rel="stylesheet" href="css/shared.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/theme-german.css">
@@ -79,11 +79,48 @@
             font-weight: 600;
         }
 
-        .emoji-display {
-            font-size: 5rem !important;
+        /* Hint area */
+        .hint-area {
             text-align: center;
             margin: 0.25rem 0 1.25rem 0;
-            animation: bounceIn 0.6s ease-out;
+        }
+
+        .btn-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: white;
+            border: 2px solid var(--german-secondary);
+            color: var(--german-primary);
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 0.45rem 1.1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+            box-shadow: none;
+            width: auto;
+            margin: 0;
+        }
+
+        .btn-hint:hover {
+            background: rgba(155, 89, 182, 0.08);
+            border-color: var(--german-primary);
+            transform: scale(1.04);
+            box-shadow: none;
+        }
+
+        .btn-hint::before { display: none; }
+
+        .emoji-display {
+            font-size: 5rem;
+            margin-top: 0.6rem;
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        .emoji-display.hidden {
+            display: none;
         }
 
         /* ── Word Slots ── */
@@ -282,7 +319,7 @@
 
     <div class="container">
         <header>
-            <h1>🧩 Wort-Puzzle</h1>
+            <h1>🔡 Buchstaben-Puzzle</h1>
             <p class="subtitle">Leg die Buchstaben in der richtigen Reihenfolge!</p>
         </header>
 
@@ -302,7 +339,10 @@
             </div>
 
             <div id="taskArea">
-                <div class="emoji-display" id="wordEmoji">?</div>
+                <div class="hint-area">
+                    <button class="btn-hint" id="hintBtn">💡 Hinweis zeigen</button>
+                    <div class="emoji-display hidden" id="wordEmoji"></div>
+                </div>
 
                 <p class="instruction">Ordne die Buchstaben zum richtigen Wort:</p>
                 <div class="word-slots" id="wordSlots"></div>

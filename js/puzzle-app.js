@@ -32,6 +32,7 @@ class PuzzleApp {
         this.dom.progressFill      = document.getElementById('progressFill');
         this.dom.progressText      = document.getElementById('progressText');
         this.dom.wordEmoji         = document.getElementById('wordEmoji');
+        this.dom.hintBtn           = document.getElementById('hintBtn');
         this.dom.wordSlots         = document.getElementById('wordSlots');
         this.dom.letterChips       = document.getElementById('letterChips');
         this.dom.feedback          = document.getElementById('feedback');
@@ -51,6 +52,7 @@ class PuzzleApp {
             this.difficulty = parseInt(this.dom.difficultySlider.value);
             this.updateDifficultyLabel();
         });
+        this.dom.hintBtn.addEventListener('click', () => this.showHint());
         this.dom.restartBtn.addEventListener('click', () => this.restart());
     }
 
@@ -102,6 +104,11 @@ class PuzzleApp {
         this.dom.diffLabel.textContent = label;
     }
 
+    showHint() {
+        this.dom.wordEmoji.classList.remove('hidden');
+        this.dom.hintBtn.style.display = 'none';
+    }
+
     // ── Task lifecycle ─────────────────────────────────────────────────────
 
     nextWord() {
@@ -128,6 +135,8 @@ class PuzzleApp {
         this.slots = new Array(word.length).fill(null);
 
         this.dom.wordEmoji.textContent = this.currentWord.emoji;
+        this.dom.wordEmoji.classList.add('hidden');
+        this.dom.hintBtn.style.display = 'inline-flex';
         this.dom.feedback.textContent = '';
         this.dom.feedback.className = 'feedback';
 
