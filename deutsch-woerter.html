@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+    <title>Wörter schreiben – Smarty Learn</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/theme-german.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
+    <style>
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 14px;
+            background: #E8E8E8;
+            border-radius: 7px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--german-primary), var(--german-secondary));
+            border-radius: 7px;
+            transition: width 0.4s ease-out;
+        }
+
+        .progress-label {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        .instruction {
+            text-align: center;
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .emoji-display {
+            font-size: 3.5rem !important;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        /* Article buttons */
+        .article-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-article {
+            min-width: 70px;
+            min-height: 70px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: auto;
+            margin-top: 0;
+            padding: 0.4rem 1.2rem;
+        }
+
+        .btn-article::before { display: none; }
+
+        .btn-article:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }
+
+        .btn-article:active:not(:disabled) { transform: scale(0.95); }
+
+        .btn-article:disabled {
+            opacity: 0.6;
+            cursor: default;
+            transform: none;
+        }
+
+        .btn-article[data-article="der"] { background: linear-gradient(135deg, #5DADE2, #3498DB); }
+        .btn-article[data-article="die"] { background: linear-gradient(135deg, #FF6B9D, #E74C3C); }
+        .btn-article[data-article="das"] { background: linear-gradient(135deg, #9B59B6, #8E44AD); }
+
+        .btn-article.selected {
+            box-shadow: 0 0 0 3px white, 0 0 0 6px currentColor, 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn-article.correct {
+            box-shadow: 0 0 0 3px #27AE60, 0 4px 12px rgba(39,174,96,0.3);
+        }
+
+        .btn-article.incorrect {
+            box-shadow: 0 0 0 3px #E74C3C, 0 4px 12px rgba(231,76,60,0.3);
+            opacity: 0.7;
+        }
+
+        /* Letter boxes */
+        .letter-boxes {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .letter-box {
+            width: 40px;
+            height: 48px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            border: 2px solid var(--german-secondary);
+            border-radius: 10px;
+            outline: none;
+            color: var(--text-dark);
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            caret-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .letter-box:focus {
+            border-color: var(--german-primary);
+            box-shadow: 0 0 0 3px rgba(155,89,182,0.15);
+        }
+
+        .letter-box:disabled {
+            background: #F5F5F5;
+            color: #AAA;
+        }
+
+        .letter-box.correct {
+            border-color: #27AE60;
+            background: #EAFAF1;
+            color: #27AE60;
+        }
+
+        .letter-box.incorrect {
+            border-color: #E74C3C;
+            background: #FDEDEC;
+            color: #E74C3C;
+        }
+
+        .feedback {
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            min-height: 2rem;
+            transition: color 0.2s;
+        }
+
+        .feedback.correct   { color: #27AE60; }
+        .feedback.incorrect { color: #E74C3C; }
+        .feedback.hint      { color: #F39C12; }
+
+        .completion-screen {
+            display: none;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .completion-emoji {
+            font-size: 5rem;
+            display: block;
+            margin-bottom: 1rem;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .completion-heading {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            color: var(--german-primary);
+            margin-bottom: 0.8rem;
+        }
+
+        .completion-crowns {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 16px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+        }
+
+        .btn-restart {
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(155,89,182,0.4);
+            transition: transform 0.2s ease;
+            display: inline-block;
+            width: auto;
+            margin-top: 0.8rem;
+        }
+
+        .btn-restart:hover { transform: scale(1.05); }
+
+        @media (max-width: 480px) {
+            .btn-article { min-width: 60px; min-height: 60px; font-size: 1.3rem; }
+            .letter-box  { width: 34px; height: 42px; font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
+
+    <div class="crown-counter" id="crownCounter" style="display: none;">
+        <span class="crown-icon">👑</span>
+        <span class="crown-count" id="crownCount">0</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>✍️ Wörter schreiben</h1>
+            <p class="subtitle">Wähle den Artikel und schreib das Wort!</p>
+        </header>
+
+        <div class="card">
+            <div class="progress-row">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-label" id="progressText">0 / 20</span>
+            </div>
+
+            <div id="taskArea">
+                <p class="instruction">Welcher Artikel passt?</p>
+
+                <div class="emoji-display" id="wordEmoji">?</div>
+
+                <div class="article-buttons">
+                    <button class="btn-article" data-article="der">der</button>
+                    <button class="btn-article" data-article="die">die</button>
+                    <button class="btn-article" data-article="das">das</button>
+                </div>
+
+                <p class="instruction">Schreib das Wort Buchstabe für Buchstabe:</p>
+
+                <div class="letter-boxes" id="letterBoxes"></div>
+
+                <div class="feedback" id="feedback"></div>
+            </div>
+
+            <div class="completion-screen" id="completionScreen">
+                <span class="completion-emoji">🎉</span>
+                <h2 class="completion-heading">Super gemacht!</h2>
+                <p style="font-size: 1.1rem; color: #666; margin-bottom: 0.5rem;" id="completionCorrect"></p>
+                <div class="completion-crowns" id="completionCrowns">👑 0 Kronen</div>
+                <br>
+                <button class="btn-restart" id="restartBtn">🔄 Nochmal spielen</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="milestone-celebration" id="milestoneCelebration"></div>
+
+    <script src="js/audio-manager.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/woerter-app.js"></script>
+
+    <footer>
+        <p>© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p>
+            <a href="impressum.html">Impressum</a> |
+            <a href="nutzungsbedingungen.html">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html">Datenschutz</a>
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.7;">
+            Die unerlaubte Vervielfältigung oder Verbreitung dieser Software ist untersagt.
+        </p>
+    </footer>
+</body>
+</html>

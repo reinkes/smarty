@@ -331,7 +331,7 @@ class MatheApp {
             if (useAddVariant) {
                 return { num1: a, num2: total, num3: null, operator: '+', result: missing, key: `erg+${a}+${missing}`, level: effectiveMax, ergaenzen: true };
             } else {
-                return { num1: total, num2: a, num3: null, operator: '−', result: missing, key: `erg-${total}-${a}`, level: effectiveMax };
+                return { num1: total, num2: a, num3: null, operator: '−', result: missing, key: `erg-${total}-${a}`, level: effectiveMax, ergaenzen: true };
             }
         }
 
@@ -342,7 +342,7 @@ class MatheApp {
         const recentTasks = this.currentTasks.slice(-3);
         const hasRecentZero = recentTasks.some(t => t.num2 === 0);
 
-        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5);
+        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.65);
 
         do {
             if (useAdd) {
@@ -458,7 +458,7 @@ class MatheApp {
             if (useAddVariant) {
                 return { num1: a, num2: total, num3: null, operator: '+', result: missing, key: `erg+${a}+${missing}`, level: effectiveMax, ergaenzen: true };
             } else {
-                return { num1: total, num2: a, num3: null, operator: '−', result: missing, key: `erg-${total}-${a}`, level: effectiveMax };
+                return { num1: total, num2: a, num3: null, operator: '−', result: missing, key: `erg-${total}-${a}`, level: effectiveMax, ergaenzen: true };
             }
         }
 
@@ -469,7 +469,7 @@ class MatheApp {
         const recentTasks = this.currentTasks.slice(-3);
         const hasRecentZero = recentTasks.some(t => t.num2 === 0);
 
-        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5);
+        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.65);
 
         do {
             if (useAdd) {
@@ -811,7 +811,7 @@ class MatheApp {
 
     getEquationText(task) {
         if (task.ergaenzen) {
-            return `${task.num1} +`;
+            return `${task.num1} ${task.operator}`;
         }
         return task.num3 != null
             ? `${task.num1} ${task.operator} ${task.num2} ${task.operator} ${task.num3} =`
@@ -841,7 +841,7 @@ class MatheApp {
         let num1, num2, num3, operator, result, key;
         const max = maxValue || (type === 'add10' || type === 'sub10' ? 10 : type === 'add20' ? 20 : 50);
 
-        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.5);
+        const useAdd = this.currentOperator === 'add' || (this.currentOperator === 'mix' && Math.random() < 0.65);
 
         if (this.currentOperator === 'ergaenzen') {
             const useAddVariant = Math.random() < 0.5;
@@ -864,19 +864,28 @@ class MatheApp {
                 result = missing;
                 operator = '−';
                 key = `erg-${total}-${a}`;
-                return { num1, num2, num3: null, operator, result, key };
+                return { num1, num2, num3: null, operator, result, key, ergaenzen: true };
             }
         } else if (this.currentOperator === 'add3') {
-            // 3-number addition, result <= 20
-            const maxResult = 20;
+            // Pick result uniformly in [3, 20], then split into 3 summands >= 1
+            result = Math.floor(Math.random() * 18) + 3; // 3 to 20
             do {
-                num1 = Math.floor(Math.random() * (maxResult - 2)) + 1; // 1 to 18
-                num2 = Math.floor(Math.random() * (maxResult - num1 - 1)) + 1; // 1 to remainder-1
-                num3 = Math.floor(Math.random() * (maxResult - num1 - num2)) + 1; // 1 to remainder
-            } while (num1 + num2 + num3 > maxResult || num1 + num2 + num3 < 3);
+                num1 = Math.floor(Math.random() * (result - 2)) + 1;
+                num2 = Math.floor(Math.random() * (result - num1 - 1)) + 1;
+                num3 = result - num1 - num2;
+            } while (num3 < 1);
             operator = '+';
-            result = num1 + num2 + num3;
             key = `${num1}+${num2}+${num3}`;
+        } else if (this.currentOperator === 'sub3') {
+            // 3-number subtraction: num1 <= 20, result >= 0
+            do {
+                num1 = Math.floor(Math.random() * 18) + 3; // 3 to 20
+                num2 = Math.floor(Math.random() * (num1 - 1)) + 1; // 1 to num1-1
+                num3 = Math.floor(Math.random() * (num1 - num2)) + 1; // 1 to num1-num2
+            } while (num1 - num2 - num3 <= 0);
+            operator = '−';
+            result = num1 - num2 - num3;
+            key = `${num1}-${num2}-${num3}`;
         } else if (useAdd) {
             // Addition with dynamic max
             do {
@@ -921,6 +930,7 @@ class MatheApp {
             'add20': 'Addition Zahlenraum 20',
             'sub10': 'Subtraktion Zahlenraum 10',
             'add3': '3-Zahlen Addition (bis 20)',
+            'sub3': '3-Zahlen Subtraktion (bis 20)',
             'mix': 'Mix (Addition & Subtraktion)',
             'ergaenzen': 'Ergänzen bis 10'
         };
@@ -1185,6 +1195,7 @@ class MatheApp {
             'add20': 'Addition Zahlenraum 20',
             'sub10': 'Subtraktion Zahlenraum 10',
             'add3': '3-Zahlen Addition (bis 20)',
+            'sub3': '3-Zahlen Subtraktion (bis 20)',
             'mix': 'Mix (Addition & Subtraktion)',
             'ergaenzen': 'Ergänzen bis 10'
         };
@@ -1219,7 +1230,7 @@ class MatheApp {
 
             let equation, answer;
             if (task.ergaenzen) {
-                equation = `${task.num1} + _____ = ${task.num2}`;
+                equation = `${task.num1} ${operator} _____ = ${task.num2}`;
                 answer = '';
             } else {
                 equation = task.num3 != null
