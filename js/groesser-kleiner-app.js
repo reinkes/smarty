@@ -80,12 +80,12 @@ class GroesserKleinerApp {
     }
 
     loadCrowns() {
-        const stored = localStorage.getItem('smarty_crowns_groesser-kleiner');
+        const stored = localStorage.getItem('smarty-crowns');
         return stored ? parseInt(stored, 10) : 0;
     }
 
     saveCrowns() {
-        localStorage.setItem('smarty_crowns_groesser-kleiner', this.crownsEarned);
+        localStorage.setItem('smarty-crowns', this.crownsEarned);
     }
 
     getMaxNumber() {

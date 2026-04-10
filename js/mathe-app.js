@@ -867,15 +867,14 @@ class MatheApp {
                 return { num1, num2, num3: null, operator, result, key, ergaenzen: true };
             }
         } else if (this.currentOperator === 'add3') {
-            // 3-number addition, result <= 20
-            const maxResult = 20;
+            // Pick result uniformly in [3, 20], then split into 3 summands >= 1
+            result = Math.floor(Math.random() * 18) + 3; // 3 to 20
             do {
-                num1 = Math.floor(Math.random() * (maxResult - 2)) + 1; // 1 to 18
-                num2 = Math.floor(Math.random() * (maxResult - num1 - 1)) + 1; // 1 to remainder-1
-                num3 = Math.floor(Math.random() * (maxResult - num1 - num2)) + 1; // 1 to remainder
-            } while (num1 + num2 + num3 > maxResult || num1 + num2 + num3 < 3);
+                num1 = Math.floor(Math.random() * (result - 2)) + 1;
+                num2 = Math.floor(Math.random() * (result - num1 - 1)) + 1;
+                num3 = result - num1 - num2;
+            } while (num3 < 1);
             operator = '+';
-            result = num1 + num2 + num3;
             key = `${num1}+${num2}+${num3}`;
         } else if (this.currentOperator === 'sub3') {
             // 3-number subtraction: num1 <= 20, result >= 0
