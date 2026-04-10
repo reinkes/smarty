@@ -324,10 +324,6 @@ class PuzzleApp {
             this.correctCount++;
             this.dom.feedback.textContent = `✓ ${this.currentWord.word}`;
             this.dom.feedback.className   = 'feedback correct';
-            const reward = this.calculateCrownReward();
-            this.crownsEarned += reward;
-            this.saveCrowns();
-            this.updateCrownDisplay(true);
         } else {
             this.dom.feedback.innerHTML = `✗ Es heißt: <strong>${this.currentWord.word}</strong>`;
             this.dom.feedback.className = 'feedback incorrect';
@@ -350,6 +346,14 @@ class PuzzleApp {
         return 5;
     }
 
+    earnCrown() {
+        const reward = this.calculateCrownReward();
+        this.crownsEarned += reward;
+        this.saveCrowns();
+        this.updateCrownDisplay(true);
+        return reward;
+    }
+
     // ── Progress & UI ──────────────────────────────────────────────────────
 
     updateProgress() {
@@ -359,9 +363,10 @@ class PuzzleApp {
     }
 
     showCompletion() {
-        this.dom.taskArea.style.display      = 'none';
+        const reward = this.earnCrown();
+        this.dom.taskArea.style.display         = 'none';
         this.dom.completionScreen.style.display = 'block';
-        this.dom.completionCrowns.textContent   = `👑 ${this.crownsEarned} Kronen gesamt`;
+        this.dom.completionCrowns.textContent   = `+${reward} = ${this.crownsEarned} 👑 Kronen`;
         this.dom.completionCorrect.textContent  = `${this.correctCount} von ${PuzzleApp.TOTAL_TASKS} richtig`;
         if (typeof launchFireworks !== 'undefined') launchFireworks();
     }
