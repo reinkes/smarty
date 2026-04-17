@@ -1,6 +1,7 @@
 class SnakeApp {
     static GRID_SIZE = 15;
     static FOOD_EMOJIS = ['🍎', '🍐', '🍊', '🍋', '🍇', '🍓', '🍒', '🍑'];
+    static HIGHSCORE_KEY = 'smarty-snake-highscore';
     static SPEED_PRESETS = {
         1: { name: 'Langsam', interval: 200, cost: 1 },
         2: { name: 'Normal', interval: 140, cost: 2 },
@@ -28,6 +29,7 @@ class SnakeApp {
         this.cacheDOMElements();
         this.attachEventListeners();
         this.updateSpeedLabel();
+        this.updateHighscoreDisplay();
         CrownManager.showCounter(this.dom.crownCounter, this.dom.crownCount);
     }
 
@@ -48,6 +50,8 @@ class SnakeApp {
         this.dom.crownCounter = document.getElementById('crownCounter');
         this.dom.crownCount = document.getElementById('crownCount');
         this.dom.milestoneCelebration = document.getElementById('milestoneCelebration');
+        this.dom.highscoreValue = document.getElementById('highscoreValue');
+        this.dom.gameOverHighscore = document.getElementById('gameOverHighscore');
     }
 
     attachEventListeners() {
@@ -318,13 +322,34 @@ class SnakeApp {
         }
     }
 
+    loadHighscore() {
+        return parseInt(localStorage.getItem(SnakeApp.HIGHSCORE_KEY) || '0', 10);
+    }
+
+    saveHighscore(score) {
+        localStorage.setItem(SnakeApp.HIGHSCORE_KEY, String(score));
+    }
+
+    updateHighscoreDisplay() {
+        const hs = this.loadHighscore();
+        if (this.dom.highscoreValue) this.dom.highscoreValue.textContent = hs;
+        if (this.dom.gameOverHighscore) this.dom.gameOverHighscore.textContent = 'Rekord: ' + hs;
+    }
+
     gameOver() {
         this.stopGame();
         this.running = false;
 
+        const isNew = this.score > this.loadHighscore();
+        if (isNew) this.saveHighscore(this.score);
+        this.updateHighscoreDisplay();
+
         this.dom.gameOverScore.textContent = 'Punkte: ' + this.score;
 
-        if (this.score >= 10) {
+        if (isNew && this.score > 0) {
+            this.dom.gameOverTitle.textContent = '🏆 Neuer Rekord!';
+            setTimeout(() => launchFireworks(), 300);
+        } else if (this.score >= 10) {
             this.dom.gameOverTitle.textContent = '🎉 Super gemacht!';
             setTimeout(() => launchFireworks(), 300);
         } else {

@@ -55,6 +55,7 @@
         <div class="card preview" id="gameArea">
             <div class="score-display" id="scoreDisplay">
                 <span>Punkte: </span><span id="scoreValue">0</span>
+                <span class="highscore-label">🏆 </span><span id="highscoreValue">0</span>
             </div>
 
             <canvas id="snakeCanvas" width="450" height="450"></canvas>
@@ -63,6 +64,7 @@
                 <div class="game-over-content">
                     <h2 id="gameOverTitle">Spiel vorbei!</h2>
                     <p id="gameOverScore">Punkte: 0</p>
+                    <p class="game-over-highscore" id="gameOverHighscore">Rekord: 0</p>
                     <p class="game-over-cost" id="gameOverCost">Kostet 2 👑</p>
                     <button id="restartButton" class="btn-restart">🔄 Nochmal spielen</button>
                 </div>

@@ -93,6 +93,21 @@ input[type="range"]::-moz-range-thumb {
     font-size: 1.6rem;
 }
 
+.highscore-label {
+    margin-left: 1rem;
+}
+
+#highscoreValue {
+    color: #B8860B;
+    font-size: 1.2rem;
+}
+
+.game-over-highscore {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #B8860B;
+}
+
 /* Canvas */
 #snakeCanvas {
     display: block;
