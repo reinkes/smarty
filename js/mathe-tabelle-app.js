@@ -40,16 +40,16 @@ class TabelleApp {
     // headerHint   = how strongly to highlight prefilled cells when a blank header is focused
     getConfig(level) {
         const configs = [
-            { gridSize: 2, maxAddend:  5, emptyHeaders: 0, headerHint: null     }, //  1
-            { gridSize: 2, maxAddend:  7, emptyHeaders: 0, headerHint: null     }, //  2
-            { gridSize: 2, maxAddend: 10, emptyHeaders: 0, headerHint: null     }, //  3
-            { gridSize: 3, maxAddend:  5, emptyHeaders: 0, headerHint: null     }, //  4
-            { gridSize: 3, maxAddend:  8, emptyHeaders: 0, headerHint: null     }, //  5
-            { gridSize: 3, maxAddend: 10, emptyHeaders: 0, headerHint: null     }, //  6
-            { gridSize: 3, maxAddend: 10, emptyHeaders: 1, headerHint: 'full'   }, //  7 – deduce, 1 blank, full hint
-            { gridSize: 4, maxAddend:  7, emptyHeaders: 1, headerHint: 'medium' }, //  8 – deduce, 1 blank, medium hint
-            { gridSize: 4, maxAddend: 10, emptyHeaders: 2, headerHint: 'faint'  }, //  9 – deduce, 2 blanks, faint hint
-            { gridSize: 4, maxAddend: 10, emptyHeaders: 2, headerHint: null     }, // 10 – deduce, 2 blanks, no hint
+            { gridSize: 2, maxAddend:  5, emptyHeaders: 0, headerHint: null,     crowns: 1 }, //  1
+            { gridSize: 2, maxAddend:  7, emptyHeaders: 0, headerHint: null,     crowns: 1 }, //  2
+            { gridSize: 2, maxAddend: 10, emptyHeaders: 0, headerHint: null,     crowns: 1 }, //  3
+            { gridSize: 3, maxAddend:  5, emptyHeaders: 0, headerHint: null,     crowns: 2 }, //  4
+            { gridSize: 3, maxAddend:  8, emptyHeaders: 0, headerHint: null,     crowns: 2 }, //  5
+            { gridSize: 3, maxAddend: 10, emptyHeaders: 0, headerHint: null,     crowns: 2 }, //  6
+            { gridSize: 3, maxAddend: 10, emptyHeaders: 1, headerHint: 'full',   crowns: 3 }, //  7
+            { gridSize: 4, maxAddend:  7, emptyHeaders: 1, headerHint: 'medium', crowns: 3 }, //  8
+            { gridSize: 4, maxAddend: 10, emptyHeaders: 2, headerHint: 'faint',  crowns: 4 }, //  9
+            { gridSize: 4, maxAddend: 10, emptyHeaders: 2, headerHint: null,     crowns: 4 }, // 10
         ];
         return configs[level - 1];
     }
@@ -328,7 +328,7 @@ class TabelleApp {
     }
 
     earnCrown() {
-        this.crownsEarned += 1;
+        this.crownsEarned += this.config.crowns;
         this.saveCrowns();
         this.updateCrownDisplay();
         const counter = this.dom.crownCounter;
