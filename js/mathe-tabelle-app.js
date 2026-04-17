@@ -34,20 +34,23 @@ class TabelleApp {
         this.updateDifficultyDisplay();
     }
 
-    // gridSize = result grid dimension (2, 3, or 4)
-    // maxAddend = max value for header numbers (so max sum = 2 × maxAddend)
+    // gridSize    = result-grid dimension (2, 3, 4)
+    // maxAddend   = max header value (max sum = 2 × maxAddend)
+    // emptyHeaders = how many row headers AND col headers to make blank (deduce mode).
+    //               Invariant: pre-filled result cells never sit at (emptyRow, emptyCol),
+    //               so every empty header can be solved from a pre-filled result.
     getConfig(level) {
         const configs = [
-            { gridSize: 2, maxAddend:  5 }, //  1 – 2×2, sum bis 10
-            { gridSize: 2, maxAddend:  7 }, //  2
-            { gridSize: 2, maxAddend: 10 }, //  3 – 2×2, sum bis 20
-            { gridSize: 3, maxAddend:  5 }, //  4 – 3×3, sum bis 10
-            { gridSize: 3, maxAddend:  7 }, //  5
-            { gridSize: 3, maxAddend:  8 }, //  6
-            { gridSize: 3, maxAddend: 10 }, //  7 – 3×3, sum bis 20
-            { gridSize: 4, maxAddend:  7 }, //  8 – 4×4
-            { gridSize: 4, maxAddend:  8 }, //  9
-            { gridSize: 4, maxAddend: 10 }, // 10 – 4×4, sum bis 20
+            { gridSize: 2, maxAddend:  5, emptyHeaders: 0 }, //  1
+            { gridSize: 2, maxAddend:  7, emptyHeaders: 0 }, //  2
+            { gridSize: 2, maxAddend: 10, emptyHeaders: 0 }, //  3
+            { gridSize: 3, maxAddend:  5, emptyHeaders: 0 }, //  4
+            { gridSize: 3, maxAddend:  8, emptyHeaders: 0 }, //  5
+            { gridSize: 3, maxAddend: 10, emptyHeaders: 0 }, //  6
+            { gridSize: 3, maxAddend: 10, emptyHeaders: 1 }, //  7 – deduce
+            { gridSize: 4, maxAddend:  7, emptyHeaders: 0 }, //  8
+            { gridSize: 4, maxAddend: 10, emptyHeaders: 0 }, //  9
+            { gridSize: 4, maxAddend: 10, emptyHeaders: 1 }, // 10 – deduce
         ];
         return configs[level - 1];
     }
@@ -65,10 +68,11 @@ class TabelleApp {
 
     updateDifficultyDisplay() {
         const level = this.currentLevel();
-        const { gridSize, maxAddend } = this.getConfig(level);
-        const emoji = level <= 3 ? '😊' : level <= 7 ? '🤔' : '🔥';
+        const cfg = this.getConfig(level);
+        const emoji = level <= 3 ? '😊' : level <= 6 ? '🤔' : '🔥';
+        const mode = cfg.emptyHeaders > 0 ? ' · Kopfzeile ergänzen' : '';
         this.dom.difficultyValue.textContent =
-            `Level ${level} – ${gridSize}×${gridSize}, Summe bis ${maxAddend * 2} ${emoji}`;
+            `Level ${level} – ${cfg.gridSize}×${cfg.gridSize}, Summe bis ${cfg.maxAddend * 2}${mode} ${emoji}`;
     }
 
     startGame() {
@@ -87,23 +91,61 @@ class TabelleApp {
         this.dom.preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = (Math.random() * (i + 1)) | 0;
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
     pickUniqueNumbers(count, max) {
         const pool = [];
         for (let i = 1; i <= max; i++) pool.push(i);
-        // Fisher-Yates
-        for (let i = pool.length - 1; i > 0; i--) {
-            const j = (Math.random() * (i + 1)) | 0;
-            [pool[i], pool[j]] = [pool[j], pool[i]];
-        }
-        return pool.slice(0, count).sort((a, b) => a - b);
+        return this.shuffle(pool).slice(0, count);
+    }
+
+    pickEmptyIndices(gridSize, count) {
+        const set = new Set();
+        if (count <= 0) return set;
+        const all = [];
+        for (let i = 1; i <= gridSize; i++) all.push(i);
+        this.shuffle(all).slice(0, count).forEach(i => set.add(i));
+        return set;
+    }
+
+    // For each empty header, pre-fill exactly one result cell in its row/column
+    // whose other axis is NOT empty — so the kid can deduce the missing value.
+    pickPrefilled(gridSize, emptyRows, emptyCols) {
+        const prefilled = new Set();
+
+        const addFor = (fixedIsRow, fixedIdx) => {
+            const candidates = [];
+            for (let i = 1; i <= gridSize; i++) {
+                const otherIsEmpty = fixedIsRow ? emptyCols.has(i) : emptyRows.has(i);
+                if (!otherIsEmpty) candidates.push(i);
+            }
+            if (candidates.length === 0) return;
+            const pick = candidates[(Math.random() * candidates.length) | 0];
+            const key = fixedIsRow ? `${fixedIdx},${pick}` : `${pick},${fixedIdx}`;
+            prefilled.add(key);
+        };
+
+        emptyRows.forEach(er => addFor(true,  er));
+        emptyCols.forEach(ec => addFor(false, ec));
+        return prefilled;
     }
 
     buildTable() {
-        const { gridSize } = this.config;
+        const { gridSize, emptyHeaders } = this.config;
         this.dom.wrapper.innerHTML = '';
         this.colHeaders = Object.create(null);
         this.rowHeaders = Object.create(null);
         this.inputs = [];
+
+        const emptyRows = this.pickEmptyIndices(gridSize, emptyHeaders);
+        const emptyCols = this.pickEmptyIndices(gridSize, emptyHeaders);
+        const prefilled = this.pickPrefilled(gridSize, emptyRows, emptyCols);
 
         const size = gridSize + 1;
         const grid = document.createElement('div');
@@ -112,7 +154,7 @@ class TabelleApp {
 
         for (let row = 0; row <= gridSize; row++) {
             for (let col = 0; col <= gridSize; col++) {
-                grid.appendChild(this.buildCell(row, col));
+                grid.appendChild(this.buildCell(row, col, emptyRows, emptyCols, prefilled));
             }
         }
 
@@ -121,7 +163,7 @@ class TabelleApp {
         if (this.inputs.length > 0) this.inputs[0].focus();
     }
 
-    buildCell(row, col) {
+    buildCell(row, col, emptyRows, emptyCols, prefilled) {
         const cell = document.createElement('div');
 
         if (row === 0 && col === 0) {
@@ -131,7 +173,7 @@ class TabelleApp {
         }
 
         if (row === 0 || col === 0) {
-            return this.buildHeaderCell(cell, row, col);
+            return this.buildHeaderCell(cell, row, col, emptyRows, emptyCols);
         }
 
         const answer = this.rowValues[row - 1] + this.colValues[col - 1];
@@ -139,35 +181,56 @@ class TabelleApp {
         cell.dataset.row = row;
         cell.dataset.col = col;
 
-        const input = this.makeInput(answer, row, col);
-        input.addEventListener('focus',   () => this.highlightHeaders(row, col, true));
-        input.addEventListener('blur',    () => this.highlightHeaders(row, col, false));
-        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.advanceFocus(row, col); });
-        cell.appendChild(input);
-        this.inputs.push(input);
+        if (prefilled.has(`${row},${col}`)) {
+            cell.classList.add('prefilled');
+            cell.textContent = answer;
+        } else {
+            const input = this.makeInput(answer, row, col);
+            input.addEventListener('focus',   () => this.highlightHeaders(row, col, true));
+            input.addEventListener('blur',    () => this.highlightHeaders(row, col, false));
+            input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.advanceFocus(input); });
+            cell.appendChild(input);
+            this.inputs.push(input);
+        }
         return cell;
     }
 
-    buildHeaderCell(cell, row, col) {
+    buildHeaderCell(cell, row, col, emptyRows, emptyCols) {
         const isCol = row === 0;
         const index = isCol ? col : row;
         const value = isCol ? this.colValues[col - 1] : this.rowValues[row - 1];
+        const isEmpty = isCol ? emptyCols.has(col) : emptyRows.has(row);
+
         cell.className = `grid-cell header-cell ${isCol ? 'col-header' : 'row-header'}`;
         cell.dataset.index = index;
-        cell.textContent = value;
         (isCol ? this.colHeaders : this.rowHeaders)[index] = cell;
+
+        if (isEmpty) {
+            cell.classList.add('hidden-header');
+            const input = this.makeInput(value);
+            input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.advanceFocus(input); });
+            cell.appendChild(input);
+            this.inputs.push(input);
+        } else {
+            cell.textContent = value;
+        }
         return cell;
     }
 
     makeInput(answer, row, col) {
         const input = document.createElement('input');
         input.type = 'number';
-        input.min = '2';
-        input.max = String(this.config.maxAddend * 2);
         input.autocomplete = 'off';
         input.dataset.answer = String(answer);
-        input.dataset.row = row;
-        input.dataset.col = col;
+        if (row === undefined) {
+            input.min = '1';
+            input.max = String(this.config.maxAddend);
+        } else {
+            input.min = '2';
+            input.max = String(this.config.maxAddend * 2);
+            input.dataset.row = row;
+            input.dataset.col = col;
+        }
         input.addEventListener('input', () => this.onInputChange(input));
         return input;
     }
@@ -206,13 +269,11 @@ class TabelleApp {
         }
     }
 
-    advanceFocus(row, col) {
-        const { gridSize } = this.config;
-        let nextRow = row, nextCol = col + 1;
-        if (nextCol > gridSize) { nextCol = 1; nextRow++; }
-        if (nextRow > gridSize) return;
-        const next = this.dom.wrapper.querySelector(`input[data-row="${nextRow}"][data-col="${nextCol}"]`);
-        if (next) next.focus();
+    advanceFocus(currentInput) {
+        const idx = this.inputs.indexOf(currentInput);
+        if (idx >= 0 && idx < this.inputs.length - 1) {
+            this.inputs[idx + 1].focus();
+        }
     }
 
     checkAnswers() {
