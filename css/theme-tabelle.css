@@ -1,0 +1,263 @@
+/* === Additions-Tabelle Theme === */
+
+:root {
+    --primary: #FF6B9D;
+    --secondary: #FEC260;
+    --tertiary: #5DADE2;
+}
+
+body {
+    background: linear-gradient(135deg, #FFF9F0 0%, #FFE5F1 100%);
+}
+
+body::before { background: #5DADE2; }
+body::after  { background: #FEC260; }
+
+h1 {
+    color: #FF6B9D;
+    text-shadow: 3px 3px 0px #FEC260;
+}
+
+.card {
+    border-color: #FF6B9D;
+    box-shadow: 0 8px 32px rgba(255, 107, 157, 0.15);
+}
+
+.card::before { content: '➕'; }
+
+select, input[type="range"] {
+    border-color: #5DADE2;
+}
+
+select:focus, input[type="range"]:focus {
+    border-color: #FF6B9D;
+    box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.1);
+}
+
+.btn-back {
+    color: #FF6B9D;
+    border-color: #FF6B9D;
+}
+
+.btn-back:hover {
+    background: #FF6B9D;
+    color: white;
+}
+
+button {
+    background: linear-gradient(135deg, #FF6B9D, #FF8CB4);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+}
+
+.btn-check {
+    background: linear-gradient(135deg, #27AE60, #52BE80);
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+    width: auto;
+    margin-top: 0;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+}
+
+.btn-new {
+    background: linear-gradient(135deg, #5DADE2, #7FC8F8);
+    box-shadow: 0 4px 15px rgba(93, 173, 226, 0.4);
+    width: auto;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+}
+
+.preview-header {
+    border-bottom-color: #FEC260;
+}
+
+.preview-title {
+    color: #FF6B9D;
+}
+
+.milestone-celebration {
+    background: linear-gradient(135deg, #FF6B9D, #FEC260);
+}
+
+footer {
+    border-top-color: rgba(255, 107, 157, 0.2);
+}
+
+footer a {
+    color: #FF6B9D;
+}
+
+/* === Addition Grid === */
+
+.table-wrapper {
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.addition-grid {
+    display: grid;
+    gap: 5px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.grid-cell {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    position: relative;
+}
+
+/* Corner cell */
+.corner-cell {
+    background: linear-gradient(135deg, #FF6B9D, #FF8CB4);
+    color: white;
+    font-size: 1.8rem;
+    pointer-events: none;
+}
+
+/* Header cells (top row + left column) */
+.header-cell {
+    background: linear-gradient(135deg, #FFF3CD, #FFE082);
+    color: #2C3E50;
+    border: 2px solid #FFC107;
+    pointer-events: none;
+}
+
+/* Highlighted state – triggered when a result cell in that row/col is focused */
+.header-cell.highlighted {
+    background: linear-gradient(135deg, #FEC260, #FFD54F);
+    border-color: #FF8F00;
+    transform: scale(1.12);
+    box-shadow: 0 4px 14px rgba(254, 194, 96, 0.6);
+    z-index: 2;
+}
+
+/* Hidden header – becomes an input */
+.header-cell.hidden-header {
+    background: white;
+    border: 2px dashed #FFC107;
+    pointer-events: auto;
+}
+
+.header-cell.hidden-header.correct {
+    background: linear-gradient(135deg, #D5F4E6, #ABEBC6);
+    border: 2px solid #27AE60;
+}
+
+.header-cell.hidden-header.incorrect {
+    background: linear-gradient(135deg, #FADBD8, #F5B7B1);
+    border: 2px solid #E74C3C;
+}
+
+/* Result cells */
+.result-cell {
+    background: white;
+    border: 2px solid #E0E0E0;
+}
+
+/* Pre-filled reference cells (shown as static numbers, not inputs) */
+.result-cell.prefilled {
+    background: linear-gradient(135deg, #EBF5FB, #D6EAF8);
+    border-color: #AED6F1;
+    color: #2471A3;
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: 'Fredoka', sans-serif;
+    cursor: default;
+}
+
+.result-cell.prefilled:hover {
+    background: linear-gradient(135deg, #D6EAF8, #BDE0F7);
+}
+
+.result-cell.correct {
+    background: linear-gradient(135deg, #D5F4E6, #ABEBC6);
+    border-color: #27AE60;
+}
+
+.result-cell.incorrect {
+    background: linear-gradient(135deg, #FADBD8, #F5B7B1);
+    border-color: #E74C3C;
+}
+
+/* Inputs inside cells */
+.grid-cell input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2C3E50;
+    outline: none;
+    padding: 0;
+    -moz-appearance: textfield;
+    cursor: pointer;
+}
+
+.grid-cell input::-webkit-inner-spin-button,
+.grid-cell input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.grid-cell input:focus {
+    color: #FF6B9D;
+}
+
+.result-cell.correct input,
+.result-cell.incorrect input,
+.header-cell.correct input,
+.header-cell.incorrect input {
+    color: #2C3E50;
+}
+
+/* === Controls row below the table === */
+.table-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* === Legend / hint bar === */
+.hint-bar {
+    text-align: center;
+    font-size: 1rem;
+    color: #888;
+    margin-top: 1rem;
+    font-style: italic;
+}
+
+/* === Mobile === */
+@media (max-width: 600px) {
+    .grid-cell {
+        width: 42px;
+        height: 42px;
+        font-size: 1.1rem;
+        border-radius: 8px;
+    }
+
+    .corner-cell {
+        font-size: 1.3rem;
+    }
+
+    .grid-cell input {
+        font-size: 1.1rem;
+    }
+
+    .addition-grid {
+        gap: 3px;
+    }
+}
