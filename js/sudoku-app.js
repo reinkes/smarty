@@ -211,15 +211,11 @@ class SudokuApp {
         return result;
     }
 
-    /**
-     * Create puzzle by removing numbers
-     */
     createPuzzle(solution, clues) {
         const puzzle = solution.map(row => [...row]);
         const totalCells = SudokuApp.GRID_SIZE * SudokuApp.GRID_SIZE;
         const cellsToRemove = totalCells - clues;
 
-        // Get all cell positions
         const positions = [];
         for (let row = 0; row < SudokuApp.GRID_SIZE; row++) {
             for (let col = 0; col < SudokuApp.GRID_SIZE; col++) {
@@ -227,19 +223,68 @@ class SudokuApp {
             }
         }
 
-        // Shuffle positions
         for (let i = positions.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [positions[i], positions[j]] = [positions[j], positions[i]];
         }
 
-        // Remove numbers
-        for (let i = 0; i < cellsToRemove; i++) {
-            const { row, col } = positions[i];
+        let removed = 0;
+        for (const { row, col } of positions) {
+            if (removed >= cellsToRemove) break;
+            const backup = puzzle[row][col];
             puzzle[row][col] = 0;
+
+            if (this.countSolutions(puzzle) !== 1) {
+                puzzle[row][col] = backup;
+            } else {
+                removed++;
+            }
         }
 
         return puzzle;
+    }
+
+    countSolutions(grid) {
+        const SIZE = SudokuApp.GRID_SIZE;
+        const BOX = SudokuApp.BOX_SIZE;
+        const board = grid.map(row => [...row]);
+        let count = 0;
+
+        const isValid = (r, c, num) => {
+            for (let i = 0; i < SIZE; i++) {
+                if (board[r][i] === num || board[i][c] === num) return false;
+            }
+            const br = Math.floor(r / BOX) * BOX;
+            const bc = Math.floor(c / BOX) * BOX;
+            for (let dr = 0; dr < BOX; dr++) {
+                for (let dc = 0; dc < BOX; dc++) {
+                    if (board[br + dr][bc + dc] === num) return false;
+                }
+            }
+            return true;
+        };
+
+        const solve = () => {
+            if (count > 1) return;
+            for (let r = 0; r < SIZE; r++) {
+                for (let c = 0; c < SIZE; c++) {
+                    if (board[r][c] === 0) {
+                        for (let num = 1; num <= SIZE; num++) {
+                            if (isValid(r, c, num)) {
+                                board[r][c] = num;
+                                solve();
+                                board[r][c] = 0;
+                            }
+                        }
+                        return;
+                    }
+                }
+            }
+            count++;
+        };
+
+        solve();
+        return count;
     }
 
     /**
