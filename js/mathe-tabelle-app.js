@@ -49,7 +49,7 @@ class TabelleApp {
             { gridSize: 3, maxAddend: 10, emptyHeaders: 1, headerHint: 'full'   }, //  7 – deduce, 1 blank, full hint
             { gridSize: 4, maxAddend:  7, emptyHeaders: 1, headerHint: 'medium' }, //  8 – deduce, 1 blank, medium hint
             { gridSize: 4, maxAddend: 10, emptyHeaders: 2, headerHint: 'faint'  }, //  9 – deduce, 2 blanks, faint hint
-            { gridSize: 4, maxAddend: 10, emptyHeaders: 3, headerHint: null     }, // 10 – deduce, 3 blanks, no hint
+            { gridSize: 4, maxAddend: 10, emptyHeaders: 2, headerHint: null     }, // 10 – deduce, 2 blanks, no hint
         ];
         return configs[level - 1];
     }
