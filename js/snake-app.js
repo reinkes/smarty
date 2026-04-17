@@ -111,16 +111,16 @@ class SnakeApp {
         CrownManager.updateDisplay(this.dom.crownCount);
 
         this.stopGame();
-        this.resetState();
-        this.resizeCanvas();
         this.dom.gameArea.classList.add('active');
         this.dom.gameOverOverlay.classList.remove('active');
+        this.resetState();
+        this.resizeCanvas();
         this.dom.gameArea.scrollIntoView({ behavior: 'smooth' });
         this.running = true;
+        this.draw();
 
         const preset = SnakeApp.SPEED_PRESETS[this.speed];
         this.gameInterval = setInterval(() => this.tick(), preset.interval);
-        this.draw();
     }
 
     resetState() {
@@ -140,7 +140,7 @@ class SnakeApp {
     resizeCanvas() {
         const container = this.dom.canvas.parentElement;
         const maxWidth = container.clientWidth - 6;
-        const size = Math.min(450, maxWidth);
+        const size = Math.max(150, Math.min(450, maxWidth));
         this.dom.canvas.width = size;
         this.dom.canvas.height = size;
         this.cellSize = size / SnakeApp.GRID_SIZE;
