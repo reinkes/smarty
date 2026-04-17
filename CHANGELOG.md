@@ -6,6 +6,79 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ---
 
+## [3.0.0] - 2026-04-17
+
+### 👑 Unified Crown System
+
+#### Changed
+- **CrownManager singleton** in `shared.js` replaces 8 duplicate crown implementations across all apps
+- Single LocalStorage key `smarty-crowns` is the only persisted user data
+- Unified reward scale: L1-3→1, L4-6→2, L7-9→3, L10→5 crowns (Additions-Tabelle has own per-level config)
+- All apps now use `CrownManager.earn()`, `CrownManager.earnAndDisplay()`, `CrownManager.showCounter()`
+- Removed `ProgressTracker` usage for crown storage — only used for level persistence
+
+#### Fixed
+- **GroesserKleinerApp** awarded crowns every 10 tasks regardless of correctness — now only at completion
+- **WoerterApp** only awarded 1 crown at task 10 — now awards level-based crowns at completion
+- **BuchstabenApp** called non-existent `AudioManager.getInstance()` — fixed to use global `audioManager`
+- **BuchstabenApp** used `location.reload()` for restart — replaced with proper state reset
+- **WoerterApp** innerHTML XSS pattern — replaced with textContent
+- **DeutschApp** had duplicate fireworks code (~80 lines) — removed, uses shared `launchFireworks()`
+- **Sudoku** could generate puzzles with multiple solutions — added backtracking solver (`countSolutions()`) to guarantee unique solvability
+- Removed ~20 stray `console.log` statements across sudoku-app.js
+- Removed non-existent `playSuccessSound` export from shared.js
+
+#### Removed
+- ~491 lines of duplicate crown code across 8 apps
+- Duplicate fireworks implementations (was triplicated)
+- All per-app crown storage keys and methods
+
+### 🃏 Memory Game (NEW)
+
+#### Added
+- **memory-spiel.html** + **js/memory-app.js** + **css/theme-memory.css**
+- Emoji card matching with CSS 3D flip animation
+- 3 difficulty levels: 3×2 (1👑), 4×3 (2👑), 4×4 (3👑)
+- 16 animal emojis as card faces
+- Crown check before starting — blocks if insufficient balance
+- Deducts crowns via `CrownManager.earn(-cost)` on game start
+- Move counter and pair counter
+- 🏆 Highscore per difficulty level (fewest moves, stored in `smarty-memory-highscore`)
+- Highscore updates when switching difficulty slider
+- Orange/amber theme
+
+### 🐍 Snake Game (NEW)
+
+#### Added
+- **snake-spiel.html** + **js/snake-app.js** + **css/theme-snake.css**
+- Canvas-based 15×15 grid with emoji fruit food
+- 3 speed levels: Langsam/200ms (1👑), Normal/140ms (2👑), Schnell/90ms (3👑)
+- Keyboard control (arrow keys) with reverse-direction prevention
+- Touch/swipe control for mobile (30px minimum threshold)
+- Snake head with directional eyes, gradient body brightness
+- Crown check before starting — blocks if insufficient balance
+- 🏆 Highscore (global, stored in `smarty-snake-highscore`)
+- New record celebration with fireworks
+- Fireworks on score ≥ 10
+- Game-over overlay with score, highscore, and restart
+- Green/lime theme
+
+### 🏠 Index Page
+
+#### Changed
+- Added Memory and Snake cards to app grid
+- Added `.app-card.memory` (orange/amber) and `.app-card.snake` (green/lime) color schemes
+- Both reward games clearly marked as "Kostet Kronen zum Spielen 👑"
+
+### 🔧 CI/CD
+
+#### Changed
+- Added `refactor/**` branch pattern to deploy triggers
+- Dynamic `DEPLOY_ENV` determination: `refactor/*` → `/refactor/`, `beta/*` → `/beta/`
+- SFTP mirror target uses `$DEPLOY_ENV` variable
+
+---
+
 ## [2.5.0] - 2026-03-27
 
 ### 🔢 Mathe-Aufgaben Generator
