@@ -31,7 +31,14 @@
       "Bash(timeout 5 cat:*)",
       "Bash(timeout 8 cat:*)",
       "Bash(git commit:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(ls:*)",
+      "Bash(wc:*)",
+      "Bash(git push:*)",
+      "Bash(git merge:*)",
+      "Bash(git tag:*)",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"try { new Function\\(require\\('fs'\\).readFileSync\\('js/mathe-tabelle-app.js','utf8'\\)\\); console.log\\('OK'\\); } catch\\(e\\){ console.error\\(e.message\\); process.exit\\(1\\);}\")"
     ]
   }
 }

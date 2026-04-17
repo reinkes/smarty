@@ -1,0 +1,188 @@
+/* === Additions-Tabelle — extends theme-math.css === */
+
+.card::before { content: '➕'; }
+
+.btn-check {
+    background: linear-gradient(135deg, #27AE60, #52BE80);
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+    width: auto;
+    margin-top: 0;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+}
+
+.btn-new {
+    background: linear-gradient(135deg, var(--math-tertiary), #7FC8F8);
+    box-shadow: 0 4px 15px rgba(93, 173, 226, 0.4);
+    width: auto;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.addition-grid {
+    display: grid;
+    gap: 5px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.grid-cell {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    position: relative;
+}
+
+/* Animate only the cells that actually change state */
+.header-cell,
+.result-cell {
+    transition: transform 0.15s ease, box-shadow 0.15s ease,
+                background 0.15s ease, border-color 0.15s ease;
+}
+
+.corner-cell {
+    background: linear-gradient(135deg, var(--math-primary), #FF8CB4);
+    color: white;
+    font-size: 1.8rem;
+    pointer-events: none;
+}
+
+.header-cell {
+    background: linear-gradient(135deg, #FFF3CD, #FFE082);
+    color: var(--text-dark);
+    border: 2px solid #FFC107;
+    pointer-events: none;
+}
+
+.header-cell.highlighted {
+    background: linear-gradient(135deg, var(--math-secondary), #FFD54F);
+    border-color: #FF8F00;
+    transform: scale(1.12);
+    box-shadow: 0 4px 14px rgba(254, 194, 96, 0.6);
+    z-index: 2;
+}
+
+.header-cell.hidden-header {
+    background: white;
+    border: 2px dashed #FFC107;
+    pointer-events: auto;
+}
+
+.header-cell.hidden-header.correct {
+    background: linear-gradient(135deg, #D5F4E6, #ABEBC6);
+    border: 2px solid #27AE60;
+}
+
+.header-cell.hidden-header.incorrect {
+    background: linear-gradient(135deg, #FADBD8, #F5B7B1);
+    border: 2px solid #E74C3C;
+}
+
+.result-cell {
+    background: white;
+    border: 2px solid #E0E0E0;
+}
+
+.result-cell.prefilled {
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    border-color: #5DADE2;
+    color: #1565C0;
+}
+
+.result-cell.prefilled.hint-full {
+    background: linear-gradient(135deg, #FFF9C4, #FFF176);
+    border-color: #F9A825;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(249, 168, 37, 0.5);
+    z-index: 2;
+}
+
+.result-cell.prefilled.hint-medium {
+    background: linear-gradient(135deg, #FFFDE7, #FFF9C4);
+    border-color: #FFC107;
+    transform: scale(1.04);
+    box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+    z-index: 2;
+}
+
+.result-cell.prefilled.hint-faint {
+    border-color: #FFD54F;
+    transform: scale(1.02);
+}
+
+.result-cell.correct {
+    background: linear-gradient(135deg, #D5F4E6, #ABEBC6);
+    border-color: #27AE60;
+}
+
+.result-cell.incorrect {
+    background: linear-gradient(135deg, #FADBD8, #F5B7B1);
+    border-color: #E74C3C;
+}
+
+.grid-cell input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    outline: none;
+    padding: 0;
+    -moz-appearance: textfield;
+    cursor: pointer;
+}
+
+.grid-cell input::-webkit-inner-spin-button,
+.grid-cell input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.grid-cell input:focus {
+    color: var(--math-primary);
+}
+
+.table-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.hint-bar {
+    text-align: center;
+    font-size: 1rem;
+    color: #888;
+    margin-top: 1rem;
+    font-style: italic;
+}
+
+@media (max-width: 600px) {
+    .grid-cell {
+        width: 42px;
+        height: 42px;
+        font-size: 1.1rem;
+        border-radius: 8px;
+    }
+
+    .corner-cell { font-size: 1.3rem; }
+    .grid-cell input { font-size: 1.1rem; }
+    .addition-grid { gap: 3px; }
+}
