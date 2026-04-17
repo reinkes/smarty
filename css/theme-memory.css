@@ -99,6 +99,10 @@ input[type="range"]::-moz-range-thumb {
     color: var(--secondary);
 }
 
+.highscore-label {
+    color: #B8860B;
+}
+
 /* === MEMORY GRID === */
 .memory-grid {
     display: grid;

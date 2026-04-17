@@ -1,5 +1,6 @@
 class MemoryApp {
     static EMOJIS = ['🐱','🐶','🐸','🐵','🦁','🐘','🦊','🐼','🐨','🦄','🐙','🦋','🐢','🐬','🦜','🐝'];
+    static HIGHSCORE_KEY = 'smarty-memory-highscore';
 
     static DIFFICULTY_PRESETS = {
         1: { name: 'Einfach 3×2', cols: 3, rows: 2, cost: 1 },
@@ -37,6 +38,7 @@ class MemoryApp {
     init() {
         this.cacheDOMElements();
         this.attachEventListeners();
+        this.updateHighscoreDisplay();
         this.showCrownCounter();
     }
 
@@ -55,6 +57,7 @@ class MemoryApp {
         this.dom.fireworksContainer = document.getElementById('fireworksContainer');
         this.dom.crownCounter = document.getElementById('crownCounter');
         this.dom.crownCount = document.getElementById('crownCount');
+        this.dom.highscoreValue = document.getElementById('highscoreValue');
     }
 
     attachEventListeners() {
@@ -73,10 +76,12 @@ class MemoryApp {
 
     updateDifficultyLabel() {
         const level = parseInt(this.dom.difficultySlider.value);
+        this.difficulty = level;
         const preset = MemoryApp.DIFFICULTY_PRESETS[level];
         const emoji = level === 1 ? '😊' : level === 2 ? '🤔' : '😎';
         this.dom.difficultyValue.textContent = `Level ${level} (${preset.name}) ${emoji}`;
         this.dom.crownCost.textContent = `Kostet ${preset.cost} 👑`;
+        this.updateHighscoreDisplay();
     }
 
     startGame() {
@@ -204,8 +209,33 @@ class MemoryApp {
         this.dom.pairsDisplay.textContent = `Paare: ${this.matchedPairs}/${this.totalPairs}`;
     }
 
+    loadHighscore() {
+        const data = JSON.parse(localStorage.getItem(MemoryApp.HIGHSCORE_KEY) || '{}');
+        return data[this.difficulty] || 0;
+    }
+
+    saveHighscore(moves) {
+        const data = JSON.parse(localStorage.getItem(MemoryApp.HIGHSCORE_KEY) || '{}');
+        data[this.difficulty] = moves;
+        localStorage.setItem(MemoryApp.HIGHSCORE_KEY, JSON.stringify(data));
+    }
+
+    updateHighscoreDisplay() {
+        const best = this.loadHighscore();
+        if (this.dom.highscoreValue) {
+            this.dom.highscoreValue.textContent = best > 0 ? best : '–';
+        }
+    }
+
     gameWon() {
-        const message = `🎉 Geschafft in ${this.moves} Zügen!`;
+        const best = this.loadHighscore();
+        const isNew = best === 0 || this.moves < best;
+        if (isNew) this.saveHighscore(this.moves);
+        this.updateHighscoreDisplay();
+
+        const message = isNew
+            ? `🏆 Neuer Rekord! ${this.moves} Züge!`
+            : `🎉 Geschafft in ${this.moves} Zügen!`;
         showMilestoneCelebration(message);
         setTimeout(() => launchFireworks(), 500);
     }
