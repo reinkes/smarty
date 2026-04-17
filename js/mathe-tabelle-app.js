@@ -251,7 +251,12 @@ class TabelleApp {
         const hint = this.config.headerHint;
         if (!hint) return;
         const cells = (isCol ? this.prefilledByCol[index] : this.prefilledByRow[index]) || [];
-        cells.forEach(cell => cell.classList.toggle(`hint-${hint}`, on));
+        cells.forEach(cell => {
+            cell.classList.toggle(`hint-${hint}`, on);
+            const otherIdx = isCol ? parseInt(cell.dataset.row) : parseInt(cell.dataset.col);
+            const otherHeader = isCol ? this.rowHeaders[otherIdx] : this.colHeaders[otherIdx];
+            if (otherHeader) otherHeader.classList.toggle('highlighted', on);
+        });
     }
 
     isInputCorrect(input) {
