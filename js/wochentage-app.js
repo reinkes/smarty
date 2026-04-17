@@ -17,7 +17,7 @@ class WochentageApp {
         this.tasksSolved = 0;
         this.correctStreak = 0;
         this.incorrectCount = 0;
-        this.crownsEarned = 0;
+        // Crown achievement system (managed by CrownManager)
         this.taskIdCounter = 0;
         this.currentTaskData = null;
         this.isAnswered = false;
@@ -37,8 +37,6 @@ class WochentageApp {
             crownCounter: null,
             crownCount: null
         };
-
-        this.loadCrowns();
     }
 
     init() {
@@ -417,7 +415,7 @@ class WochentageApp {
             crownIcon.textContent = '👑';
 
             const crownText = document.createElement('span');
-            crownText.textContent = `+${crownsEarned} = ${this.crownsEarned} Kronen!`;
+            crownText.textContent = `+${crownsEarned} = ${CrownManager.load()} Kronen!`;
 
             crownDiv.appendChild(crownIcon);
             crownDiv.appendChild(crownText);
@@ -440,52 +438,16 @@ class WochentageApp {
             : '🎊 Alle Aufgaben richtig! Super! 🎊');
     }
 
-    loadCrowns() {
-        const saved = localStorage.getItem('smarty-crowns');
-        this.crownsEarned = saved ? parseInt(saved) : 0;
-    }
-
-    saveCrowns() {
-        localStorage.setItem('smarty-crowns', this.crownsEarned.toString());
-    }
-
-    updateCrownDisplay() {
-        if (this.dom.crownCount) {
-            this.dom.crownCount.textContent = this.crownsEarned;
-        }
-    }
-
     showCrownCounter() {
-        if (this.dom.crownCounter) {
-            this.dom.crownCounter.style.display = 'flex';
-            this.updateCrownDisplay();
-        }
+        CrownManager.showCounter(this.dom.crownCounter, this.dom.crownCount);
     }
 
     hideCrownCounter() {
-        if (this.dom.crownCounter) {
-            this.dom.crownCounter.style.display = 'none';
-        }
-    }
-
-    calculateCrownReward() {
-        if (this.level <= 3) return 1;
-        if (this.level <= 6) return 2;
-        if (this.level <= 9) return 3;
-        return 5;
+        CrownManager.hideCounter(this.dom.crownCounter);
     }
 
     earnCrown() {
-        const reward = this.calculateCrownReward();
-        this.crownsEarned += reward;
-        this.saveCrowns();
-        this.updateCrownDisplay();
-
-        if (this.dom.crownCounter) {
-            this.dom.crownCounter.classList.add('earn');
-            setTimeout(() => this.dom.crownCounter.classList.remove('earn'), 600);
-        }
-
+        const { reward } = CrownManager.earnAndDisplay(this.level, this.dom.crownCount, this.dom.crownCounter);
         return reward;
     }
 }

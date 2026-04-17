@@ -21,9 +21,7 @@ class SudokuApp {
         this.hintsUsed = 0;
         this.puzzlesSolved = 0;
 
-        // Crown achievement system
-        this.crownsEarned = 0;
-        this.loadCrowns();
+        // Crown achievement system (managed by CrownManager)
 
         // DOM cache
         this.dom = {
@@ -449,77 +447,24 @@ class SudokuApp {
             if (!allFilled) break;
         }
 
-        // If all filled, check solution automatically
         if (allFilled) {
-            console.log('All cells filled, auto-checking solution...');
             setTimeout(() => {
                 this.checkSolution();
             }, 300);
         }
     }
 
-    /**
-     * Puzzle successfully solved
-     */
     puzzleSolved() {
-        console.log('🎉 Sudoku solved!');
         this.puzzlesSolved++;
 
-        // Earn crowns based on difficulty
         const crowns = this.earnCrown();
-        console.log(`Earned ${crowns} crowns, total: ${this.crownsEarned}`);
-
-        // Play success sound
         audioManager.playSuccessSound();
 
-        // Show celebration message like Math and German apps
-        const crownEmojis = '👑'.repeat(crowns);
-        const message = `🎉 Geschafft! Super gelöst! +${crowns} = ${this.crownsEarned} Kronen! ${crownEmojis}`;
-        console.log('Celebration message:', message);
+        const total = CrownManager.load();
+        const message = `🎉 Geschafft! +${crowns} = ${total} Kronen! 👑`;
+        showMilestoneCelebration(message);
 
-        if (this.dom.milestoneCelebration) {
-            console.log('Showing milestone celebration WITHOUT animation');
-
-            this.dom.milestoneCelebration.textContent = message;
-
-            // Show directly WITHOUT animation (no .show class)
-            this.dom.milestoneCelebration.style.cssText = `
-                position: fixed !important;
-                top: 50% !important;
-                left: 50% !important;
-                transform: translate(-50%, -50%) scale(1) !important;
-                background: linear-gradient(135deg, #4CAF50, #26A69A) !important;
-                color: white !important;
-                padding: 2rem 3rem !important;
-                border-radius: 24px !important;
-                font-size: 2rem !important;
-                font-weight: 700 !important;
-                z-index: 999999 !important;
-                opacity: 1 !important;
-                display: block !important;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8) !important;
-                animation: none !important;
-            `;
-
-            console.log('✅ Celebration should be VISIBLE NOW');
-
-            setTimeout(() => {
-                console.log('Hiding celebration');
-                this.dom.milestoneCelebration.style.cssText = '';
-            }, 4000);
-        } else {
-            console.error('milestoneCelebration element not found!');
-        }
-
-        // Launch fireworks using shared function
-        setTimeout(() => {
-            if (typeof launchFireworks === 'function') {
-                console.log('Launching fireworks');
-                launchFireworks();
-            } else {
-                console.error('launchFireworks function not found!');
-            }
-        }, 500);
+        setTimeout(() => launchFireworks(), 500);
     }
 
     /**
@@ -578,66 +523,16 @@ class SudokuApp {
      */
     // Fireworks now handled by shared.js launchFireworks() function
 
-    /**
-     * Calculate crown reward based on difficulty
-     */
-    calculateCrownReward() {
-        // Sudoku: 1 crown for easy, 2 for medium, 3 for hard
-        return this.difficulty;
-    }
-
-    /**
-     * Earn crowns
-     */
     earnCrown() {
-        const reward = this.calculateCrownReward();
-        this.crownsEarned += reward;
-        this.saveCrowns();
-        this.updateCrownDisplay();
-
-        // Animate crown counter
-        if (this.dom.crownCounter) {
-            this.dom.crownCounter.classList.add('earn');
-            setTimeout(() => {
-                this.dom.crownCounter.classList.remove('earn');
-            }, 600);
-        }
-
+        const reward = this.difficulty;
+        CrownManager.earn(reward);
+        CrownManager.updateDisplay(this.dom.crownCount);
+        CrownManager.animateEarn(this.dom.crownCounter);
         return reward;
     }
 
-    /**
-     * Load crowns from localStorage
-     */
-    loadCrowns() {
-        const saved = localStorage.getItem('smarty-crowns');
-        this.crownsEarned = saved ? parseInt(saved) : 0;
-    }
-
-    /**
-     * Save crowns to localStorage
-     */
-    saveCrowns() {
-        localStorage.setItem('smarty-crowns', this.crownsEarned.toString());
-    }
-
-    /**
-     * Update crown display
-     */
-    updateCrownDisplay() {
-        if (this.dom.crownCount) {
-            this.dom.crownCount.textContent = this.crownsEarned;
-        }
-    }
-
-    /**
-     * Show crown counter
-     */
     showCrownCounter() {
-        if (this.dom.crownCounter) {
-            this.dom.crownCounter.style.display = 'flex';
-            this.updateCrownDisplay();
-        }
+        CrownManager.showCounter(this.dom.crownCounter, this.dom.crownCount);
     }
 
     /**

@@ -36,9 +36,7 @@ class MatheApp {
         this.tasksNeededPerNumber = 10; // How many tasks with a number before unlocking next
         this.correctAnswersAtStartLevel = 0; // At level 10, count ALL correct answers
 
-        // Crown achievement system
-        this.crownsEarned = 0;
-        this.loadCrowns();
+        // Crown achievement system (managed by CrownManager)
 
         // Timeout references
         this.opacityUpdateTimeout = null;
@@ -1347,52 +1345,16 @@ class MatheApp {
         this.updateProgressBar();
     }
 
-    /**
-     * Load crowns from localStorage
-     */
-    loadCrowns() {
-        const saved = localStorage.getItem('smarty-crowns');
-        this.crownsEarned = saved ? parseInt(saved) : 0;
-    }
-
-    /**
-     * Save crowns to localStorage
-     */
-    saveCrowns() {
-        localStorage.setItem('smarty-crowns', this.crownsEarned.toString());
-    }
-
-    /**
-     * Update crown counter display
-     */
-    updateCrownDisplay() {
-        if (this.dom.crownCount) {
-            this.dom.crownCount.textContent = this.crownsEarned;
-        }
-    }
-
-    /**
-     * Show crown counter (non-adaptive mode only)
-     */
     showCrownCounter() {
-        if (this.dom.crownCounter && !this.adaptiveMode) {
-            this.dom.crownCounter.style.display = 'flex';
-            this.updateCrownDisplay();
+        if (!this.adaptiveMode) {
+            CrownManager.showCounter(this.dom.crownCounter, this.dom.crownCount);
         }
     }
 
-    /**
-     * Hide crown counter
-     */
     hideCrownCounter() {
-        if (this.dom.crownCounter) {
-            this.dom.crownCounter.style.display = 'none';
-        }
+        CrownManager.hideCounter(this.dom.crownCounter);
     }
 
-    /**
-     * Show completion screen with crown count and retry button
-     */
     showCompletionScreen(crownsEarned) {
         const wrapper = document.createElement('div');
         wrapper.className = 'completion-screen';
@@ -1409,9 +1371,9 @@ class MatheApp {
         message.className = 'completion-message';
         message.textContent = `Alle ${this.currentTasks.length} Aufgaben richtig gelöst! 🌟`;
 
-        // Create crown display (if not in adaptive mode)
         let crownDisplay = null;
-        if (!this.adaptiveMode && this.crownsEarned > 0) {
+        if (!this.adaptiveMode && crownsEarned > 0) {
+            const total = CrownManager.load();
             crownDisplay = document.createElement('div');
             crownDisplay.className = 'completion-crown-display';
 
@@ -1421,9 +1383,7 @@ class MatheApp {
 
             const crownText = document.createElement('span');
             crownText.className = 'crown-text';
-            crownText.textContent = crownsEarned > 0
-                ? `+${crownsEarned} = ${this.crownsEarned} Kronen!`
-                : `${this.crownsEarned} Kronen gesammelt!`;
+            crownText.textContent = `+${crownsEarned} = ${total} Kronen!`;
 
             crownDisplay.appendChild(crownIcon);
             crownDisplay.appendChild(crownText);
@@ -1458,43 +1418,11 @@ class MatheApp {
         }
     }
 
-    /**
-     * Calculate crowns based on difficulty level
-     * Level 1-3: 1 crown
-     * Level 4-6: 2 crowns
-     * Level 7-9: 3 crowns
-     * Level 10: 5 crowns
-     */
-    calculateCrownReward() {
-        const level = parseInt(this.dom.difficultySlider.value);
-        if (level <= 3) return 1;
-        if (level <= 6) return 2;
-        if (level <= 9) return 3;
-        return 5; // Level 10
-    }
-
-    /**
-     * Earn crowns (called when all tasks completed)
-     * Returns number of crowns earned
-     */
     earnCrown() {
-        if (!this.adaptiveMode) {
-            const reward = this.calculateCrownReward();
-            this.crownsEarned += reward;
-            this.saveCrowns();
-            this.updateCrownDisplay();
-
-            // Animate crown counter
-            if (this.dom.crownCounter) {
-                this.dom.crownCounter.classList.add('earn');
-                setTimeout(() => {
-                    this.dom.crownCounter.classList.remove('earn');
-                }, 600);
-            }
-
-            return reward;
-        }
-        return 0;
+        if (this.adaptiveMode) return 0;
+        const level = parseInt(this.dom.difficultySlider.value);
+        const { reward } = CrownManager.earnAndDisplay(level, this.dom.crownCount, this.dom.crownCounter);
+        return reward;
     }
 }
 

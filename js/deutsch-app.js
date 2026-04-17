@@ -31,9 +31,7 @@ class DeutschApp {
         this.totalTasksToSolve = 0;
         this.lastUsedWord = null; // Track last word to prevent duplicates
 
-        // Crown achievement system
-        this.crownsEarned = 0;
-        this.loadCrowns();
+        // Crown achievement system (managed by CrownManager)
 
         // DOM cache
         this.dom = {
@@ -73,7 +71,6 @@ class DeutschApp {
             const data = await response.json();
             this.wordDatabase = data.words;
             this.wordDatabaseLoaded = true;
-            console.log(`✅ Loaded ${this.wordDatabase.length} words from database (v${data.version})`);
         } catch (error) {
             console.error('❌ Failed to load word database:', error);
             // Fallback: disable start button if database failed to load
@@ -553,186 +550,62 @@ class DeutschApp {
         }, 1500);
     }
 
-    /**
-     * Show completion celebration
-     */
     showCompletionCelebration(crownsEarned = 0) {
-        // Clear container safely
         this.dom.taskContainer.textContent = '';
 
-        // Create wrapper
         const wrapper = document.createElement('div');
-        wrapper.style.cssText = 'text-align: center; padding: 4rem 2rem; animation: fadeIn 1s ease-out;';
+        wrapper.className = 'completion-screen';
 
-        // Create emoji
-        const emoji = document.createElement('div');
-        emoji.textContent = '🎉';
-        emoji.style.cssText = 'font-size: 8rem; margin-bottom: 2rem; animation: bounce 1s ease-in-out infinite;';
+        const emojiEl = document.createElement('div');
+        emojiEl.className = 'completion-emoji';
+        emojiEl.textContent = '🎉';
 
-        // Create heading
         const heading = document.createElement('h2');
+        heading.className = 'completion-heading';
         heading.textContent = 'Geschafft!';
-        heading.style.cssText = 'font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; font-family: "Fredoka", sans-serif;';
 
-        // Create message
         const message = document.createElement('p');
+        message.className = 'completion-message';
         message.textContent = `Du hast alle ${this.totalTasksToSolve} Aufgaben gelöst! 🌟`;
-        message.style.cssText = 'font-size: 1.3rem; color: var(--text-dark); margin-bottom: 1rem;';
 
-        // Create crown display (if not in adaptive mode)
         let crownDisplay = null;
         if (this.currentMode !== 'adaptive' && crownsEarned > 0) {
+            const total = CrownManager.load();
             crownDisplay = document.createElement('div');
-            crownDisplay.style.cssText = `
-                display: inline-block;
-                background: linear-gradient(135deg, #FFD700, #FFA500);
-                padding: 1rem 2rem;
-                border-radius: 20px;
-                margin-bottom: 2rem;
-                box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-                animation: bounceIn 0.8s ease-out 0.5s both;
-            `;
+            crownDisplay.className = 'completion-crown-display';
 
             const crownIcon = document.createElement('span');
+            crownIcon.className = 'crown-icon';
             crownIcon.textContent = '👑';
-            crownIcon.style.cssText = 'font-size: 2rem; margin-right: 0.5rem;';
 
             const crownText = document.createElement('span');
-            crownText.textContent = `+${crownsEarned} = ${this.crownsEarned} Kronen!`;
-            crownText.style.cssText = 'font-size: 1.5rem; font-weight: 700; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);';
+            crownText.className = 'crown-text';
+            crownText.textContent = `+${crownsEarned} = ${total} Kronen!`;
 
             crownDisplay.appendChild(crownIcon);
             crownDisplay.appendChild(crownText);
         }
 
-        // Create restart button
         const restartButton = document.createElement('button');
         restartButton.id = 'restartButton';
+        restartButton.className = 'completion-restart-btn';
         restartButton.textContent = 'Nochmal üben! 🔄';
-        restartButton.style.cssText = `
-            background: linear-gradient(135deg, var(--primary), #C39BD3);
-            color: white;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
-            transition: all 0.3s ease;
-        `;
-
-        // Add event listeners
         restartButton.addEventListener('click', () => this.startTraining());
-        restartButton.addEventListener('mouseover', function() {
-            this.style.transform = 'scale(1.05)';
-        });
-        restartButton.addEventListener('mouseout', function() {
-            this.style.transform = 'scale(1)';
-        });
 
-        // Assemble DOM
-        wrapper.appendChild(emoji);
+        wrapper.appendChild(emojiEl);
         wrapper.appendChild(heading);
         wrapper.appendChild(message);
-        if (crownDisplay) {
-            wrapper.appendChild(crownDisplay);
-        }
+        if (crownDisplay) wrapper.appendChild(crownDisplay);
         wrapper.appendChild(restartButton);
         this.dom.taskContainer.appendChild(wrapper);
 
-        // Update display
         this.dom.taskCountDisplay.textContent = `${this.totalTasksToSolve} / ${this.totalTasksToSolve} ✅`;
 
-        // Launch fireworks celebration
-        this.launchFireworks(15, crownsEarned);
-    }
-
-    /**
-     * Launch fireworks animation
-     */
-    launchFireworks(count = 15, crownsEarned = 0) {
-        if (!this.dom.milestoneCelebration || !this.dom.fireworksContainer) {
-            console.warn('Fireworks elements not found');
-            return;
-        }
-
-        // Show completion message with crown count
-        const message = crownsEarned > 0
+        const crownMsg = crownsEarned > 0
             ? `🎊 Alle Aufgaben richtig! +${crownsEarned} 👑 Kronen! 🎊`
             : `🎊 Alle Aufgaben richtig! Super! 🎊`;
-        this.dom.milestoneCelebration.textContent = message;
-        this.dom.milestoneCelebration.classList.add('show');
-
-        this.dom.fireworksContainer.classList.add('active');
-
-        // Launch multiple fireworks
-        const colors = ['#9B59B6', '#E91E63', '#FEC260', '#5DADE2', '#82E0AA', '#BB8FCE'];
-        let fireworkCount = 0;
-        const maxFireworks = 15;
-
-        const fireworkInterval = setInterval(() => {
-            if (fireworkCount >= count) {
-                clearInterval(fireworkInterval);
-                setTimeout(() => {
-                    this.dom.fireworksContainer.classList.remove('active');
-                    this.dom.fireworksContainer.innerHTML = '';
-                    this.dom.milestoneCelebration.classList.remove('show');
-                }, 2000);
-                return;
-            }
-
-            this.createFirework(colors[fireworkCount % colors.length]);
-            fireworkCount++;
-        }, 200);
-    }
-
-    /**
-     * Create a single firework
-     */
-    createFirework(color) {
-        const x = Math.random() * window.innerWidth;
-        const y = Math.random() * (window.innerHeight * 0.5);
-
-        const firework = document.createElement('div');
-        firework.className = 'firework';
-        firework.style.left = x + 'px';
-        firework.style.top = y + 'px';
-        firework.style.backgroundColor = color;
-        this.dom.fireworksContainer.appendChild(firework);
-
-        // Create explosion after delay
-        setTimeout(() => {
-            firework.remove();
-            this.createExplosion(x, y, color);
-        }, 800);
-    }
-
-    /**
-     * Create explosion effect
-     */
-    createExplosion(x, y, color) {
-        const particleCount = 30;
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-
-            const angle = (Math.PI * 2 * i) / particleCount;
-            const velocity = 100 + Math.random() * 100;
-            const tx = Math.cos(angle) * velocity;
-            const ty = Math.sin(angle) * velocity;
-
-            particle.style.left = x + 'px';
-            particle.style.top = y + 'px';
-            particle.style.backgroundColor = color;
-            particle.style.setProperty('--tx', tx + 'px');
-            particle.style.setProperty('--ty', ty + 'px');
-            particle.style.transform = `translate(var(--tx), var(--ty)) scale(0)`;
-
-            this.dom.fireworksContainer.appendChild(particle);
-
-            setTimeout(() => particle.remove(), 1000);
-        }
+        showMilestoneCelebration(crownMsg);
+        launchFireworks();
     }
 
     /**
@@ -744,86 +617,21 @@ class DeutschApp {
         this.updateDifficultyLabel();
     }
 
-    /**
-     * Load crowns from localStorage
-     */
-    loadCrowns() {
-        const saved = localStorage.getItem('smarty-crowns');
-        this.crownsEarned = saved ? parseInt(saved) : 0;
-    }
-
-    /**
-     * Save crowns to localStorage
-     */
-    saveCrowns() {
-        localStorage.setItem('smarty-crowns', this.crownsEarned.toString());
-    }
-
-    /**
-     * Update crown counter display
-     */
-    updateCrownDisplay() {
-        if (this.dom.crownCount) {
-            this.dom.crownCount.textContent = this.crownsEarned;
-        }
-    }
-
-    /**
-     * Show crown counter (non-adaptive mode only)
-     */
     showCrownCounter() {
-        if (this.dom.crownCounter && this.currentMode !== 'adaptive') {
-            this.dom.crownCounter.style.display = 'flex';
-            this.updateCrownDisplay();
-        }
-    }
-
-    /**
-     * Hide crown counter
-     */
-    hideCrownCounter() {
-        if (this.dom.crownCounter) {
-            this.dom.crownCounter.style.display = 'none';
-        }
-    }
-
-    /**
-     * Calculate crowns based on difficulty level
-     * Level 1-3: 1 crown
-     * Level 4-6: 2 crowns
-     * Level 7-9: 3 crowns
-     * Level 10: 5 crowns
-     */
-    calculateCrownReward() {
-        const level = parseInt(this.dom.difficultySlider.value);
-        if (level <= 3) return 1;
-        if (level <= 6) return 2;
-        if (level <= 9) return 3;
-        return 5; // Level 10
-    }
-
-    /**
-     * Earn crowns (called when all tasks completed)
-     * Returns number of crowns earned
-     */
-    earnCrown() {
         if (this.currentMode !== 'adaptive') {
-            const reward = this.calculateCrownReward();
-            this.crownsEarned += reward;
-            this.saveCrowns();
-            this.updateCrownDisplay();
-
-            // Animate crown counter
-            if (this.dom.crownCounter) {
-                this.dom.crownCounter.classList.add('earn');
-                setTimeout(() => {
-                    this.dom.crownCounter.classList.remove('earn');
-                }, 600);
-            }
-
-            return reward;
+            CrownManager.showCounter(this.dom.crownCounter, this.dom.crownCount);
         }
-        return 0;
+    }
+
+    hideCrownCounter() {
+        CrownManager.hideCounter(this.dom.crownCounter);
+    }
+
+    earnCrown() {
+        if (this.currentMode === 'adaptive') return 0;
+        const level = parseInt(this.dom.difficultySlider.value);
+        const { reward } = CrownManager.earnAndDisplay(level, this.dom.crownCount, this.dom.crownCounter);
+        return reward;
     }
 }
 

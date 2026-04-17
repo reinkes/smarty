@@ -314,6 +314,67 @@ const InputValidator = {
 };
 
 // ============================================
+// CROWN MANAGER
+// ============================================
+
+const CrownManager = {
+    STORAGE_KEY: 'smarty-crowns',
+
+    load() {
+        return parseInt(localStorage.getItem(this.STORAGE_KEY) || '0', 10);
+    },
+
+    save(total) {
+        localStorage.setItem(this.STORAGE_KEY, String(total));
+    },
+
+    earn(reward) {
+        const current = this.load();
+        const updated = current + reward;
+        this.save(updated);
+        return updated;
+    },
+
+    calculateReward(level) {
+        if (level <= 3) return 1;
+        if (level <= 6) return 2;
+        if (level <= 9) return 3;
+        return 5;
+    },
+
+    updateDisplay(crownCountEl, crownCounterEl) {
+        const total = this.load();
+        if (crownCountEl) crownCountEl.textContent = total;
+        return total;
+    },
+
+    showCounter(crownCounterEl, crownCountEl) {
+        if (crownCounterEl) {
+            crownCounterEl.style.display = 'flex';
+            this.updateDisplay(crownCountEl);
+        }
+    },
+
+    hideCounter(crownCounterEl) {
+        if (crownCounterEl) crownCounterEl.style.display = 'none';
+    },
+
+    animateEarn(crownCounterEl) {
+        if (!crownCounterEl) return;
+        crownCounterEl.classList.add('earn');
+        setTimeout(() => crownCounterEl.classList.remove('earn'), 600);
+    },
+
+    earnAndDisplay(level, crownCountEl, crownCounterEl) {
+        const reward = this.calculateReward(level);
+        const total = this.earn(reward);
+        if (crownCountEl) crownCountEl.textContent = total;
+        this.animateEarn(crownCounterEl);
+        return { reward, total };
+    }
+};
+
+// ============================================
 // DIFFICULTY LABELS
 // ============================================
 
@@ -346,13 +407,13 @@ function getDifficultyEmoji(level) {
 // If using as module, export functions
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        playSuccessSound,
         showMilestoneCelebration,
         showTaskCelebration,
         showLevelUpCelebration,
         launchFireworks,
         ProgressTracker,
         InputValidator,
+        CrownManager,
         getDifficultyLabel,
         getDifficultyEmoji
     };

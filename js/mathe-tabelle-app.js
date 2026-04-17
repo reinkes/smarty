@@ -1,13 +1,10 @@
 'use strict';
 
-const CROWN_STORAGE_KEY = 'smarty-crowns';
-
 class TabelleApp {
     constructor() {
         this.config = null;
         this.rowValues = [];
         this.colValues = [];
-        this.crownsEarned = 0;
         this.roundLocked = false;
 
         this.colHeaders = Object.create(null);
@@ -29,7 +26,6 @@ class TabelleApp {
             crownCount:      document.getElementById('crownCount'),
         };
 
-        this.loadCrowns();
         this.setupEventListeners();
         this.updateDifficultyDisplay();
     }
@@ -85,8 +81,7 @@ class TabelleApp {
         this.dom.preview.classList.add('active');
         this.dom.previewTitle.textContent =
             `Additions-Tabelle ${this.config.gridSize}×${this.config.gridSize}`;
-        this.dom.crownCounter.style.display = 'flex';
-        this.updateCrownDisplay();
+        CrownManager.showCounter(this.dom.crownCounter, this.dom.crownCount);
         this.dom.preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
@@ -328,27 +323,10 @@ class TabelleApp {
     }
 
     earnCrown() {
-        this.crownsEarned += this.config.crowns;
-        this.saveCrowns();
-        this.updateCrownDisplay();
-        const counter = this.dom.crownCounter;
-        if (counter) {
-            counter.classList.add('earn');
-            setTimeout(() => counter.classList.remove('earn'), 600);
-        }
-    }
-
-    loadCrowns() {
-        const s = localStorage.getItem(CROWN_STORAGE_KEY);
-        this.crownsEarned = s ? parseInt(s, 10) : 0;
-    }
-
-    saveCrowns() {
-        localStorage.setItem(CROWN_STORAGE_KEY, String(this.crownsEarned));
-    }
-
-    updateCrownDisplay() {
-        if (this.dom.crownCount) this.dom.crownCount.textContent = this.crownsEarned;
+        const reward = this.config.crowns;
+        CrownManager.earn(reward);
+        CrownManager.updateDisplay(this.dom.crownCount);
+        CrownManager.animateEarn(this.dom.crownCounter);
     }
 }
 

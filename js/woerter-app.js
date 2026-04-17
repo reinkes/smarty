@@ -10,7 +10,7 @@ class WoerterApp {
         this.selectedArticle = null;
         this.tasksCompleted = 0;
         this.correctCount = 0;
-        this.crownsEarned = 0;
+        // Crown achievement system (managed by CrownManager)
         this.answered = false;
         this.letterBoxes = [];
         this.dom = {};
@@ -19,7 +19,7 @@ class WoerterApp {
     async init() {
         this.cacheDOMElements();
         this.attachEventListeners();
-        this.loadCrowns();
+        CrownManager.showCounter(this.dom.crownCounter, this.dom.crownCount);
         await this.loadWords();
         this.buildQueue();
         this.nextWord();
@@ -194,21 +194,18 @@ class WoerterApp {
 
         if (allOk) {
             this.correctCount++;
-            this.dom.feedback.innerHTML = `✓ ${article} ${word}`;
+            this.dom.feedback.textContent = `✓ ${article} ${word}`;
             this.dom.feedback.className = 'feedback correct';
         } else {
-            this.dom.feedback.innerHTML = `✗ Es heißt: <strong>${article} ${word}</strong>`;
+            this.dom.feedback.textContent = `✗ Es heißt: ${article} ${word}`;
             this.dom.feedback.className = 'feedback incorrect';
         }
 
         this.tasksCompleted++;
         this.updateProgress();
 
-        if (this.tasksCompleted === WoerterApp.MILESTONE_INTERVAL) {
-            this.crownsEarned++;
-            this.saveCrowns();
-            this.updateCrownDisplay();
-            if (typeof showMilestoneCelebration !== 'undefined') showMilestoneCelebration('🎉 10 Wörter geschafft! 🎉');
+        if (this.tasksCompleted % WoerterApp.MILESTONE_INTERVAL === 0 && this.tasksCompleted < WoerterApp.TOTAL_TASKS) {
+            showMilestoneCelebration(`🎉 ${this.tasksCompleted} Wörter geschafft! 🎉`);
         }
 
         if (this.tasksCompleted >= WoerterApp.TOTAL_TASKS) {
@@ -225,11 +222,12 @@ class WoerterApp {
     }
 
     showCompletion() {
+        const { reward, total } = CrownManager.earnAndDisplay(5, this.dom.crownCount, this.dom.crownCounter);
         this.dom.taskArea.style.display = 'none';
         this.dom.completionScreen.style.display = 'block';
-        this.dom.completionCrowns.textContent = `👑 ${this.crownsEarned} Kronen gesamt`;
+        this.dom.completionCrowns.textContent = `👑 +${reward} = ${total} Kronen`;
         this.dom.completionCorrect.textContent = `${this.correctCount} von ${WoerterApp.TOTAL_TASKS} richtig`;
-        if (typeof launchFireworks !== 'undefined') launchFireworks();
+        launchFireworks();
     }
 
     restart() {
@@ -241,22 +239,6 @@ class WoerterApp {
         this.dom.completionScreen.style.display = 'none';
         this.updateProgress();
         this.nextWord();
-    }
-
-    loadCrowns() {
-        this.crownsEarned = parseInt(localStorage.getItem('smarty-crowns') || '0', 10);
-        this.updateCrownDisplay();
-    }
-
-    saveCrowns() {
-        localStorage.setItem('smarty-crowns', this.crownsEarned);
-    }
-
-    updateCrownDisplay() {
-        if (this.crownsEarned > 0) {
-            this.dom.crownCounter.style.display = 'flex';
-            this.dom.crownCount.textContent = this.crownsEarned;
-        }
     }
 }
 

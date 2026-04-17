@@ -12,7 +12,7 @@ class BuchstabenApp {
         this.totalTasksRequired = 10;
         this.difficulty = 5;
         this.selectedImages = new Set();
-        this.crownsEarned = 0;
+        // Crown achievement system (managed by CrownManager)
         this.dom = {};
     }
 
@@ -63,7 +63,6 @@ class BuchstabenApp {
             const response = await fetch('data/buchstaben-words.json');
             const data = await response.json();
             this.wordDatabase = data.words;
-            console.log(`Loaded ${this.wordDatabase.length} words from database`);
         } catch (error) {
             console.error('Failed to load word database:', error);
             alert('Fehler beim Laden der Wort-Datenbank. Bitte Seite neu laden.');
@@ -157,12 +156,6 @@ class BuchstabenApp {
             words: allWords,
             correctWords: new Set(selectedWithLetter.map(w => w.word))
         };
-
-        console.log('=== New Task Generated ===');
-        console.log('Letter:', this.currentLetter);
-        console.log('All words:', allWords.map(w => w.word));
-        console.log('Correct words:', Array.from(this.currentTask.correctWords));
-        console.log('=========================');
 
         // Clear selections
         this.selectedImages.clear();
@@ -282,30 +275,13 @@ class BuchstabenApp {
             // Correct selection
             element.classList.add('correct');
 
-            // Play success sound (with error handling)
-            try {
-                if (typeof AudioManager !== 'undefined' && AudioManager.getInstance) {
-                    AudioManager.getInstance().playSuccessSound();
-                }
-            } catch (error) {
-                console.warn('Audio playback failed:', error);
-            }
+            audioManager.playSuccessSound();
 
-            // Check if all correct images have been selected (after a brief delay for DOM update)
             setTimeout(() => {
-                console.log('=== Completion Check ===');
-                console.log('Current letter:', this.currentLetter);
-                console.log('Correct words:', Array.from(this.currentTask.correctWords));
-
                 const allCorrectSelected = Array.from(this.currentTask.correctWords).every(correctWord => {
                     const item = this.dom.imageGrid.querySelector(`[data-word="${correctWord}"]`);
-                    const hasCorrectClass = item && item.classList.contains('correct');
-                    console.log(`  ${correctWord}: found=${!!item}, hasCorrect=${hasCorrectClass}`);
                     return item && item.classList.contains('correct');
                 });
-
-                console.log('All correct selected?', allCorrectSelected);
-                console.log('========================');
 
                 if (allCorrectSelected) {
                     // Show success message
@@ -373,90 +349,51 @@ class BuchstabenApp {
     }
 
 
-    /**
-     * Calculate crown reward based on difficulty
-     */
-    calculateCrownReward() {
-        if (this.difficulty <= 3) return 1;
-        if (this.difficulty <= 6) return 2;
-        if (this.difficulty <= 9) return 3;
-        return 5; // Level 10
-    }
-
-    /**
-     * Earn crowns
-     */
-    earnCrown() {
-        const earned = this.calculateCrownReward();
-        this.crownsEarned = earned;
-
-        // Update shared crown counter
-        try {
-            const currentCrowns = parseInt(localStorage.getItem('smarty-crowns') || '0');
-            const newTotal = currentCrowns + earned;
-            localStorage.setItem('smarty-crowns', newTotal.toString());
-
-            // Update crown counter display
-            if (this.dom.crownCounter && this.dom.crownCount) {
-                this.dom.crownCount.textContent = newTotal;
-                this.dom.crownCounter.style.display = 'flex';
-            }
-        } catch (error) {
-            console.error('Failed to save crowns:', error);
-        }
-    }
-
-    /**
-     * Show completion screen
-     */
     showCompletion() {
-        // Earn crowns BEFORE showing completion
-        this.earnCrown();
+        const { reward, total } = CrownManager.earnAndDisplay(this.difficulty, this.dom.crownCount, this.dom.crownCounter);
 
-        // Clear game screen
         this.dom.gameScreen.innerHTML = '';
 
-        // Create completion message
         const completionDiv = document.createElement('div');
-        completionDiv.style.textAlign = 'center';
-        completionDiv.style.padding = '2rem';
+        completionDiv.className = 'completion-screen';
 
         const title = document.createElement('h2');
+        title.className = 'completion-heading';
         title.textContent = '🎉 Glückwunsch!';
-        title.style.color = 'var(--german-primary)';
-        title.style.fontSize = '2.5rem';
-        title.style.marginBottom = '1.5rem';
 
         const message = document.createElement('p');
+        message.className = 'completion-message';
         message.textContent = `Du hast alle ${this.totalTasksRequired} Aufgaben gemeistert!`;
-        message.style.fontSize = '1.3rem';
-        message.style.marginBottom = '2rem';
 
-        const crownInfo = document.createElement('p');
-        crownInfo.innerHTML = `+${this.crownsEarned} = ${localStorage.getItem('smarty-crowns')} 👑 Kronen!`;
-        crownInfo.style.fontSize = '1.8rem';
-        crownInfo.style.fontWeight = '700';
-        crownInfo.style.color = 'var(--german-primary)';
-        crownInfo.style.marginBottom = '2rem';
+        const crownInfo = document.createElement('div');
+        crownInfo.className = 'completion-crown-display';
+
+        const crownIcon = document.createElement('span');
+        crownIcon.className = 'crown-icon';
+        crownIcon.textContent = '👑';
+
+        const crownText = document.createElement('span');
+        crownText.className = 'crown-text';
+        crownText.textContent = `+${reward} = ${total} Kronen!`;
+
+        crownInfo.appendChild(crownIcon);
+        crownInfo.appendChild(crownText);
 
         const restartButton = document.createElement('button');
         restartButton.textContent = '🔄 Nochmal üben!';
-        restartButton.className = 'btn-submit';
+        restartButton.className = 'completion-restart-btn';
         restartButton.addEventListener('click', () => {
-            location.reload();
+            this.dom.gameScreen.style.display = 'none';
+            this.dom.startScreen.style.display = 'block';
         });
 
-        // Append elements
         completionDiv.appendChild(title);
         completionDiv.appendChild(message);
         completionDiv.appendChild(crownInfo);
         completionDiv.appendChild(restartButton);
         this.dom.gameScreen.appendChild(completionDiv);
 
-        // Launch fireworks
-        if (typeof launchFireworks === 'function') {
-            launchFireworks(this.crownsEarned);
-        }
+        launchFireworks();
     }
 }
 

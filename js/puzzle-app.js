@@ -9,7 +9,7 @@ class PuzzleApp {
         this.slots = [];          // [chipId | null]
         this.tasksCompleted = 0;
         this.correctCount = 0;
-        this.crownsEarned = 0;
+        // Crown achievement system (managed by CrownManager)
         this.answered = false;
         this.difficulty = 3;
         this.draggedChipId = null;
@@ -21,7 +21,7 @@ class PuzzleApp {
     async init() {
         this.cacheDOMElements();
         this.attachEventListeners();
-        this.loadCrowns();
+        CrownManager.showCounter(this.dom.crownCounter, this.dom.crownCount);
         await this.loadWords();
         this.nextWord();
     }
@@ -338,19 +338,8 @@ class PuzzleApp {
         }
     }
 
-    calculateCrownReward() {
-        const d = this.difficulty;
-        if (d <= 3) return 1;
-        if (d <= 6) return 2;
-        if (d <= 9) return 3;
-        return 5;
-    }
-
     earnCrown() {
-        const reward = this.calculateCrownReward();
-        this.crownsEarned += reward;
-        this.saveCrowns();
-        this.updateCrownDisplay(true);
+        const { reward, total } = CrownManager.earnAndDisplay(this.difficulty, this.dom.crownCount, this.dom.crownCounter);
         return reward;
     }
 
@@ -364,11 +353,12 @@ class PuzzleApp {
 
     showCompletion() {
         const reward = this.earnCrown();
+        const total = CrownManager.load();
         this.dom.taskArea.style.display         = 'none';
         this.dom.completionScreen.style.display = 'block';
-        this.dom.completionCrowns.textContent   = `+${reward} = ${this.crownsEarned} 👑 Kronen`;
+        this.dom.completionCrowns.textContent   = `+${reward} = ${total} 👑 Kronen`;
         this.dom.completionCorrect.textContent  = `${this.correctCount} von ${PuzzleApp.TOTAL_TASKS} richtig`;
-        if (typeof launchFireworks !== 'undefined') launchFireworks();
+        launchFireworks();
     }
 
     restart() {
@@ -382,28 +372,6 @@ class PuzzleApp {
         this.nextWord();
     }
 
-    // ── Crown storage ──────────────────────────────────────────────────────
-
-    loadCrowns() {
-        this.crownsEarned = parseInt(localStorage.getItem('smarty-crowns') || '0', 10);
-        this.updateCrownDisplay();
-    }
-
-    saveCrowns() {
-        localStorage.setItem('smarty-crowns', this.crownsEarned);
-    }
-
-    updateCrownDisplay(animate = false) {
-        this.dom.crownCount.textContent = this.crownsEarned;
-        if (this.crownsEarned > 0) {
-            this.dom.crownCounter.style.display = 'flex';
-        }
-        if (animate) {
-            this.dom.crownCounter.classList.remove('earn');
-            void this.dom.crownCounter.offsetWidth; // force reflow
-            this.dom.crownCounter.classList.add('earn');
-        }
-    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

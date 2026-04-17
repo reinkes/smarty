@@ -13,7 +13,7 @@ class GroesserKleinerApp {
         this.tasksCompleted = 0;
         this.correctStreak = 0;
         this.incorrectCount = 0;
-        this.crownsEarned = 0;
+        // Crown achievement system (managed by CrownManager)
         this.currentTask = null;
         this.answered = false;
 
@@ -75,17 +75,7 @@ class GroesserKleinerApp {
     loadProgress() {
         const progress = ProgressTracker.getProgress('groesser-kleiner');
         this.level = progress.level || 1;
-        this.crownsEarned = this.loadCrowns();
-        this.updateCrownDisplay();
-    }
-
-    loadCrowns() {
-        const stored = localStorage.getItem('smarty-crowns');
-        return stored ? parseInt(stored, 10) : 0;
-    }
-
-    saveCrowns() {
-        localStorage.setItem('smarty-crowns', this.crownsEarned);
+        CrownManager.showCounter(this.dom.crownCounter, this.dom.crownCount);
     }
 
     getMaxNumber() {
@@ -170,11 +160,9 @@ class GroesserKleinerApp {
         this.tasksCompleted++;
         this.updateProgress();
 
-        if (this.tasksCompleted % GroesserKleinerApp.MILESTONE_INTERVAL === 0) {
+        if (this.tasksCompleted % GroesserKleinerApp.MILESTONE_INTERVAL === 0 && this.tasksCompleted < GroesserKleinerApp.TOTAL_TASKS) {
             launchFireworks();
-            this.crownsEarned++;
-            this.saveCrowns();
-            this.updateCrownDisplay();
+            showMilestoneCelebration(`🎉 ${this.tasksCompleted} Aufgaben geschafft! 🎉`);
         }
 
         if (this.tasksCompleted >= GroesserKleinerApp.TOTAL_TASKS) {
@@ -209,17 +197,11 @@ class GroesserKleinerApp {
         this.dom.progressText.textContent = `${this.tasksCompleted} / ${GroesserKleinerApp.TOTAL_TASKS}`;
     }
 
-    updateCrownDisplay() {
-        if (this.crownsEarned > 0) {
-            this.dom.crownCounter.style.display = 'flex';
-            this.dom.crownCount.textContent = this.crownsEarned;
-        }
-    }
-
     showCompletion() {
+        const { reward, total } = CrownManager.earnAndDisplay(this.level, this.dom.crownCount, this.dom.crownCounter);
         this.dom.taskArea.style.display = 'none';
         this.dom.completionScreen.style.display = 'block';
-        this.dom.completionCrowns.textContent = `👑 ${this.crownsEarned} Kronen`;
+        this.dom.completionCrowns.textContent = `👑 +${reward} = ${total} Kronen`;
         launchFireworks();
     }
 
