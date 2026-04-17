@@ -74,32 +74,9 @@
     z-index: 2;
 }
 
-.header-cell.hidden-header {
-    background: white;
-    border: 2px dashed #FFC107;
-    pointer-events: auto;
-}
-
-.header-cell.hidden-header.correct {
-    background: linear-gradient(135deg, #D5F4E6, #ABEBC6);
-    border: 2px solid #27AE60;
-}
-
-.header-cell.hidden-header.incorrect {
-    background: linear-gradient(135deg, #FADBD8, #F5B7B1);
-    border: 2px solid #E74C3C;
-}
-
 .result-cell {
     background: white;
     border: 2px solid #E0E0E0;
-}
-
-.result-cell.prefilled {
-    background: linear-gradient(135deg, #EBF5FB, #D6EAF8);
-    border-color: #AED6F1;
-    color: #2471A3;
-    cursor: default;
 }
 
 .result-cell.correct {

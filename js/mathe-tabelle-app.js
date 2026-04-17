@@ -5,6 +5,8 @@ const CROWN_STORAGE_KEY = 'smarty-crowns';
 class TabelleApp {
     constructor() {
         this.config = null;
+        this.rowValues = [];
+        this.colValues = [];
         this.crownsEarned = 0;
         this.roundLocked = false;
 
@@ -32,20 +34,20 @@ class TabelleApp {
         this.updateDifficultyDisplay();
     }
 
-    // blankCount = result cells the kid must fill; rest are shown as reference.
-    // hideHeaders = first row AND first column are inputs too.
+    // gridSize = result grid dimension (2, 3, or 4)
+    // maxAddend = max value for header numbers (so max sum = 2 × maxAddend)
     getConfig(level) {
         const configs = [
-            { maxNum:  5, blankCount:   4, hideHeaders: false },
-            { maxNum:  5, blankCount:   8, hideHeaders: false },
-            { maxNum:  5, blankCount:  12, hideHeaders: false },
-            { maxNum:  5, blankCount:  16, hideHeaders: false },
-            { maxNum:  5, blankCount:  20, hideHeaders: false },
-            { maxNum:  5, blankCount:  25, hideHeaders: false },
-            { maxNum:  5, blankCount:  25, hideHeaders: true  },
-            { maxNum: 10, blankCount:  30, hideHeaders: false },
-            { maxNum: 10, blankCount:  60, hideHeaders: false },
-            { maxNum: 10, blankCount: 100, hideHeaders: true  },
+            { gridSize: 2, maxAddend:  5 }, //  1 – 2×2, sum bis 10
+            { gridSize: 2, maxAddend:  7 }, //  2
+            { gridSize: 2, maxAddend: 10 }, //  3 – 2×2, sum bis 20
+            { gridSize: 3, maxAddend:  5 }, //  4 – 3×3, sum bis 10
+            { gridSize: 3, maxAddend:  7 }, //  5
+            { gridSize: 3, maxAddend:  8 }, //  6
+            { gridSize: 3, maxAddend: 10 }, //  7 – 3×3, sum bis 20
+            { gridSize: 4, maxAddend:  7 }, //  8 – 4×4
+            { gridSize: 4, maxAddend:  8 }, //  9
+            { gridSize: 4, maxAddend: 10 }, // 10 – 4×4, sum bis 20
         ];
         return configs[level - 1];
     }
@@ -63,72 +65,63 @@ class TabelleApp {
 
     updateDifficultyDisplay() {
         const level = this.currentLevel();
-        const cfg = this.getConfig(level);
-        const total = cfg.maxNum * cfg.maxNum;
-        let label;
-        if (level <= 2)      label = `Level ${level} – ${cfg.blankCount} Felder ausfüllen 😊`;
-        else if (level <= 6) label = `Level ${level} – ${cfg.blankCount} von ${total} Feldern 🤔`;
-        else if (level === 7) label = `Level ${level} – Kopfzeile leer 🔥`;
-        else if (level <= 9) label = `Level ${level} – Zahlen bis 10 🔥`;
-        else                 label = `Level ${level} – Alles leer! 🌋`;
-        this.dom.difficultyValue.textContent = label;
+        const { gridSize, maxAddend } = this.getConfig(level);
+        const emoji = level <= 3 ? '😊' : level <= 7 ? '🤔' : '🔥';
+        this.dom.difficultyValue.textContent =
+            `Level ${level} – ${gridSize}×${gridSize}, Summe bis ${maxAddend * 2} ${emoji}`;
     }
 
     startGame() {
         this.config = this.getConfig(this.currentLevel());
         this.roundLocked = false;
         this.correctCount = 0;
+        this.rowValues = this.pickUniqueNumbers(this.config.gridSize, this.config.maxAddend);
+        this.colValues = this.pickUniqueNumbers(this.config.gridSize, this.config.maxAddend);
 
         this.buildTable();
         this.dom.preview.classList.add('active');
-        this.dom.previewTitle.textContent = `Additions-Tabelle (1–${this.config.maxNum})`;
+        this.dom.previewTitle.textContent =
+            `Additions-Tabelle ${this.config.gridSize}×${this.config.gridSize}`;
         this.dom.crownCounter.style.display = 'flex';
         this.updateCrownDisplay();
         this.dom.preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    pickUniqueNumbers(count, max) {
+        const pool = [];
+        for (let i = 1; i <= max; i++) pool.push(i);
+        // Fisher-Yates
+        for (let i = pool.length - 1; i > 0; i--) {
+            const j = (Math.random() * (i + 1)) | 0;
+            [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+        return pool.slice(0, count).sort((a, b) => a - b);
+    }
+
     buildTable() {
-        const { maxNum } = this.config;
+        const { gridSize } = this.config;
         this.dom.wrapper.innerHTML = '';
         this.colHeaders = Object.create(null);
         this.rowHeaders = Object.create(null);
         this.inputs = [];
 
-        const blankCells = this.pickBlankCells();
-        const size = maxNum + 1;
-
+        const size = gridSize + 1;
         const grid = document.createElement('div');
         grid.className = 'addition-grid';
         grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
 
-        for (let row = 0; row <= maxNum; row++) {
-            for (let col = 0; col <= maxNum; col++) {
-                grid.appendChild(this.buildCell(row, col, blankCells));
+        for (let row = 0; row <= gridSize; row++) {
+            for (let col = 0; col <= gridSize; col++) {
+                grid.appendChild(this.buildCell(row, col));
             }
         }
 
         this.dom.wrapper.appendChild(grid);
         this.totalInputs = this.inputs.length;
-
         if (this.inputs.length > 0) this.inputs[0].focus();
     }
 
-    pickBlankCells() {
-        const { maxNum, blankCount } = this.config;
-        const all = [];
-        for (let r = 1; r <= maxNum; r++)
-            for (let c = 1; c <= maxNum; c++)
-                all.push(`${r},${c}`);
-
-        // Fisher-Yates
-        for (let i = all.length - 1; i > 0; i--) {
-            const j = (Math.random() * (i + 1)) | 0;
-            [all[i], all[j]] = [all[j], all[i]];
-        }
-        return new Set(all.slice(0, Math.min(blankCount, all.length)));
-    }
-
-    buildCell(row, col, blankCells) {
+    buildCell(row, col) {
         const cell = document.createElement('div');
 
         if (row === 0 && col === 0) {
@@ -141,55 +134,40 @@ class TabelleApp {
             return this.buildHeaderCell(cell, row, col);
         }
 
+        const answer = this.rowValues[row - 1] + this.colValues[col - 1];
         cell.className = 'grid-cell result-cell';
         cell.dataset.row = row;
         cell.dataset.col = col;
 
-        if (blankCells.has(`${row},${col}`)) {
-            const input = this.makeInput(row + col, row, col);
-            input.addEventListener('focus',   () => this.highlightHeaders(row, col, true));
-            input.addEventListener('blur',    () => this.highlightHeaders(row, col, false));
-            input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.advanceFocus(row, col); });
-            cell.appendChild(input);
-            this.inputs.push(input);
-        } else {
-            cell.classList.add('prefilled');
-            cell.textContent = row + col;
-            cell.addEventListener('mouseenter', () => this.highlightHeaders(row, col, true));
-            cell.addEventListener('mouseleave', () => this.highlightHeaders(row, col, false));
-        }
+        const input = this.makeInput(answer, row, col);
+        input.addEventListener('focus',   () => this.highlightHeaders(row, col, true));
+        input.addEventListener('blur',    () => this.highlightHeaders(row, col, false));
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.advanceFocus(row, col); });
+        cell.appendChild(input);
+        this.inputs.push(input);
         return cell;
     }
 
     buildHeaderCell(cell, row, col) {
         const isCol = row === 0;
         const index = isCol ? col : row;
+        const value = isCol ? this.colValues[col - 1] : this.rowValues[row - 1];
         cell.className = `grid-cell header-cell ${isCol ? 'col-header' : 'row-header'}`;
         cell.dataset.index = index;
+        cell.textContent = value;
         (isCol ? this.colHeaders : this.rowHeaders)[index] = cell;
-
-        if (this.config.hideHeaders) {
-            cell.classList.add('hidden-header');
-            const input = this.makeInput(index);
-            cell.appendChild(input);
-            this.inputs.push(input);
-        } else {
-            cell.textContent = index;
-        }
         return cell;
     }
 
     makeInput(answer, row, col) {
         const input = document.createElement('input');
         input.type = 'number';
-        input.min = row === undefined ? '1' : '2';
-        input.max = row === undefined ? String(this.config.maxNum) : String(this.config.maxNum * 2);
+        input.min = '2';
+        input.max = String(this.config.maxAddend * 2);
         input.autocomplete = 'off';
         input.dataset.answer = String(answer);
-        if (row !== undefined) {
-            input.dataset.row = row;
-            input.dataset.col = col;
-        }
+        input.dataset.row = row;
+        input.dataset.col = col;
         input.addEventListener('input', () => this.onInputChange(input));
         return input;
     }
@@ -229,10 +207,10 @@ class TabelleApp {
     }
 
     advanceFocus(row, col) {
-        const { maxNum } = this.config;
+        const { gridSize } = this.config;
         let nextRow = row, nextCol = col + 1;
-        if (nextCol > maxNum) { nextCol = 1; nextRow++; }
-        if (nextRow > maxNum) return;
+        if (nextCol > gridSize) { nextCol = 1; nextRow++; }
+        if (nextRow > gridSize) return;
         const next = this.dom.wrapper.querySelector(`input[data-row="${nextRow}"][data-col="${nextCol}"]`);
         if (next) next.focus();
     }
