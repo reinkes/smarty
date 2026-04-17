@@ -1,88 +1,100 @@
 'use strict';
 
+const CROWN_STORAGE_KEY = 'smarty-crowns';
+
 class TabelleApp {
     constructor() {
-        this.level = 1;
         this.config = null;
         this.crownsEarned = 0;
-        this.crownEarnedThisRound = false;
+        this.roundLocked = false;
+
+        this.colHeaders = Object.create(null);
+        this.rowHeaders = Object.create(null);
+        this.inputs = [];
+        this.totalInputs = 0;
+        this.correctCount = 0;
+
+        this.dom = {
+            slider:          document.getElementById('difficultySlider'),
+            difficultyValue: document.getElementById('difficultyValue'),
+            startButton:     document.getElementById('startButton'),
+            checkButton:     document.getElementById('checkButton'),
+            newGameButton:   document.getElementById('newGameButton'),
+            wrapper:         document.getElementById('tableWrapper'),
+            preview:         document.getElementById('preview'),
+            previewTitle:    document.getElementById('previewTitle'),
+            crownCounter:    document.getElementById('crownCounter'),
+            crownCount:      document.getElementById('crownCount'),
+        };
+
         this.loadCrowns();
         this.setupEventListeners();
         this.updateDifficultyDisplay();
     }
 
-    // ── Config ────────────────────────────────────────────────────────────────
-    // blankCount = number of result cells the kid must fill in
-    // hideHeaders = whether first row AND first column are also empty inputs
-    // Pre-filled result cells show their answer as a static reference.
-
+    // blankCount = result cells the kid must fill; rest are shown as reference.
+    // hideHeaders = first row AND first column are inputs too.
     getConfig(level) {
         const configs = [
-            { maxNum:  5, blankCount:   4, hideHeaders: false }, // 1
-            { maxNum:  5, blankCount:   8, hideHeaders: false }, // 2
-            { maxNum:  5, blankCount:  12, hideHeaders: false }, // 3
-            { maxNum:  5, blankCount:  16, hideHeaders: false }, // 4
-            { maxNum:  5, blankCount:  20, hideHeaders: false }, // 5
-            { maxNum:  5, blankCount:  25, hideHeaders: false }, // 6 – all cells, headers visible
-            { maxNum:  5, blankCount:  25, hideHeaders: true  }, // 7 – headers empty
-            { maxNum: 10, blankCount:  30, hideHeaders: false }, // 8 – bigger table
-            { maxNum: 10, blankCount:  60, hideHeaders: false }, // 9
-            { maxNum: 10, blankCount: 100, hideHeaders: true  }, // 10 – ultimate
+            { maxNum:  5, blankCount:   4, hideHeaders: false },
+            { maxNum:  5, blankCount:   8, hideHeaders: false },
+            { maxNum:  5, blankCount:  12, hideHeaders: false },
+            { maxNum:  5, blankCount:  16, hideHeaders: false },
+            { maxNum:  5, blankCount:  20, hideHeaders: false },
+            { maxNum:  5, blankCount:  25, hideHeaders: false },
+            { maxNum:  5, blankCount:  25, hideHeaders: true  },
+            { maxNum: 10, blankCount:  30, hideHeaders: false },
+            { maxNum: 10, blankCount:  60, hideHeaders: false },
+            { maxNum: 10, blankCount: 100, hideHeaders: true  },
         ];
         return configs[level - 1];
     }
 
-    // ── Setup ─────────────────────────────────────────────────────────────────
-
     setupEventListeners() {
-        document.getElementById('difficultySlider').addEventListener('input', () => this.updateDifficultyDisplay());
-        document.getElementById('startButton').addEventListener('click',   () => this.startGame());
-        document.getElementById('checkButton').addEventListener('click',   () => this.checkAnswers());
-        document.getElementById('newGameButton').addEventListener('click', () => this.startGame());
+        this.dom.slider.addEventListener('input',        () => this.updateDifficultyDisplay());
+        this.dom.startButton.addEventListener('click',   () => this.startGame());
+        this.dom.checkButton.addEventListener('click',   () => this.checkAnswers());
+        this.dom.newGameButton.addEventListener('click', () => this.startGame());
+    }
+
+    currentLevel() {
+        return parseInt(this.dom.slider.value, 10);
     }
 
     updateDifficultyDisplay() {
-        const level = parseInt(document.getElementById('difficultySlider').value);
+        const level = this.currentLevel();
         const cfg = this.getConfig(level);
         const total = cfg.maxNum * cfg.maxNum;
         let label;
         if (level <= 2)      label = `Level ${level} – ${cfg.blankCount} Felder ausfüllen 😊`;
         else if (level <= 6) label = `Level ${level} – ${cfg.blankCount} von ${total} Feldern 🤔`;
-        else if (level <= 7) label = `Level ${level} – Kopfzeile leer 🔥`;
+        else if (level === 7) label = `Level ${level} – Kopfzeile leer 🔥`;
         else if (level <= 9) label = `Level ${level} – Zahlen bis 10 🔥`;
         else                 label = `Level ${level} – Alles leer! 🌋`;
-        document.getElementById('difficultyValue').textContent = label;
+        this.dom.difficultyValue.textContent = label;
     }
-
-    // ── Game start ────────────────────────────────────────────────────────────
 
     startGame() {
-        this.level = parseInt(document.getElementById('difficultySlider').value);
-        this.config = this.getConfig(this.level);
-        this.crownEarnedThisRound = false;
+        this.config = this.getConfig(this.currentLevel());
+        this.roundLocked = false;
+        this.correctCount = 0;
 
         this.buildTable();
-
-        const preview = document.getElementById('preview');
-        preview.classList.add('active');
-
-        document.getElementById('previewTitle').textContent =
-            `Additions-Tabelle (1–${this.config.maxNum})`;
-
-        document.getElementById('crownCounter').style.display = 'flex';
+        this.dom.preview.classList.add('active');
+        this.dom.previewTitle.textContent = `Additions-Tabelle (1–${this.config.maxNum})`;
+        this.dom.crownCounter.style.display = 'flex';
         this.updateCrownDisplay();
-
-        preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        this.dom.preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // ── Table building ────────────────────────────────────────────────────────
-
     buildTable() {
-        const { maxNum, blankCount, hideHeaders } = this.config;
-        const wrapper = document.getElementById('tableWrapper');
-        wrapper.innerHTML = '';
+        const { maxNum } = this.config;
+        this.dom.wrapper.innerHTML = '';
+        this.colHeaders = Object.create(null);
+        this.rowHeaders = Object.create(null);
+        this.inputs = [];
 
-        const blankCells = this.pickBlankCells(maxNum, blankCount);
+        const blankCells = this.pickBlankCells();
         const size = maxNum + 1;
 
         const grid = document.createElement('div');
@@ -91,216 +103,197 @@ class TabelleApp {
 
         for (let row = 0; row <= maxNum; row++) {
             for (let col = 0; col <= maxNum; col++) {
-                grid.appendChild(this.buildCell(row, col, maxNum, blankCells, hideHeaders));
+                grid.appendChild(this.buildCell(row, col, blankCells));
             }
         }
 
-        wrapper.appendChild(grid);
+        this.dom.wrapper.appendChild(grid);
+        this.totalInputs = this.inputs.length;
 
-        const first = wrapper.querySelector('input');
-        if (first) setTimeout(() => first.focus(), 80);
+        if (this.inputs.length > 0) this.inputs[0].focus();
     }
 
-    pickBlankCells(maxNum, count) {
+    pickBlankCells() {
+        const { maxNum, blankCount } = this.config;
         const all = [];
         for (let r = 1; r <= maxNum; r++)
             for (let c = 1; c <= maxNum; c++)
                 all.push(`${r},${c}`);
-        all.sort(() => Math.random() - 0.5);
-        return new Set(all.slice(0, Math.min(count, all.length)));
+
+        // Fisher-Yates
+        for (let i = all.length - 1; i > 0; i--) {
+            const j = (Math.random() * (i + 1)) | 0;
+            [all[i], all[j]] = [all[j], all[i]];
+        }
+        return new Set(all.slice(0, Math.min(blankCount, all.length)));
     }
 
-    buildCell(row, col, maxNum, blankCells, hideHeaders) {
+    buildCell(row, col, blankCells) {
         const cell = document.createElement('div');
 
-        // ── Corner ──
         if (row === 0 && col === 0) {
             cell.className = 'grid-cell corner-cell';
             cell.textContent = '+';
             return cell;
         }
 
-        // ── Column header (top row) ──
-        if (row === 0) {
-            cell.className = 'grid-cell header-cell col-header';
-            cell.dataset.index = col;
-            if (hideHeaders) {
-                cell.classList.add('hidden-header');
-                cell.appendChild(this.makeHeaderInput(col, maxNum));
-            } else {
-                cell.textContent = col;
-            }
-            return cell;
+        if (row === 0 || col === 0) {
+            return this.buildHeaderCell(cell, row, col);
         }
 
-        // ── Row header (left column) ──
-        if (col === 0) {
-            cell.className = 'grid-cell header-cell row-header';
-            cell.dataset.index = row;
-            if (hideHeaders) {
-                cell.classList.add('hidden-header');
-                cell.appendChild(this.makeHeaderInput(row, maxNum));
-            } else {
-                cell.textContent = row;
-            }
-            return cell;
-        }
-
-        // ── Result cell ──
         cell.className = 'grid-cell result-cell';
         cell.dataset.row = row;
         cell.dataset.col = col;
 
         if (blankCells.has(`${row},${col}`)) {
-            cell.appendChild(this.makeResultInput(row, col, maxNum));
+            const input = this.makeInput(row + col, row, col);
+            input.addEventListener('focus',   () => this.highlightHeaders(row, col, true));
+            input.addEventListener('blur',    () => this.highlightHeaders(row, col, false));
+            input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.advanceFocus(row, col); });
+            cell.appendChild(input);
+            this.inputs.push(input);
         } else {
             cell.classList.add('prefilled');
             cell.textContent = row + col;
-            // Highlight headers on hover for pre-filled cells too
             cell.addEventListener('mouseenter', () => this.highlightHeaders(row, col, true));
             cell.addEventListener('mouseleave', () => this.highlightHeaders(row, col, false));
         }
-
         return cell;
     }
 
-    makeResultInput(row, col, maxNum) {
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.min = '2';
-        input.max = maxNum * 2;
-        input.autocomplete = 'off';
-        input.dataset.answer = row + col;
-        input.dataset.row = row;
-        input.dataset.col = col;
+    buildHeaderCell(cell, row, col) {
+        const isCol = row === 0;
+        const index = isCol ? col : row;
+        cell.className = `grid-cell header-cell ${isCol ? 'col-header' : 'row-header'}`;
+        cell.dataset.index = index;
+        (isCol ? this.colHeaders : this.rowHeaders)[index] = cell;
 
-        input.addEventListener('focus',   () => this.highlightHeaders(row, col, true));
-        input.addEventListener('blur',    () => this.highlightHeaders(row, col, false));
-        input.addEventListener('input',   () => this.onInputChange(input));
-        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.advanceFocus(row, col); });
-        return input;
+        if (this.config.hideHeaders) {
+            cell.classList.add('hidden-header');
+            const input = this.makeInput(index);
+            cell.appendChild(input);
+            this.inputs.push(input);
+        } else {
+            cell.textContent = index;
+        }
+        return cell;
     }
 
-    makeHeaderInput(value, maxNum) {
+    makeInput(answer, row, col) {
         const input = document.createElement('input');
         input.type = 'number';
-        input.min = '1';
-        input.max = maxNum;
+        input.min = row === undefined ? '1' : '2';
+        input.max = row === undefined ? String(this.config.maxNum) : String(this.config.maxNum * 2);
         input.autocomplete = 'off';
-        input.dataset.answer = value;
+        input.dataset.answer = String(answer);
+        if (row !== undefined) {
+            input.dataset.row = row;
+            input.dataset.col = col;
+        }
         input.addEventListener('input', () => this.onInputChange(input));
         return input;
     }
 
-    // ── Highlighting ──────────────────────────────────────────────────────────
-
     highlightHeaders(row, col, on) {
-        const colH = document.querySelector(`.col-header[data-index="${col}"]`);
-        const rowH = document.querySelector(`.row-header[data-index="${row}"]`);
-        if (colH) colH.classList.toggle('highlighted', on);
-        if (rowH) rowH.classList.toggle('highlighted', on);
+        const colH = this.colHeaders[col];
+        const rowH = this.rowHeaders[row];
+        if (colH && colH.classList.contains('highlighted') !== on) colH.classList.toggle('highlighted', on);
+        if (rowH && rowH.classList.contains('highlighted') !== on) rowH.classList.toggle('highlighted', on);
     }
 
-    // ── Live validation ───────────────────────────────────────────────────────
+    isInputCorrect(input) {
+        if (input.value === '') return false;
+        return parseInt(input.value, 10) === parseInt(input.dataset.answer, 10);
+    }
 
     onInputChange(input) {
-        const val    = parseInt(input.value, 10);
-        const answer = parseInt(input.dataset.answer, 10);
-        const cell   = input.parentElement;
+        const cell = input.parentElement;
+        const wasCorrect = cell.classList.contains('correct');
+        const isCorrect = this.isInputCorrect(input);
 
-        if (!input.value) {
-            cell.classList.remove('correct', 'incorrect');
+        if (isCorrect === wasCorrect) {
+            if (!isCorrect && input.value === '') cell.classList.remove('incorrect');
             return;
         }
 
-        if (val === answer) {
+        if (isCorrect) {
             cell.classList.add('correct');
             cell.classList.remove('incorrect');
+            this.correctCount++;
             audioManager.playSuccessSound();
-            this.checkAllComplete();
+            if (this.correctCount === this.totalInputs) this.onSuccess();
         } else {
             cell.classList.remove('correct', 'incorrect');
+            this.correctCount--;
         }
     }
-
-    // ── Auto-advance on Enter ─────────────────────────────────────────────────
 
     advanceFocus(row, col) {
         const { maxNum } = this.config;
         let nextRow = row, nextCol = col + 1;
         if (nextCol > maxNum) { nextCol = 1; nextRow++; }
         if (nextRow > maxNum) return;
-        const next = document.querySelector(`input[data-row="${nextRow}"][data-col="${nextCol}"]`);
+        const next = this.dom.wrapper.querySelector(`input[data-row="${nextRow}"][data-col="${nextCol}"]`);
         if (next) next.focus();
     }
 
-    // ── Check (button) ────────────────────────────────────────────────────────
-
     checkAnswers() {
-        const inputs = document.querySelectorAll('#tableWrapper input');
-        let allCorrect = true;
         let anyInput = false;
+        this.correctCount = 0;
 
-        inputs.forEach(input => {
-            const val    = parseInt(input.value, 10);
-            const answer = parseInt(input.dataset.answer, 10);
-            const cell   = input.parentElement;
-
+        this.inputs.forEach(input => {
+            const cell = input.parentElement;
             if (input.value !== '') anyInput = true;
 
-            if (val === answer) {
+            if (this.isInputCorrect(input)) {
                 cell.classList.add('correct');
                 cell.classList.remove('incorrect');
+                this.correctCount++;
             } else {
                 cell.classList.add('incorrect');
                 cell.classList.remove('correct');
-                allCorrect = false;
             }
         });
 
-        if (allCorrect && anyInput) {
+        if (this.correctCount === this.totalInputs && anyInput) {
             this.onSuccess();
         } else {
             showMilestoneCelebration('🤔 Noch Fehler – versuch es nochmal!');
         }
     }
 
-    // ── Auto-complete check ───────────────────────────────────────────────────
-
-    checkAllComplete() {
-        if (this.crownEarnedThisRound) return;
-        const inputs = document.querySelectorAll('#tableWrapper input');
-        const allDone = [...inputs].every(inp =>
-            parseInt(inp.value, 10) === parseInt(inp.dataset.answer, 10)
-        );
-        if (allDone) this.onSuccess();
-    }
-
     onSuccess() {
-        if (!this.crownEarnedThisRound) {
-            this.crownEarnedThisRound = true;
+        if (!this.roundLocked) {
+            this.roundLocked = true;
             this.earnCrown();
         }
         launchFireworks();
         showMilestoneCelebration('🎉 Fantastisch! Alles richtig! 🎉');
     }
 
-    // ── Crown system ──────────────────────────────────────────────────────────
-
     earnCrown() {
         this.crownsEarned += 1;
         this.saveCrowns();
         this.updateCrownDisplay();
-        const counter = document.getElementById('crownCounter');
+        const counter = this.dom.crownCounter;
         if (counter) {
             counter.classList.add('earn');
             setTimeout(() => counter.classList.remove('earn'), 600);
         }
     }
 
-    loadCrowns()  { const s = localStorage.getItem('smarty-crowns'); this.crownsEarned = s ? parseInt(s, 10) : 0; }
-    saveCrowns()  { localStorage.setItem('smarty-crowns', this.crownsEarned.toString()); }
-    updateCrownDisplay() { const el = document.getElementById('crownCount'); if (el) el.textContent = this.crownsEarned; }
+    loadCrowns() {
+        const s = localStorage.getItem(CROWN_STORAGE_KEY);
+        this.crownsEarned = s ? parseInt(s, 10) : 0;
+    }
+
+    saveCrowns() {
+        localStorage.setItem(CROWN_STORAGE_KEY, String(this.crownsEarned));
+    }
+
+    updateCrownDisplay() {
+        if (this.dom.crownCount) this.dom.crownCount.textContent = this.crownsEarned;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => { new TabelleApp(); });
