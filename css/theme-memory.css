@@ -1,0 +1,304 @@
+/* Memory Theme - Mobile-First */
+
+:root {
+    --primary: #FF9800;
+    --secondary: #F57C00;
+    --tertiary: #FFB74D;
+    --accent: #FFC107;
+}
+
+/* Background gradient */
+body {
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+}
+
+/* Decorative background circles */
+body::before {
+    background: var(--primary);
+}
+
+body::after {
+    background: var(--secondary);
+}
+
+/* Card styling */
+.card {
+    border-color: var(--primary);
+}
+
+.card::before {
+    content: '🃏';
+}
+
+/* Buttons */
+.btn-start {
+    background: linear-gradient(135deg, var(--primary), var(--tertiary));
+}
+
+.btn-back {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-back:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Slider */
+input[type="range"]::-webkit-slider-thumb {
+    border-color: var(--primary);
+}
+
+input[type="range"]::-moz-range-thumb {
+    border-color: var(--primary);
+}
+
+/* Milestone celebration */
+.milestone-celebration {
+    background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+    z-index: 99999 !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Crown cost display */
+.crown-cost {
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--secondary);
+    margin-top: 0.5rem;
+}
+
+/* Preview section */
+.preview {
+    text-align: center;
+}
+
+.preview-header {
+    border-bottom-color: var(--primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.preview-title {
+    color: var(--primary);
+    margin: 0;
+}
+
+/* Stats display */
+.memory-stats {
+    display: flex;
+    gap: 1rem;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--secondary);
+}
+
+/* === MEMORY GRID === */
+.memory-grid {
+    display: grid;
+    gap: 8px;
+    width: 100%;
+    max-width: 400px;
+    margin: 1rem auto;
+}
+
+/* === MEMORY CARD === */
+.memory-card {
+    aspect-ratio: 1;
+    perspective: 600px;
+    cursor: pointer;
+}
+
+.memory-card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+}
+
+.memory-card.flipped .memory-card-inner {
+    transform: rotateY(180deg);
+}
+
+.memory-card-back,
+.memory-card-front {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+}
+
+.memory-card-back {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    font-size: 1.8rem;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.memory-card-front {
+    background: white;
+    font-size: 2.2rem;
+    transform: rotateY(180deg);
+    border: 3px solid var(--tertiary);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.15);
+}
+
+/* Matched cards */
+.memory-card.matched .memory-card-front {
+    border-color: #4CAF50;
+    box-shadow: 0 0 16px rgba(76, 175, 80, 0.4);
+}
+
+.memory-card.matched {
+    animation: bounceIn 0.5s ease-out;
+}
+
+/* Hover effect on unflipped cards */
+.memory-card:not(.flipped):not(.matched):hover .memory-card-back {
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.5);
+    transform: scale(1.03);
+}
+
+/* Control buttons */
+.memory-controls {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.btn-new {
+    background: linear-gradient(135deg, var(--secondary), #4DB6AC);
+    max-width: 250px;
+}
+
+.btn-new:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-new:active {
+    transform: translateY(0);
+}
+
+/* === RESPONSIVE === */
+
+/* Small phones (>=360px) */
+@media (min-width: 360px) {
+    .memory-card-back {
+        font-size: 2rem;
+    }
+
+    .memory-card-front {
+        font-size: 2.4rem;
+    }
+}
+
+/* Large phones (>=480px) */
+@media (min-width: 480px) {
+    .memory-grid {
+        gap: 10px;
+    }
+
+    .memory-card-back {
+        font-size: 2.2rem;
+    }
+
+    .memory-card-front {
+        font-size: 2.8rem;
+    }
+}
+
+/* Tablets (>=768px) */
+@media (min-width: 768px) {
+    .memory-grid {
+        gap: 12px;
+        max-width: 500px;
+    }
+
+    .memory-card-back {
+        font-size: 2.5rem;
+    }
+
+    .memory-card-front {
+        font-size: 3.2rem;
+    }
+
+    .memory-card-back,
+    .memory-card-front {
+        border-radius: 16px;
+    }
+}
+
+/* Desktop (>=1024px) */
+@media (min-width: 1024px) {
+    .memory-grid {
+        max-width: 550px;
+    }
+
+    .memory-card-back {
+        font-size: 2.8rem;
+    }
+
+    .memory-card-front {
+        font-size: 3.5rem;
+    }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 767px) {
+    .preview {
+        padding: 0.5rem !important;
+    }
+
+    .preview-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .preview-title {
+        font-size: 0.95rem;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    .subtitle {
+        font-size: 0.85rem;
+    }
+
+    .card {
+        padding: 0.75rem !important;
+    }
+
+    .form-group label {
+        font-size: 0.85rem;
+    }
+
+    .slider-value {
+        font-size: 0.75rem;
+    }
+
+    .slider-labels span {
+        font-size: 0.65rem;
+    }
+
+    .memory-stats {
+        font-size: 0.8rem;
+    }
+}

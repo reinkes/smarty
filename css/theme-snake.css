@@ -1,0 +1,258 @@
+/* Snake Theme - Mobile-First */
+
+:root {
+    --primary: #4CAF50;
+    --secondary: #388E3C;
+    --tertiary: #81C784;
+    --accent: #CDDC39;
+}
+
+/* Background gradient */
+body {
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+}
+
+/* Decorative background circles */
+body::before {
+    background: var(--primary);
+}
+
+body::after {
+    background: var(--secondary);
+}
+
+/* Card styling */
+.card {
+    border-color: var(--primary);
+}
+
+.card::before {
+    content: '🐍';
+}
+
+/* Buttons */
+.btn-start {
+    background: linear-gradient(135deg, var(--primary), var(--tertiary));
+}
+
+.btn-back {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-back:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Slider */
+input[type="range"]::-webkit-slider-thumb {
+    border-color: var(--primary);
+}
+
+input[type="range"]::-moz-range-thumb {
+    border-color: var(--primary);
+}
+
+/* Crown cost label */
+.crown-cost,
+.game-over-cost {
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--secondary);
+    margin-top: 0.5rem;
+}
+
+/* Milestone celebration */
+.milestone-celebration {
+    background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+    z-index: 99999 !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Game area */
+.preview {
+    text-align: center;
+    position: relative;
+}
+
+/* Score display */
+.score-display {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+#scoreValue {
+    color: var(--secondary);
+    font-size: 1.6rem;
+}
+
+/* Canvas */
+#snakeCanvas {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 3px solid var(--primary);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.25);
+    background: #F1F8E9;
+    touch-action: none;
+}
+
+/* Game over overlay */
+.game-over-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 24px;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-over-overlay.active {
+    display: flex;
+}
+
+.game-over-content {
+    background: white;
+    padding: 2rem 2.5rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: bounceIn 0.5s ease-out;
+}
+
+.game-over-content h2 {
+    font-family: 'Fredoka', sans-serif;
+    color: var(--primary);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.game-over-content p {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.btn-restart {
+    background: linear-gradient(135deg, var(--primary), var(--tertiary));
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+    width: auto;
+}
+
+.btn-restart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+/* === RESPONSIVE === */
+
+/* Small phones (>=360px) */
+@media (min-width: 360px) {
+    .score-display {
+        font-size: 1.5rem;
+    }
+}
+
+/* Large phones (>=480px) */
+@media (min-width: 480px) {
+    .score-display {
+        font-size: 1.6rem;
+    }
+
+    #scoreValue {
+        font-size: 1.8rem;
+    }
+}
+
+/* Tablets (>=768px) */
+@media (min-width: 768px) {
+    .score-display {
+        font-size: 1.7rem;
+    }
+
+    .game-over-content h2 {
+        font-size: 2rem;
+    }
+
+    .game-over-content p {
+        font-size: 1.3rem;
+    }
+}
+
+/* Desktop (>=1024px) */
+@media (min-width: 1024px) {
+    .score-display {
+        font-size: 1.8rem;
+    }
+
+    #scoreValue {
+        font-size: 2rem;
+    }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 767px) {
+    .preview {
+        padding: 0.75rem !important;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    .subtitle {
+        font-size: 0.85rem;
+    }
+
+    .card {
+        padding: 0.75rem !important;
+    }
+
+    .form-group label {
+        font-size: 0.85rem;
+    }
+
+    .slider-value {
+        font-size: 0.75rem;
+    }
+
+    .slider-labels span {
+        font-size: 0.65rem;
+    }
+
+    .game-over-content {
+        padding: 1.5rem 1.75rem;
+    }
+
+    .game-over-content h2 {
+        font-size: 1.4rem;
+    }
+
+    .game-over-content p {
+        font-size: 1rem;
+    }
+}
