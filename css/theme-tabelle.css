@@ -101,6 +101,27 @@
     color: #1565C0;
 }
 
+.result-cell.prefilled.hint-full {
+    background: linear-gradient(135deg, #FFF9C4, #FFF176);
+    border-color: #F9A825;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(249, 168, 37, 0.5);
+    z-index: 2;
+}
+
+.result-cell.prefilled.hint-medium {
+    background: linear-gradient(135deg, #FFFDE7, #FFF9C4);
+    border-color: #FFC107;
+    transform: scale(1.04);
+    box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+    z-index: 2;
+}
+
+.result-cell.prefilled.hint-faint {
+    border-color: #FFD54F;
+    transform: scale(1.02);
+}
+
 .result-cell.correct {
     background: linear-gradient(135deg, #D5F4E6, #ABEBC6);
     border-color: #27AE60;

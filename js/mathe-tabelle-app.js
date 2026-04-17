@@ -34,23 +34,22 @@ class TabelleApp {
         this.updateDifficultyDisplay();
     }
 
-    // gridSize    = result-grid dimension (2, 3, 4)
-    // maxAddend   = max header value (max sum = 2 × maxAddend)
-    // emptyHeaders = how many row headers AND col headers to make blank (deduce mode).
-    //               Invariant: pre-filled result cells never sit at (emptyRow, emptyCol),
-    //               so every empty header can be solved from a pre-filled result.
+    // gridSize     = result-grid dimension (2, 3, 4)
+    // maxAddend    = max header value (max sum = 2 × maxAddend)
+    // emptyHeaders = how many row/col headers to blank out (deduce mode)
+    // headerHint   = how strongly to highlight prefilled cells when a blank header is focused
     getConfig(level) {
         const configs = [
-            { gridSize: 2, maxAddend:  5, emptyHeaders: 0 }, //  1
-            { gridSize: 2, maxAddend:  7, emptyHeaders: 0 }, //  2
-            { gridSize: 2, maxAddend: 10, emptyHeaders: 0 }, //  3
-            { gridSize: 3, maxAddend:  5, emptyHeaders: 0 }, //  4
-            { gridSize: 3, maxAddend:  8, emptyHeaders: 0 }, //  5
-            { gridSize: 3, maxAddend: 10, emptyHeaders: 0 }, //  6
-            { gridSize: 3, maxAddend: 10, emptyHeaders: 1 }, //  7 – deduce
-            { gridSize: 4, maxAddend:  7, emptyHeaders: 0 }, //  8
-            { gridSize: 4, maxAddend: 10, emptyHeaders: 0 }, //  9
-            { gridSize: 4, maxAddend: 10, emptyHeaders: 1 }, // 10 – deduce
+            { gridSize: 2, maxAddend:  5, emptyHeaders: 0, headerHint: null     }, //  1
+            { gridSize: 2, maxAddend:  7, emptyHeaders: 0, headerHint: null     }, //  2
+            { gridSize: 2, maxAddend: 10, emptyHeaders: 0, headerHint: null     }, //  3
+            { gridSize: 3, maxAddend:  5, emptyHeaders: 0, headerHint: null     }, //  4
+            { gridSize: 3, maxAddend:  8, emptyHeaders: 0, headerHint: null     }, //  5
+            { gridSize: 3, maxAddend: 10, emptyHeaders: 0, headerHint: null     }, //  6
+            { gridSize: 3, maxAddend: 10, emptyHeaders: 1, headerHint: 'full'   }, //  7 – deduce, full hint
+            { gridSize: 4, maxAddend:  7, emptyHeaders: 1, headerHint: 'medium' }, //  8 – deduce, medium hint
+            { gridSize: 4, maxAddend: 10, emptyHeaders: 1, headerHint: 'faint'  }, //  9 – deduce, faint hint
+            { gridSize: 4, maxAddend: 10, emptyHeaders: 1, headerHint: null     }, // 10 – deduce, no hint
         ];
         return configs[level - 1];
     }
@@ -141,6 +140,8 @@ class TabelleApp {
         this.dom.wrapper.innerHTML = '';
         this.colHeaders = Object.create(null);
         this.rowHeaders = Object.create(null);
+        this.prefilledByRow = Object.create(null);
+        this.prefilledByCol = Object.create(null);
         this.inputs = [];
 
         const emptyRows = this.pickEmptyIndices(gridSize, emptyHeaders);
@@ -184,6 +185,8 @@ class TabelleApp {
         if (prefilled.has(`${row},${col}`)) {
             cell.classList.add('prefilled');
             cell.textContent = answer;
+            (this.prefilledByRow[row] = this.prefilledByRow[row] || []).push(cell);
+            (this.prefilledByCol[col] = this.prefilledByCol[col] || []).push(cell);
         } else {
             const input = this.makeInput(answer, row, col);
             input.addEventListener('focus',   () => this.highlightHeaders(row, col, true));
@@ -208,6 +211,8 @@ class TabelleApp {
         if (isEmpty) {
             cell.classList.add('hidden-header');
             const input = this.makeInput(value);
+            input.addEventListener('focus',   () => this.highlightPrefilled(isCol, index, true));
+            input.addEventListener('blur',    () => this.highlightPrefilled(isCol, index, false));
             input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.advanceFocus(input); });
             cell.appendChild(input);
             this.inputs.push(input);
@@ -240,6 +245,13 @@ class TabelleApp {
         const rowH = this.rowHeaders[row];
         if (colH && colH.classList.contains('highlighted') !== on) colH.classList.toggle('highlighted', on);
         if (rowH && rowH.classList.contains('highlighted') !== on) rowH.classList.toggle('highlighted', on);
+    }
+
+    highlightPrefilled(isCol, index, on) {
+        const hint = this.config.headerHint;
+        if (!hint) return;
+        const cells = (isCol ? this.prefilledByCol[index] : this.prefilledByRow[index]) || [];
+        cells.forEach(cell => cell.classList.toggle(`hint-${hint}`, on));
     }
 
     isInputCorrect(input) {
