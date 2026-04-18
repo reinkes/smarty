@@ -130,63 +130,25 @@
         }
 
         .logo {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            background: white;
-            padding: 2rem 3rem;
-            border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: inline-block;
             transition: transform 0.3s ease;
+            animation: bounce 3s infinite ease-in-out;
         }
 
         .logo:hover {
             transform: scale(1.05);
         }
 
-        .logo-icon {
-            width: 120px;
-            height: 120px;
-            position: relative;
-            animation: bounce 2s infinite ease-in-out;
+        .logo img {
+            width: 380px;
+            max-width: 90vw;
+            height: auto;
+            display: block;
         }
 
         @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-15px);
-            }
-        }
-
-        /* SVG Brain with graduation cap */
-        .brain-svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        .logo-text {
-            text-align: left;
-        }
-
-        .logo-text h1 {
-            font-family: 'Baloo 2', cursive;
-            font-size: 4rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-
-        .logo-text p {
-            font-size: 1.3rem;
-            color: #666;
-            font-weight: 600;
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-12px); }
         }
 
         /* App Cards */
@@ -383,18 +345,6 @@
                 padding: 1rem 0;
             }
 
-            .logo {
-                flex-direction: column;
-                padding: 2rem;
-            }
-
-            .logo-text h1 {
-                font-size: 3rem;
-            }
-
-            .logo-text p {
-                font-size: 1.1rem;
-            }
 
             .apps-container {
                 grid-template-columns: 1fr;
@@ -428,58 +378,7 @@
         <!-- Logo -->
         <div class="logo-container">
             <div class="logo">
-                <div class="logo-icon">
-                    <svg class="brain-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Brain -->
-                        <g id="brain">
-                            <!-- Left hemisphere -->
-                            <path d="M 30 60 Q 20 40 30 25 Q 40 15 50 20 Q 55 15 60 20" 
-                                  fill="#FF6B9D" stroke="#E74C3C" stroke-width="2"/>
-                            <path d="M 30 60 Q 25 70 30 85 Q 40 95 50 90 Q 55 95 60 90" 
-                                  fill="#FFC837" stroke="#F39C12" stroke-width="2"/>
-                            
-                            <!-- Right hemisphere -->
-                            <path d="M 90 60 Q 100 40 90 25 Q 80 15 70 20 Q 65 15 60 20" 
-                                  fill="#4ECDC4" stroke="#16A085" stroke-width="2"/>
-                            <path d="M 90 60 Q 95 70 90 85 Q 80 95 70 90 Q 65 95 60 90" 
-                                  fill="#9B59B6" stroke="#8E44AD" stroke-width="2"/>
-                            
-                            <!-- Brain details (squiggles) -->
-                            <path d="M 35 35 Q 40 33 45 35" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
-                            <path d="M 35 50 Q 42 48 48 50" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
-                            <path d="M 33 65 Q 40 63 46 65" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
-                            <path d="M 35 78 Q 42 76 48 78" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
-                            
-                            <path d="M 85 35 Q 80 33 75 35" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
-                            <path d="M 85 50 Q 78 48 72 50" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
-                            <path d="M 87 65 Q 80 63 74 65" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
-                            <path d="M 85 78 Q 78 76 72 78" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
-                        </g>
-                        
-                        <!-- Graduation cap -->
-                        <g id="cap" transform="translate(0, -5)">
-                            <!-- Cap top -->
-                            <polygon points="60,15 30,25 60,35 90,25" 
-                                     fill="#2C3E50" stroke="#34495E" stroke-width="1.5"/>
-                            <!-- Cap board -->
-                            <ellipse cx="60" cy="25" rx="30" ry="6" 
-                                     fill="#34495E" stroke="#2C3E50" stroke-width="1"/>
-                            <!-- Tassel -->
-                            <line x1="90" y1="25" x2="95" y2="32" 
-                                  stroke="#FFC837" stroke-width="2"/>
-                            <circle cx="95" cy="34" r="3" fill="#FFC837"/>
-                        </g>
-                        
-                        <!-- Sparkles -->
-                        <text x="10" y="30" font-size="12" fill="#FFC837" opacity="0.8">✨</text>
-                        <text x="100" y="50" font-size="10" fill="#FF6B9D" opacity="0.8">⭐</text>
-                        <text x="15" y="95" font-size="11" fill="#4ECDC4" opacity="0.8">💫</text>
-                    </svg>
-                </div>
-                <div class="logo-text">
-                    <h1>Smarty Learn</h1>
-                    <p>Spielend Lernen</p>
-                </div>
+                <img src="images/logo.jpg" alt="Smarty Learn – Spielend Lernen">
             </div>
         </div>
 
