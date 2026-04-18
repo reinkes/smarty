@@ -131,24 +131,29 @@
 
         .logo {
             display: inline-block;
-            transition: transform 0.3s ease;
+            background: white;
+            border-radius: 32px;
+            padding: 1.5rem 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: bounce 3s infinite ease-in-out;
         }
 
         .logo:hover {
-            transform: scale(1.05);
+            transform: scale(1.04);
+            box-shadow: 0 28px 70px rgba(0, 0, 0, 0.3);
         }
 
         .logo img {
-            width: 380px;
-            max-width: 90vw;
+            width: 320px;
+            max-width: 80vw;
             height: auto;
             display: block;
         }
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-12px); }
+            50%       { transform: translateY(-10px); }
         }
 
         /* App Cards */
