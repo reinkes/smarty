@@ -3,6 +3,7 @@ class SnakeApp {
     static FOOD_EMOJIS = ['🍎', '🍐', '🍊', '🍋', '🍇', '🍓', '🍒', '🍑'];
     static HIGHSCORE_KEY = 'smarty-snake-highscore';
     static SPEED_PRESETS = {
+        0: { name: 'Sehr Langsam 🐌', interval: 380, cost: 0 },
         1: { name: 'Langsam', interval: 200, cost: 1 },
         2: { name: 'Normal', interval: 140, cost: 2 },
         3: { name: 'Schnell', interval: 90, cost: 3 }
@@ -289,6 +290,54 @@ class SnakeApp {
                 this.food.y * cs + cs / 2
             );
         }
+
+        if (this.speed === 0 && this.food && this.snake.length > 0) {
+            this.drawHintArrow(ctx, cs);
+        }
+    }
+
+    drawHintArrow(ctx, cs) {
+        const head = this.snake[0];
+        const fromX = head.x * cs + cs / 2;
+        const fromY = head.y * cs + cs / 2;
+        const toX   = this.food.x * cs + cs / 2;
+        const toY   = this.food.y * cs + cs / 2;
+
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < cs) return;
+
+        const ux = dx / dist;
+        const uy = dy / dist;
+        const gap = cs * 0.65;
+        const x1 = fromX + ux * gap;
+        const y1 = fromY + uy * gap;
+        const x2 = toX   - ux * gap;
+        const y2 = toY   - uy * gap;
+
+        ctx.save();
+        ctx.globalAlpha = 0.45;
+        ctx.strokeStyle = '#FFC107';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([cs * 0.3, cs * 0.25]);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+
+        // arrowhead
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#FFC107';
+        const angle = Math.atan2(dy, dx);
+        const aSize = cs * 0.35;
+        ctx.beginPath();
+        ctx.moveTo(x2, y2);
+        ctx.lineTo(x2 - aSize * Math.cos(angle - 0.4), y2 - aSize * Math.sin(angle - 0.4));
+        ctx.lineTo(x2 - aSize * Math.cos(angle + 0.4), y2 - aSize * Math.sin(angle + 0.4));
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
     }
 
     handleKeydown(e) {
