@@ -156,6 +156,29 @@
             50%       { transform: translateY(-10px); }
         }
 
+        /* Crown Banner */
+        .crown-banner {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: linear-gradient(135deg, #FFF9C4, #FFE082);
+            border: 2px solid #FFC107;
+            border-radius: 50px;
+            padding: 0.6rem 1.6rem;
+            margin-top: 1.2rem;
+            box-shadow: 0 4px 20px rgba(255, 193, 7, 0.4);
+            animation: fadeInDown 1s ease-out 0.4s both;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #7B5800;
+        }
+
+        .crown-banner-icon {
+            font-size: 1.4rem;
+            line-height: 1;
+        }
+
         /* App Cards */
         .apps-container {
             display: grid;
@@ -385,6 +408,10 @@
             <div class="logo">
                 <img src="images/logo.jpg" alt="Smarty Learn – Spielend Lernen">
             </div>
+            <div class="crown-banner" id="crownBanner" style="display:none;">
+                <span class="crown-banner-icon">👑</span>
+                <span>Du hast <strong id="totalCrowns">0</strong> Kronen gesammelt!</span>
+            </div>
         </div>
 
         <!-- App Cards -->
@@ -567,6 +594,16 @@
             </a>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const crowns = parseInt(localStorage.getItem('smarty-crowns') || '0', 10);
+            if (crowns > 0) {
+                document.getElementById('totalCrowns').textContent = crowns;
+                document.getElementById('crownBanner').style.display = 'inline-flex';
+            }
+        })();
+    </script>
 
     <footer>
         <p>Made with ❤️ for curious minds</p>
