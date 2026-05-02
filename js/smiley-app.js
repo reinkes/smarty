@@ -66,40 +66,36 @@
     }
 
     // ── Problem generation ────────────────────────────────────────────
+    // Scope: Klasse 1 Germany — addition and subtraction only, numbers up to 20.
+    // No multiplication or division (not part of Klasse 1 curriculum).
     function generateProblem(level) {
         const rnd = function (min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         };
 
+        // Only + and − for Klasse 1. Subtraction unlocks at level 4.
         const ops = ['+'];
-        if (level >= 3) ops.push('−'); // −
-        if (level >= 6) ops.push('×'); // ×
-        if (level >= 9) ops.push('÷'); // ÷
+        if (level >= 4) ops.push('−');
 
         const op = ops[rnd(0, ops.length - 1)];
-        const maxNums = [5, 10, 10, 15, 20, 30, 50, 50, 100, 100];
+
+        // Number ranges scaled by level, capped at 20 (Klasse 1 curriculum).
+        // Level 1: 1–5  Level 2-3: 1–10  Level 4-6: 1–15  Level 7-10: 1–20
+        const maxNums = [5, 10, 10, 15, 15, 15, 20, 20, 20, 20];
         const max = maxNums[level - 1];
 
         var a, b, answer;
 
         if (op === '+') {
-            a = rnd(1, max);
-            b = rnd(1, max);
+            // Keep sum within 20
+            a = rnd(1, Math.min(max, 19));
+            b = rnd(1, Math.min(max, 20 - a));
             answer = a + b;
-        } else if (op === '−') {
-            b = rnd(1, max);
-            a = b + rnd(0, max);
-            answer = a - b;
-        } else if (op === '×') {
-            var mf = level <= 7 ? 3 : level <= 8 ? 5 : 10;
-            a = rnd(1, mf);
-            b = rnd(1, mf);
-            answer = a * b;
         } else {
-            // division — always exact
-            b = rnd(2, 10);
-            answer = rnd(1, 10);
-            a = answer * b;
+            // Subtraction: result always >= 0
+            b = rnd(1, max);
+            a = b + rnd(0, Math.min(max, 20 - b));
+            answer = a - b;
         }
 
         return { text: a + ' ' + op + ' ' + b + ' = ?', answer: answer };
@@ -323,10 +319,12 @@
     }
 
     function updateLevelDisplay() {
-        var labels = ['', 'Einfach 😊', 'Einfach 😊', 'Einfach 😊',
-                      'Mittel 🤔', 'Mittel 🤔', 'Mittel 🤔',
-                      'Schwer 🔥', 'Schwer 🔥', 'Schwer 🔥',
-                      'Experte ⚡'];
+        // Klasse 1: levels 1-3 = addition only (bis 10/15), 4-10 = + and − (bis 20)
+        var labels = ['',
+            'Addition bis 5 😊', 'Addition bis 10 😊', 'Addition bis 10 😊',
+            'Plus & Minus bis 15 🤔', 'Plus & Minus bis 15 🤔', 'Plus & Minus bis 15 🤔',
+            'Plus & Minus bis 20 🔥', 'Plus & Minus bis 20 🔥', 'Plus & Minus bis 20 🔥',
+            'Plus & Minus bis 20 🔥'];
         el.levelBadge.textContent = 'Level ' + state.level + ' – ' + labels[state.level];
     }
 
