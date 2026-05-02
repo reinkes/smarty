@@ -14,111 +14,177 @@
       crossorigin="anonymous"
     >
     <style>
-        body {
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            padding: 0;
-            align-items: center;
-            justify-content: center;
+        .level-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
         }
 
-        .game-wrapper {
+        .progress-row {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 18px;
+            background: #E8E8E8;
+            border-radius: 9px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--math-primary), var(--math-secondary));
+            border-radius: 9px;
+            transition: width 0.4s ease-out;
+        }
+
+        .progress-label {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        /* Smiley SVG */
+        #smileySvg {
+            display: block;
+            width: 220px;
+            height: 220px;
+            max-width: 65vw;
+            margin: 0.5rem auto 0.5rem;
+            filter: drop-shadow(0 6px 18px rgba(255, 200, 0, 0.35));
+        }
+
+        /* Problem display */
+        .problem-display {
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: clamp(2rem, 7vw, 3rem);
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: 3px;
+            margin: 0.75rem 0 1rem;
+        }
+
+        /* Feedback line */
+        .feedback {
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            min-height: 2.2rem;
+            margin-bottom: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .feedback.correct { color: #27AE60; }
+        .feedback.incorrect { color: #E74C3C; }
+
+        /* Answer input */
+        #answerInput {
+            display: block;
             width: 100%;
-            max-width: 560px;
-            padding: 3.5rem 1rem 1rem;
-            gap: 0.75rem;
-            min-height: 100vh;
+            padding: 1rem;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            border: 3px solid var(--math-tertiary);
+            border-radius: 16px;
+            color: var(--text-dark);
+            background: white;
+            margin-top: 0;
+            -moz-appearance: textfield;
             box-sizing: border-box;
         }
 
-        /* Stats bar */
-        .stats-bar {
-            display: flex;
-            gap: 0.75rem;
-            justify-content: center;
-            flex-wrap: wrap;
+        #answerInput::-webkit-outer-spin-button,
+        #answerInput::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
-        .stat-pill {
-            background: white;
-            border-radius: 20px;
-            padding: 0.35rem 1rem;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--math-primary);
-            box-shadow: 0 2px 8px rgba(255, 107, 157, 0.2);
-            border: 2px solid var(--math-primary);
+        #answerInput:focus {
+            border-color: var(--math-primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.15);
         }
 
-        /* Smiley stage — square container matching SVG viewBox aspect ratio */
-        .smiley-stage {
-            position: relative;
-            width: min(370px, 82vw, 55vh);
-            height: min(370px, 82vw, 55vh);
-            flex-shrink: 0;
+        /* Submit button — full-width, matches theme-math.css button style */
+        #submitBtn {
+            margin-top: 1rem;
         }
 
-        #smileySvg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 8px 24px rgba(255, 200, 0, 0.35));
-        }
-
-        /* Problem card — overlaid on smiley forehead */
-        .problem-card {
-            position: absolute;
-            top: 6%;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.93);
-            border-radius: 18px;
-            padding: 0.5rem 1.4rem;
-            box-shadow: 0 4px 18px rgba(255, 107, 157, 0.25);
-            border: 3px solid var(--math-primary);
-            white-space: nowrap;
-            backdrop-filter: blur(4px);
-        }
-
-        .problem-text {
-            font-family: 'Fredoka', sans-serif;
-            font-size: clamp(1.6rem, 5.5vw, 2.4rem);
-            font-weight: 700;
-            color: var(--text-dark);
-            letter-spacing: 2px;
-        }
-
-        /* Correct answer hint — shown inside smiley-stage when wrong */
-        #correctHint {
-            position: absolute;
-            bottom: 4%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #fff;
-            border: 2px solid #E74C3C;
-            border-radius: 12px;
-            padding: 0.35rem 1rem;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: #E74C3C;
-            z-index: 10;
-            white-space: nowrap;
+        /* Completion screen */
+        .completion-screen {
             display: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 2rem 1rem;
+            animation: fadeIn 0.8s ease-out;
         }
 
-        /* Animated answer token (position: fixed → not clipped by overflow:hidden) */
+        .completion-emoji {
+            font-size: 6rem;
+            display: block;
+            margin-bottom: 1rem;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .completion-heading {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.2rem;
+            color: var(--math-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .completion-crowns {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, var(--math-primary), #FF8CB4);
+            color: white;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+            transition: transform 0.2s ease;
+            display: inline-block;
+            width: auto;
+            margin-top: 1rem;
+        }
+
+        .btn-restart:hover {
+            transform: scale(1.05);
+        }
+
+        /* Animated answer token — position:fixed so it travels across the page */
         #answerToken {
             position: fixed;
             width: 62px;
@@ -137,114 +203,10 @@
             pointer-events: none;
         }
 
-        /* Input area */
-        .input-area {
-            display: flex;
-            gap: 0.75rem;
-            width: min(370px, 82vw);
-            align-items: stretch;
-        }
-
-        #answerInput {
-            flex: 1;
-            padding: 0.875rem 1rem;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.9rem;
-            font-weight: 700;
-            text-align: center;
-            border: 3px solid var(--math-tertiary);
-            border-radius: 16px;
-            color: var(--text-dark);
-            background: white;
-            margin-top: 0;
-            -moz-appearance: textfield;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
-        }
-
-        #answerInput::-webkit-outer-spin-button,
-        #answerInput::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        #answerInput:focus {
-            border-color: var(--math-primary);
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.15);
-        }
-
-        #submitBtn {
-            width: auto;
-            padding: 0 1.4rem;
-            font-size: 1.3rem;
-            margin-top: 0;
-            flex-shrink: 0;
-            border-radius: 16px;
-        }
-
-        /* Difficulty settings */
-        .settings-area {
-            background: white;
-            border-radius: 16px;
-            padding: 0.7rem 1.25rem 0.85rem;
-            border: 2px solid var(--math-secondary);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-            width: min(370px, 82vw);
-        }
-
-        .settings-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .level-badge {
-            background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
-            color: white;
-            padding: 0.2rem 0.7rem;
-            border-radius: 10px;
-            font-size: 0.9rem;
-        }
-
-        /* Feedback popup */
-        #feedbackOverlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            padding: 1rem 2rem;
-            border-radius: 20px;
-            color: white;
-            z-index: 10000;
-            pointer-events: none;
-            opacity: 0;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-        }
-
-        #feedbackOverlay.show {
-            animation: milestoneShow 1.5s ease-out forwards;
-        }
-
-        #feedbackOverlay.correct {
-            background: linear-gradient(135deg, #2ECC71, #27AE60);
-        }
-
-        #feedbackOverlay.wrong {
-            background: linear-gradient(135deg, #E74C3C, #C0392B);
-        }
-
         /* Smiley animations */
         @keyframes smileyBounce {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-7px) rotate(1deg); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
         }
 
         @keyframes smileyHappy {
@@ -257,193 +219,182 @@
 
         @keyframes smileyShake {
             0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-14px); }
-            40% { transform: translateX(14px); }
-            60% { transform: translateX(-9px); }
-            80% { transform: translateX(9px); }
+            20% { transform: translateX(-12px); }
+            40% { transform: translateX(12px); }
+            60% { transform: translateX(-8px); }
+            80% { transform: translateX(8px); }
         }
 
-        #smileySvg.bouncing {
-            animation: smileyBounce 2.5s ease-in-out infinite;
-        }
+        #smileySvg.bouncing    { animation: smileyBounce 2.5s ease-in-out infinite; }
+        #smileySvg.celebrating { animation: smileyHappy 0.9s ease-in-out forwards; }
+        #smileySvg.shaking     { animation: smileyShake 0.65s ease-in-out forwards; }
 
-        #smileySvg.celebrating {
-            animation: smileyHappy 0.9s ease-in-out forwards;
-        }
-
-        #smileySvg.shaking {
-            animation: smileyShake 0.65s ease-in-out forwards;
-        }
-
-        /* Mobile tweaks */
-        @media (max-width: 400px) {
-            .problem-text {
-                font-size: 1.4rem;
-                letter-spacing: 1px;
-            }
-
-            .game-wrapper {
-                gap: 0.5rem;
-                padding-top: 3rem;
-            }
-        }
-
-        @media (max-height: 650px) {
-            .smiley-stage {
-                width: min(300px, 75vw, 42vh);
-                height: min(300px, 75vw, 42vh);
-            }
+        @media (max-width: 480px) {
+            .problem-display { font-size: 2rem; letter-spacing: 2px; }
+            #smileySvg { width: 180px; height: 180px; }
         }
     </style>
 </head>
 <body>
-    <a href="index.html" class="btn-back">⬅ Zurück</a>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
 
-    <div class="crown-counter" id="crownCounter">
+    <div class="crown-counter" id="crownCounter" style="display: none;">
         <span class="crown-icon">👑</span>
         <span class="crown-count" id="crownCount">0</span>
     </div>
 
-    <div class="milestone-celebration" id="milestoneCelebration"></div>
-    <div class="fireworks-container" id="fireworksContainer"></div>
-    <div id="feedbackOverlay"></div>
-    <div id="answerToken"></div>
+    <div class="container">
+        <header>
+            <h1>😊 Smiley-Rechner</h1>
+            <p class="subtitle">Füttere den Smiley mit der richtigen Antwort!</p>
+        </header>
 
-    <div class="game-wrapper">
-        <div class="stats-bar">
-            <div class="stat-pill" id="statScore">✅ 0 richtig</div>
-            <div class="stat-pill" id="statStreak">🔥 0er Streak</div>
-        </div>
-
-        <div class="smiley-stage" id="smileyStage">
-            <!-- Problem floats on the smiley's forehead -->
-            <div class="problem-card" id="problemCard">
-                <div class="problem-text" id="problemText">Lade…</div>
+        <div class="card">
+            <div style="text-align: center;">
+                <span class="level-badge" id="levelDisplay">Level 1</span>
             </div>
 
-            <!-- The smiley SVG — viewBox 400×400, face centered at (200,200) r=190 -->
-            <svg id="smileySvg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" class="bouncing" aria-hidden="true">
-                <defs>
-                    <radialGradient id="faceGrad" cx="38%" cy="32%" r="62%">
-                        <stop offset="0%" stop-color="#FFF176"/>
-                        <stop offset="100%" stop-color="#FFB800"/>
-                    </radialGradient>
-                    <radialGradient id="cheekGrad" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="#FF9999" stop-opacity="0.65"/>
-                        <stop offset="100%" stop-color="#FF9999" stop-opacity="0"/>
-                    </radialGradient>
-                </defs>
-
-                <!-- Face base -->
-                <circle cx="200" cy="200" r="190" fill="url(#faceGrad)" stroke="#E8A000" stroke-width="4"/>
-
-                <!-- Rosy cheeks -->
-                <ellipse cx="85"  cy="268" rx="54" ry="33" fill="url(#cheekGrad)"/>
-                <ellipse cx="315" cy="268" rx="54" ry="33" fill="url(#cheekGrad)"/>
-
-                <!-- ── Normal eyes ── -->
-                <g id="eyesNormal">
-                    <circle cx="135" cy="165" r="33" fill="white"/>
-                    <circle cx="265" cy="165" r="33" fill="white"/>
-                    <circle cx="138" cy="168" r="18" fill="#222"/>
-                    <circle cx="268" cy="168" r="18" fill="#222"/>
-                    <circle cx="146" cy="160" r="6" fill="white"/>
-                    <circle cx="276" cy="160" r="6" fill="white"/>
-                    <!-- eyebrows -->
-                    <path d="M 107,133 Q 135,122 163,130" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
-                    <path d="M 237,130 Q 265,122 293,133" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
-                </g>
-
-                <!-- ── Happy eyes (squinting arcs) ── -->
-                <g id="eyesHappy" style="display:none">
-                    <path d="M 103,165 Q 135,132 167,165" stroke="#222" stroke-width="10" fill="none" stroke-linecap="round"/>
-                    <path d="M 233,165 Q 265,132 297,165" stroke="#222" stroke-width="10" fill="none" stroke-linecap="round"/>
-                    <!-- happy eyebrows — raised -->
-                    <path d="M 107,128 Q 135,114 163,124" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
-                    <path d="M 237,124 Q 265,114 293,128" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
-                </g>
-
-                <!-- ── Sad eyes ── -->
-                <g id="eyesSad" style="display:none">
-                    <circle cx="135" cy="170" r="33" fill="white"/>
-                    <circle cx="265" cy="170" r="33" fill="white"/>
-                    <circle cx="138" cy="175" r="18" fill="#222"/>
-                    <circle cx="268" cy="175" r="18" fill="#222"/>
-                    <circle cx="146" cy="167" r="6" fill="white"/>
-                    <circle cx="276" cy="167" r="6" fill="white"/>
-                    <!-- sad eyebrows — inner corners lifted -->
-                    <path d="M 107,142 Q 135,157 163,137" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
-                    <path d="M 237,137 Q 265,157 293,142" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
-                </g>
-
-                <!-- ── Neutral mouth — gentle smile ── -->
-                <path id="mouthNeutral" d="M 140,280 Q 200,320 260,280" stroke="#333" stroke-width="7" fill="none" stroke-linecap="round"/>
-
-                <!-- ── Open mouth (about to eat / eating) ── -->
-                <g id="mouthOpen" style="display:none">
-                    <!-- dark interior -->
-                    <path d="M 135,274 Q 200,262 265,274 Q 268,330 200,342 Q 132,330 135,274 Z" fill="#AA1800"/>
-                    <!-- lip highlight (upper) -->
-                    <path d="M 135,274 Q 200,262 265,274" fill="#FF9080" stroke="#FF9080" stroke-width="1"/>
-                    <!-- upper teeth -->
-                    <rect x="148" y="267" width="18" height="12" rx="3" fill="white"/>
-                    <rect x="170" y="264" width="18" height="12" rx="3" fill="white"/>
-                    <rect x="192" y="263" width="18" height="12" rx="3" fill="white"/>
-                    <rect x="214" y="264" width="18" height="12" rx="3" fill="white"/>
-                    <rect x="234" y="267" width="18" height="12" rx="3" fill="white"/>
-                </g>
-
-                <!-- ── Happy mouth — wide smile with rosy fill ── -->
-                <g id="mouthHappy" style="display:none">
-                    <path d="M 108,270 Q 200,358 292,270 Q 200,308 108,270 Z" fill="#FF6B8A"/>
-                    <path d="M 108,270 Q 200,358 292,270" stroke="#222" stroke-width="8" fill="none" stroke-linecap="round"/>
-                </g>
-
-                <!-- ── Sad mouth — frown ── -->
-                <path id="mouthSad" d="M 140,310 Q 200,274 260,310" stroke="#444" stroke-width="7" fill="none" stroke-linecap="round" style="display:none"/>
-
-                <!-- Spit particles (shown briefly on wrong) -->
-                <g id="spitParticles" style="display:none">
-                    <circle cx="278" cy="295" r="6"  fill="#97E87A"/>
-                    <circle cx="296" cy="278" r="5"  fill="#97E87A"/>
-                    <circle cx="310" cy="260" r="4"  fill="#97E87A"/>
-                    <circle cx="295" cy="258" r="3"  fill="#FFD700"/>
-                </g>
-            </svg>
-
-            <div id="correctHint"></div>
-        </div>
-
-        <!-- Answer input -->
-        <div class="input-area">
-            <input
-                type="number"
-                id="answerInput"
-                placeholder="?"
-                autocomplete="off"
-                inputmode="numeric"
-                aria-label="Deine Antwort"
-            />
-            <button id="submitBtn" type="button">✓ OK</button>
-        </div>
-
-        <!-- Difficulty control -->
-        <div class="settings-area">
-            <div class="settings-header">
-                <span>🎯 Schwierigkeitsgrad</span>
-                <span class="level-badge" id="levelBadge">Level 5</span>
+            <div class="progress-row">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-label" id="progressText">0 / 10</span>
             </div>
-            <input type="range" id="levelSlider" min="1" max="10" value="5" step="1">
-            <div class="slider-labels">
-                <span>😊 Einfach</span>
-                <span>🤔 Mittel</span>
-                <span>🔥 Schwer</span>
+
+            <div id="taskArea">
+                <!-- SVG Smiley — viewBox 400×400, face circle at (200,200) r=190 -->
+                <svg id="smileySvg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"
+                     class="bouncing" aria-hidden="true">
+                    <defs>
+                        <radialGradient id="faceGrad" cx="38%" cy="32%" r="62%">
+                            <stop offset="0%" stop-color="#FFF176"/>
+                            <stop offset="100%" stop-color="#FFB800"/>
+                        </radialGradient>
+                        <radialGradient id="cheekGrad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#FF9999" stop-opacity="0.65"/>
+                            <stop offset="100%" stop-color="#FF9999" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+
+                    <!-- Face -->
+                    <circle cx="200" cy="200" r="190" fill="url(#faceGrad)" stroke="#E8A000" stroke-width="4"/>
+
+                    <!-- Cheeks -->
+                    <ellipse cx="85"  cy="268" rx="54" ry="33" fill="url(#cheekGrad)"/>
+                    <ellipse cx="315" cy="268" rx="54" ry="33" fill="url(#cheekGrad)"/>
+
+                    <!-- Normal eyes -->
+                    <g id="eyesNormal">
+                        <circle cx="135" cy="165" r="33" fill="white"/>
+                        <circle cx="265" cy="165" r="33" fill="white"/>
+                        <circle cx="138" cy="168" r="18" fill="#222"/>
+                        <circle cx="268" cy="168" r="18" fill="#222"/>
+                        <circle cx="146" cy="160" r="6"  fill="white"/>
+                        <circle cx="276" cy="160" r="6"  fill="white"/>
+                        <path d="M 107,133 Q 135,122 163,130" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                        <path d="M 237,130 Q 265,122 293,133" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Happy eyes (squinting arcs) -->
+                    <g id="eyesHappy" style="display:none">
+                        <path d="M 103,165 Q 135,132 167,165" stroke="#222" stroke-width="10" fill="none" stroke-linecap="round"/>
+                        <path d="M 233,165 Q 265,132 297,165" stroke="#222" stroke-width="10" fill="none" stroke-linecap="round"/>
+                        <path d="M 107,128 Q 135,114 163,124" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                        <path d="M 237,124 Q 265,114 293,128" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Sad eyes -->
+                    <g id="eyesSad" style="display:none">
+                        <circle cx="135" cy="170" r="33" fill="white"/>
+                        <circle cx="265" cy="170" r="33" fill="white"/>
+                        <circle cx="138" cy="175" r="18" fill="#222"/>
+                        <circle cx="268" cy="175" r="18" fill="#222"/>
+                        <circle cx="146" cy="167" r="6"  fill="white"/>
+                        <circle cx="276" cy="167" r="6"  fill="white"/>
+                        <!-- sad eyebrows — inner corners lifted -->
+                        <path d="M 107,142 Q 135,157 163,137" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                        <path d="M 237,137 Q 265,157 293,142" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Neutral mouth -->
+                    <path id="mouthNeutral" d="M 140,280 Q 200,320 260,280"
+                          stroke="#333" stroke-width="7" fill="none" stroke-linecap="round"/>
+
+                    <!-- Open mouth (eating) -->
+                    <g id="mouthOpen" style="display:none">
+                        <path d="M 135,274 Q 200,262 265,274 Q 268,330 200,342 Q 132,330 135,274 Z" fill="#AA1800"/>
+                        <path d="M 135,274 Q 200,262 265,274" fill="#FF9080" stroke="#FF9080" stroke-width="1"/>
+                        <rect x="148" y="267" width="18" height="12" rx="3" fill="white"/>
+                        <rect x="170" y="264" width="18" height="12" rx="3" fill="white"/>
+                        <rect x="192" y="263" width="18" height="12" rx="3" fill="white"/>
+                        <rect x="214" y="264" width="18" height="12" rx="3" fill="white"/>
+                        <rect x="234" y="267" width="18" height="12" rx="3" fill="white"/>
+                    </g>
+
+                    <!-- Happy mouth (wide smile with fill) -->
+                    <g id="mouthHappy" style="display:none">
+                        <path d="M 108,268 Q 200,358 292,268 Q 200,308 108,268 Z" fill="#FF6B8A"/>
+                        <path d="M 108,268 Q 200,358 292,268"
+                              stroke="#222" stroke-width="8" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Sad mouth (frown) -->
+                    <path id="mouthSad" d="M 140,310 Q 200,274 260,310"
+                          stroke="#444" stroke-width="7" fill="none" stroke-linecap="round" style="display:none"/>
+
+                    <!-- Spit particles -->
+                    <g id="spitParticles" style="display:none">
+                        <circle cx="278" cy="295" r="6" fill="#97E87A"/>
+                        <circle cx="296" cy="278" r="5" fill="#97E87A"/>
+                        <circle cx="310" cy="260" r="4" fill="#97E87A"/>
+                    </g>
+                </svg>
+
+                <div class="problem-display" id="problemText">Lade…</div>
+
+                <div class="feedback" id="feedback"></div>
+
+                <input
+                    type="number"
+                    id="answerInput"
+                    placeholder="?"
+                    autocomplete="off"
+                    inputmode="numeric"
+                    aria-label="Deine Antwort"
+                />
+
+                <button id="submitBtn" type="button">✓ Überprüfen</button>
+            </div>
+
+            <!-- Shown after completing all 10 tasks -->
+            <div class="completion-screen" id="completionScreen">
+                <span class="completion-emoji">🎉</span>
+                <h2 class="completion-heading">Super gemacht!</h2>
+                <p style="font-size: 1.2rem; color: #666; margin-bottom: 0.5rem;">
+                    Du hast alle 10 Aufgaben richtig gelöst!
+                </p>
+                <div class="completion-crowns" id="completionCrowns">👑 0 Kronen</div>
+                <br>
+                <button class="btn-restart" id="restartBtn">🔄 Nochmal spielen</button>
             </div>
         </div>
     </div>
 
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="milestone-celebration" id="milestoneCelebration"></div>
+    <div id="answerToken"></div>
+
     <script src="js/audio-manager.js"></script>
     <script src="js/shared.js"></script>
     <script src="js/smiley-app.js"></script>
+
+    <footer>
+        <p>© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p>
+            <a href="impressum.html">Impressum</a> |
+            <a href="nutzungsbedingungen.html">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html">Datenschutz</a>
+        </p>
+    </footer>
 </body>
 </html>
