@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'none';">
+    <title>Minen-Mathe 🪨</title>
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/theme-minecraft.css">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" crossorigin="anonymous">
+</head>
+<body>
+
+<!-- Custom pickaxe cursor -->
+<div id="pickaxe-cursor">⛏️</div>
+
+<!-- Fireworks -->
+<div id="fireworksContainer"></div>
+
+<!-- Milestone toast -->
+<div id="milestoneCelebration"></div>
+
+<!-- Crown counter (shared component) -->
+<div id="crownCounter" style="position:fixed;top:4px;right:48px;z-index:110;display:flex;align-items:center;gap:4px;background:rgba(0,0,0,0.6);border:2px solid #ffd700;border-radius:4px;padding:2px 8px;font-family:'VT323',monospace;font-size:1.3rem;color:#ffd700;">
+    <span>👑</span><span id="crownCount">0</span>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+    <a href="index.html" id="btn-back">⬅ Zurück</a>
+    <span id="hud-title">⛏️ Minen-Mathe</span>
+    <span id="hud-hearts">❤️❤️❤️❤️❤️</span>
+</div>
+
+<!-- Depth progress bar -->
+<div id="depth-bar-wrap">
+    <div id="depth-bar"></div>
+</div>
+
+<!-- Mine viewport -->
+<div id="mine-viewport">
+    <div id="mine-grid"></div>
+</div>
+
+<!-- Game Over overlay -->
+<div id="overlay-gameover" class="overlay hidden">
+    <div class="overlay-title">💀 Game Over</div>
+    <div class="overlay-sub">Du hast alle Leben verloren. Versuch es nochmal!</div>
+    <button id="btn-restart-gameover" class="overlay-btn">🪓 Nochmal graben!</button>
+</div>
+
+<!-- Win overlay -->
+<div id="overlay-win" class="overlay hidden">
+    <div class="overlay-title">🏆 Geschafft!</div>
+    <div class="overlay-sub">Du hast die Schatztruhe geöffnet!</div>
+    <div id="win-crowns" class="crown-reward">+10 Kronen!</div>
+    <button id="btn-restart-win" class="overlay-btn">⛏️ Nochmal spielen!</button>
+</div>
+
+<script src="js/shared.js"></script>
+<script src="js/minecraft-app.js"></script>
+<script>
+    // Init crown display
+    (function () {
+        const c = parseInt(localStorage.getItem('smarty-crowns') || '0', 10);
+        document.getElementById('crownCount').textContent = c;
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "gras",
+    "name": "Gras",
+    "emoji": "🌿",
+    "blockClass": "block-gras",
+    "rows": 1,
+    "math": { "operators": ["+"], "min": 1, "max": 10 },
+    "tool": { "name": "Holz-Spitzhacke", "emoji": "⛏️" }
+  },
+  {
+    "id": "erde",
+    "name": "Erde",
+    "emoji": "🪱",
+    "blockClass": "block-erde",
+    "rows": 1,
+    "math": { "operators": ["-"], "min": 1, "max": 10 },
+    "tool": { "name": "Holz-Spitzhacke", "emoji": "⛏️" }
+  },
+  {
+    "id": "stein",
+    "name": "Stein",
+    "emoji": "🪨",
+    "blockClass": "block-stein",
+    "rows": 2,
+    "math": { "operators": ["+", "-"], "min": 1, "max": 20 },
+    "tool": { "name": "Stein-Spitzhacke", "emoji": "⛏️" }
+  },
+  {
+    "id": "kohle",
+    "name": "Kohle",
+    "emoji": "⚫",
+    "blockClass": "block-kohle",
+    "rows": 2,
+    "math": { "operators": ["+", "-"], "min": 1, "max": 20 },
+    "tool": { "name": "Stein-Spitzhacke", "emoji": "⛏️" }
+  },
+  {
+    "id": "eisen",
+    "name": "Eisen",
+    "emoji": "🔩",
+    "blockClass": "block-eisen",
+    "rows": 2,
+    "math": { "operators": ["+", "-"], "min": 1, "max": 50 },
+    "tool": { "name": "Eisen-Spitzhacke", "emoji": "⛏️" }
+  },
+  {
+    "id": "gold",
+    "name": "Gold",
+    "emoji": "✨",
+    "blockClass": "block-gold",
+    "rows": 2,
+    "math": { "operators": ["+", "-"], "min": 1, "max": 100 },
+    "tool": { "name": "Gold-Spitzhacke", "emoji": "⛏️" }
+  },
+  {
+    "id": "diamant",
+    "name": "Diamant",
+    "emoji": "💎",
+    "blockClass": "block-diamant",
+    "rows": 2,
+    "math": { "operators": ["+", "-"], "min": 10, "max": 100 },
+    "tool": { "name": "Diamant-Spitzhacke", "emoji": "⛏️" }
+  },
+  {
+    "id": "chest",
+    "name": "Schatztruhe",
+    "emoji": "💰",
+    "blockClass": "block-chest",
+    "rows": 1,
+    "math": { "operators": ["+", "-"], "min": 20, "max": 100 },
+    "tool": { "name": "Goldene Spitzhacke", "emoji": "👑" }
+  }
+]
