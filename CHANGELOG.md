@@ -6,6 +6,22 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ---
 
+## [3.1.0] - 2026-05-15
+
+### 😊 Smiley-Rechner (NEW)
+
+#### Added
+- **mathe-smiley.html** + **js/smiley-app.js** — interactive math game for Klasse 1 Germany
+- Large animated SVG smiley face reacts to the child's answer: eats the number token when correct (happy squinting eyes, wide smile), spits it back when wrong (frown, disgusted expression)
+- Answer animates as a coloured token flying from the input field to the smiley's mouth
+- Wrong answers keep the same problem on screen so the child can retry; new problem only generated after a correct answer
+- Addition only (levels 1–3, numbers up to 10), subtraction unlocks at level 4 (up to 20) — no multiplication or division (not part of Klasse 1 curriculum)
+- Adaptive difficulty: 3 correct in a row → level up, 2 wrong → level down
+- Progress bar (0 / 10); crowns awarded once per completed round via `CrownManager` (consistent with other apps)
+- Card positioned before Sudoku in `index.html`
+
+---
+
 ## [3.0.0] - 2026-04-17
 
 ### 👑 Unified Crown System
