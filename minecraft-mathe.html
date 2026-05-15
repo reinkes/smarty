@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self';">
     <title>Minen-Mathe 🪨</title>
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/theme-minecraft.css">
@@ -11,8 +11,8 @@
 </head>
 <body>
 
-<!-- Custom pickaxe cursor -->
-<div id="pickaxe-cursor">⛏️</div>
+<!-- Custom pickaxe cursor (hidden until first mouse move) -->
+<div id="pickaxe-cursor" style="display:none;">⛏️</div>
 
 <!-- Fireworks -->
 <div id="fireworksContainer"></div>
@@ -20,16 +20,12 @@
 <!-- Milestone toast -->
 <div id="milestoneCelebration"></div>
 
-<!-- Crown counter (shared component) -->
-<div id="crownCounter" style="position:fixed;top:4px;right:48px;z-index:110;display:flex;align-items:center;gap:4px;background:rgba(0,0,0,0.6);border:2px solid #ffd700;border-radius:4px;padding:2px 8px;font-family:'VT323',monospace;font-size:1.3rem;color:#ffd700;">
-    <span>👑</span><span id="crownCount">0</span>
-</div>
-
 <!-- HUD -->
 <div id="hud">
     <a href="index.html" id="btn-back">⬅ Zurück</a>
     <span id="hud-title">⛏️ Minen-Mathe</span>
     <span id="hud-hearts">❤️❤️❤️❤️❤️</span>
+    <span id="crownCounter"><span>👑</span><span id="crownCount">0</span></span>
 </div>
 
 <!-- Depth progress bar -->

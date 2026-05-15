@@ -52,10 +52,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 1.2rem;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
   background: rgba(0, 0, 0, 0.75);
   border-bottom: 3px solid #555;
   backdrop-filter: blur(4px);
+  flex-wrap: nowrap;
 }
 
 #hud-title {
@@ -72,6 +74,15 @@ body {
 #hud-hearts {
   font-size: 1.6rem;
   letter-spacing: 3px;
+}
+
+#crownCounter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1.3rem;
+  color: #ffd700;
+  letter-spacing: 1px;
 }
 
 #btn-back {
