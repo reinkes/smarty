@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none';">
+    <title>Smiley-Rechner – Smarty Learn</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/theme-math.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
+    <style>
+        .level-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 18px;
+            background: #E8E8E8;
+            border-radius: 9px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--math-primary), var(--math-secondary));
+            border-radius: 9px;
+            transition: width 0.4s ease-out;
+        }
+
+        .progress-label {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        /* Smiley SVG */
+        #smileySvg {
+            display: block;
+            width: 220px;
+            height: 220px;
+            max-width: 65vw;
+            margin: 0.5rem auto 0.5rem;
+            filter: drop-shadow(0 6px 18px rgba(255, 200, 0, 0.35));
+        }
+
+        /* Problem display */
+        .problem-display {
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: clamp(2rem, 7vw, 3rem);
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: 3px;
+            margin: 0.75rem 0 1rem;
+        }
+
+        /* Feedback line */
+        .feedback {
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            min-height: 2.2rem;
+            margin-bottom: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .feedback.correct { color: #27AE60; }
+        .feedback.incorrect { color: #E74C3C; }
+
+        /* Answer input */
+        #answerInput {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            border: 3px solid var(--math-tertiary);
+            border-radius: 16px;
+            color: var(--text-dark);
+            background: white;
+            margin-top: 0;
+            -moz-appearance: textfield;
+            box-sizing: border-box;
+        }
+
+        #answerInput::-webkit-outer-spin-button,
+        #answerInput::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        #answerInput:focus {
+            border-color: var(--math-primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.15);
+        }
+
+        /* Submit button — full-width, matches theme-math.css button style */
+        #submitBtn {
+            margin-top: 1rem;
+        }
+
+        /* Completion screen */
+        .completion-screen {
+            display: none;
+            text-align: center;
+            padding: 2rem 1rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .completion-emoji {
+            font-size: 6rem;
+            display: block;
+            margin-bottom: 1rem;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .completion-heading {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.2rem;
+            color: var(--math-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .completion-crowns {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, var(--math-primary), #FF8CB4);
+            color: white;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+            transition: transform 0.2s ease;
+            display: inline-block;
+            width: auto;
+            margin-top: 1rem;
+        }
+
+        .btn-restart:hover {
+            transform: scale(1.05);
+        }
+
+        /* Animated answer token — position:fixed so it travels across the page */
+        #answerToken {
+            position: fixed;
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
+            color: white;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            box-shadow: 0 4px 16px rgba(255, 107, 157, 0.45);
+            pointer-events: none;
+        }
+
+        /* Smiley animations */
+        @keyframes smileyBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        @keyframes smileyHappy {
+            0% { transform: scale(1) rotate(0deg); }
+            20% { transform: scale(1.1) rotate(-6deg); }
+            50% { transform: scale(1.14) rotate(6deg); }
+            80% { transform: scale(1.08) rotate(-3deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        @keyframes smileyShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-12px); }
+            40% { transform: translateX(12px); }
+            60% { transform: translateX(-8px); }
+            80% { transform: translateX(8px); }
+        }
+
+        #smileySvg.bouncing    { animation: smileyBounce 2.5s ease-in-out infinite; }
+        #smileySvg.celebrating { animation: smileyHappy 0.9s ease-in-out forwards; }
+        #smileySvg.shaking     { animation: smileyShake 0.65s ease-in-out forwards; }
+
+        @media (max-width: 480px) {
+            .problem-display { font-size: 2rem; letter-spacing: 2px; }
+            #smileySvg { width: 180px; height: 180px; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
+
+    <div class="crown-counter" id="crownCounter" style="display: none;">
+        <span class="crown-icon">👑</span>
+        <span class="crown-count" id="crownCount">0</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>😊 Smiley-Rechner</h1>
+            <p class="subtitle">Füttere den Smiley mit der richtigen Antwort!</p>
+        </header>
+
+        <div class="card">
+            <div style="text-align: center;">
+                <span class="level-badge" id="levelDisplay">Level 1</span>
+            </div>
+
+            <div class="progress-row">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-label" id="progressText">0 / 10</span>
+            </div>
+
+            <div id="taskArea">
+                <!-- SVG Smiley — viewBox 400×400, face circle at (200,200) r=190 -->
+                <svg id="smileySvg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"
+                     class="bouncing" aria-hidden="true">
+                    <defs>
+                        <radialGradient id="faceGrad" cx="38%" cy="32%" r="62%">
+                            <stop offset="0%" stop-color="#FFF176"/>
+                            <stop offset="100%" stop-color="#FFB800"/>
+                        </radialGradient>
+                        <radialGradient id="cheekGrad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#FF9999" stop-opacity="0.65"/>
+                            <stop offset="100%" stop-color="#FF9999" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+
+                    <!-- Face -->
+                    <circle cx="200" cy="200" r="190" fill="url(#faceGrad)" stroke="#E8A000" stroke-width="4"/>
+
+                    <!-- Cheeks -->
+                    <ellipse cx="85"  cy="268" rx="54" ry="33" fill="url(#cheekGrad)"/>
+                    <ellipse cx="315" cy="268" rx="54" ry="33" fill="url(#cheekGrad)"/>
+
+                    <!-- Normal eyes -->
+                    <g id="eyesNormal">
+                        <circle cx="135" cy="165" r="33" fill="white"/>
+                        <circle cx="265" cy="165" r="33" fill="white"/>
+                        <circle cx="138" cy="168" r="18" fill="#222"/>
+                        <circle cx="268" cy="168" r="18" fill="#222"/>
+                        <circle cx="146" cy="160" r="6"  fill="white"/>
+                        <circle cx="276" cy="160" r="6"  fill="white"/>
+                        <path d="M 107,133 Q 135,122 163,130" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                        <path d="M 237,130 Q 265,122 293,133" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Happy eyes (squinting arcs) -->
+                    <g id="eyesHappy" style="display:none">
+                        <path d="M 103,165 Q 135,132 167,165" stroke="#222" stroke-width="10" fill="none" stroke-linecap="round"/>
+                        <path d="M 233,165 Q 265,132 297,165" stroke="#222" stroke-width="10" fill="none" stroke-linecap="round"/>
+                        <path d="M 107,128 Q 135,114 163,124" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                        <path d="M 237,124 Q 265,114 293,128" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Sad eyes -->
+                    <g id="eyesSad" style="display:none">
+                        <circle cx="135" cy="170" r="33" fill="white"/>
+                        <circle cx="265" cy="170" r="33" fill="white"/>
+                        <circle cx="138" cy="175" r="18" fill="#222"/>
+                        <circle cx="268" cy="175" r="18" fill="#222"/>
+                        <circle cx="146" cy="167" r="6"  fill="white"/>
+                        <circle cx="276" cy="167" r="6"  fill="white"/>
+                        <!-- sad eyebrows — inner corners lifted -->
+                        <path d="M 107,142 Q 135,157 163,137" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                        <path d="M 237,137 Q 265,157 293,142" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Neutral mouth -->
+                    <path id="mouthNeutral" d="M 140,280 Q 200,320 260,280"
+                          stroke="#333" stroke-width="7" fill="none" stroke-linecap="round"/>
+
+                    <!-- Open mouth (eating) -->
+                    <g id="mouthOpen" style="display:none">
+                        <path d="M 135,274 Q 200,262 265,274 Q 268,330 200,342 Q 132,330 135,274 Z" fill="#AA1800"/>
+                        <path d="M 135,274 Q 200,262 265,274" fill="#FF9080" stroke="#FF9080" stroke-width="1"/>
+                        <rect x="148" y="267" width="18" height="12" rx="3" fill="white"/>
+                        <rect x="170" y="264" width="18" height="12" rx="3" fill="white"/>
+                        <rect x="192" y="263" width="18" height="12" rx="3" fill="white"/>
+                        <rect x="214" y="264" width="18" height="12" rx="3" fill="white"/>
+                        <rect x="234" y="267" width="18" height="12" rx="3" fill="white"/>
+                    </g>
+
+                    <!-- Happy mouth (wide smile with fill) -->
+                    <g id="mouthHappy" style="display:none">
+                        <path d="M 108,268 Q 200,358 292,268 Q 200,308 108,268 Z" fill="#FF6B8A"/>
+                        <path d="M 108,268 Q 200,358 292,268"
+                              stroke="#222" stroke-width="8" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Sad mouth (frown) -->
+                    <path id="mouthSad" d="M 140,310 Q 200,274 260,310"
+                          stroke="#444" stroke-width="7" fill="none" stroke-linecap="round" style="display:none"/>
+
+                    <!-- Spit particles -->
+                    <g id="spitParticles" style="display:none">
+                        <circle cx="278" cy="295" r="6" fill="#97E87A"/>
+                        <circle cx="296" cy="278" r="5" fill="#97E87A"/>
+                        <circle cx="310" cy="260" r="4" fill="#97E87A"/>
+                    </g>
+                </svg>
+
+                <div class="problem-display" id="problemText">Lade…</div>
+
+                <div class="feedback" id="feedback"></div>
+
+                <input
+                    type="number"
+                    id="answerInput"
+                    placeholder="?"
+                    autocomplete="off"
+                    inputmode="numeric"
+                    aria-label="Deine Antwort"
+                />
+
+                <button id="submitBtn" type="button">✓ Überprüfen</button>
+            </div>
+
+            <!-- Shown after completing all 10 tasks -->
+            <div class="completion-screen" id="completionScreen">
+                <span class="completion-emoji">🎉</span>
+                <h2 class="completion-heading">Super gemacht!</h2>
+                <p style="font-size: 1.2rem; color: #666; margin-bottom: 0.5rem;">
+                    Du hast alle 10 Aufgaben richtig gelöst!
+                </p>
+                <div class="completion-crowns" id="completionCrowns">👑 0 Kronen</div>
+                <br>
+                <button class="btn-restart" id="restartBtn">🔄 Nochmal spielen</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="milestone-celebration" id="milestoneCelebration"></div>
+    <div id="answerToken"></div>
+
+    <script src="js/audio-manager.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/smiley-app.js"></script>
+
+    <footer>
+        <p>© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p>
+            <a href="impressum.html">Impressum</a> |
+            <a href="nutzungsbedingungen.html">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html">Datenschutz</a>
+        </p>
+    </footer>
+</body>
+</html>
