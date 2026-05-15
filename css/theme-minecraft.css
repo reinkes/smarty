@@ -252,7 +252,7 @@ body {
 
 .block-input {
   font-family: 'Press Start 2P', monospace;
-  font-size: clamp(0.6rem, 2vw, 0.85rem);
+  font-size: clamp(0.6rem, 2vw, 0.9rem);
   width: 100%;
   text-align: center;
   background: rgba(0, 0, 0, 0.85);
@@ -261,28 +261,20 @@ body {
   border-right: 2px solid #b8960c;
   color: #ffd700;
   outline: none;
-  padding: 2px 4px;
+  padding: 3px 4px;
 }
 
-.block-submit-btn {
-  display: block;
-  width: 100%;
-  margin-top: 3px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: clamp(0.5rem, 1.5vw, 0.65rem);
-  background: #5a8a20;
-  border: 2px solid #8fcc44;
-  border-bottom: 2px solid #2d5010;
-  border-right: 2px solid #2d5010;
-  border-radius: 0;
-  color: #fff;
-  cursor: none;
-  padding: 2px 0;
-  line-height: 1.4;
-  text-shadow: 1px 1px 0 #000;
+/* Charging animation: border pulses green as auto-submit countdown runs */
+.block-input.charging {
+  animation: input-charge 1.5s linear forwards;
 }
 
-.block-submit-btn:hover { background: #6ba025; }
+@keyframes input-charge {
+  0%   { border-color: #ffd700; box-shadow: none; }
+  50%  { border-color: #88ff44; box-shadow: 0 0 6px #88ff44; }
+  85%  { border-color: #aaffaa; box-shadow: 0 0 12px #88ff44; }
+  100% { border-color: #ffffff; box-shadow: 0 0 18px #fff; }
+}
 
 /* ── Chest Specific ── */
 .block-chest {
