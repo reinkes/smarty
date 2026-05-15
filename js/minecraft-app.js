@@ -223,20 +223,20 @@ class MinecraftApp {
                 <div class="block-calc">${calc.text}</div>
                 <div class="block-input-wrap">
                     <input class="block-input" type="number" inputmode="numeric" autocomplete="off" />
-                    <button class="block-submit-btn">OK</button>
                 </div>
             </div>`;
 
         const input = el.querySelector('.block-input');
-        const submitBtn = el.querySelector('.block-submit-btn');
-        const data = { el, calc, input, solved: false, rowRef: null, gateRole };
+        const data = { el, calc, input, solved: false, rowRef: null, gateRole, _autoTimer: null };
 
         el.addEventListener('click', () => this._onBlockClick(data));
         el.addEventListener('touchend', (e) => { e.preventDefault(); this._onBlockClick(data); }, { passive: false });
-        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this._onSubmit(data); });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { this._clearAutoTimer(data); this._onSubmit(data); }
+        });
         input.addEventListener('touchend', (e) => e.stopPropagation());
-        submitBtn.addEventListener('click', (e) => { e.stopPropagation(); this._onSubmit(data); });
-        submitBtn.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); this._onSubmit(data); }, { passive: false });
+        // Auto-submit 1.5s after the user stops typing
+        input.addEventListener('input', () => this._scheduleAutoSubmit(data));
 
         return { el, data };
     }
@@ -271,7 +271,24 @@ class MinecraftApp {
         setTimeout(() => data.input.focus(), 50);
     }
 
+    _scheduleAutoSubmit(data) {
+        this._clearAutoTimer(data);
+        if (data.input.value.trim() === '') return;
+        // Show a subtle "charging" border on the input
+        data.input.classList.add('charging');
+        data._autoTimer = setTimeout(() => {
+            data.input.classList.remove('charging');
+            if (data.input.value.trim() !== '' && !data.solved) this._onSubmit(data);
+        }, 1500);
+    }
+
+    _clearAutoTimer(data) {
+        if (data._autoTimer) { clearTimeout(data._autoTimer); data._autoTimer = null; }
+        data.input.classList.remove('charging');
+    }
+
     _deactivateBlock(data) {
+        this._clearAutoTimer(data);
         data.el.querySelector('.block-input-wrap').classList.remove('active');
         data.input.value = '';
         if (this.activeBlock === data) this.activeBlock = null;
@@ -285,6 +302,7 @@ class MinecraftApp {
     }
 
     _solveBlock(data) {
+        this._clearAutoTimer(data);
         data.solved = true;
         data.input.blur();
         data.el.classList.add('breaking');
@@ -306,6 +324,7 @@ class MinecraftApp {
     }
 
     _wrongAnswer(data) {
+        this._clearAutoTimer(data);
         this.lives--;
         data.input.value = '';
         data.el.classList.add('shake');
