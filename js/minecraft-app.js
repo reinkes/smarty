@@ -288,11 +288,25 @@ class MinecraftApp {
 
     _setupCursor() {
         this._pickaxeEl = document.getElementById('pickaxe-cursor');
+
+        // Only show on first real mouse move (not touch)
+        const onFirstMove = (e) => {
+            this._pickaxeEl.style.display = 'block';
+            document.removeEventListener('mousemove', onFirstMove);
+        };
+        document.addEventListener('mousemove', onFirstMove);
+
         document.addEventListener('mousemove', (e) => {
             this._pickaxeEl.style.left = e.clientX + 'px';
             this._pickaxeEl.style.top = e.clientY + 'px';
         });
         document.addEventListener('mousedown', () => this._swingPickaxe());
+
+        // On touch devices: hide custom cursor and restore system cursor
+        document.addEventListener('touchstart', () => {
+            this._pickaxeEl.style.display = 'none';
+            document.body.style.cursor = 'auto';
+        }, { once: true });
     }
 
     _swingPickaxe() {
