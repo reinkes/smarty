@@ -1,50 +1,64 @@
-/* Minecraft Mathe - Theme */
+/* ═══════════════════════════════════════════════
+   Minen-Mathe — Minecraft Visual Theme
+   ═══════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+/* ── Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-:root {
-  --mc-bg: #1a1a2e;
-  --mc-sky: #5b8dd9;
-  --mc-text: #f5f5f5;
-  --mc-green: #5ba85b;
-}
-
-/* ── Body & Background ── */
+/* ── Body: Minecraft World Cross-Section ── */
 body {
-  background: linear-gradient(180deg, #87CEEB 0%, #5b8dd9 30%, #3a6bb5 60%, #2a4d8c 100%);
-  min-height: 100vh;
-  font-family: 'VT323', 'Courier New', monospace;
-  color: var(--mc-text);
-  padding: 0;
   margin: 0;
+  padding: 0;
   overflow-x: hidden;
   cursor: none;
+  font-family: 'Press Start 2P', monospace;
+  /* Sky to deep underground gradient */
+  background:
+    linear-gradient(180deg,
+      #87CEEB  0%,    /* sky */
+      #87CEEB  4%,
+      #6BAE6B  4%,    /* grass */
+      #6BAE6B  5%,
+      #8B6040  5%,    /* dirt */
+      #8B6040  12%,
+      #808080  12%,   /* stone */
+      #808080  45%,
+      #646464  45%,   /* deeper stone */
+      #646464  70%,
+      #404040  70%,   /* deep stone */
+      #404040  90%,
+      #1A1A1A  90%,   /* bedrock */
+      #1A1A1A  100%
+    );
+  background-attachment: fixed;
+  color: #fff;
+  min-height: 100vh;
 }
 
-/* ── Custom Pickaxe Cursor ── */
+/* ── Pickaxe Cursor ── */
 #pickaxe-cursor {
   position: fixed;
   pointer-events: none;
   z-index: 9999;
-  font-size: 2rem;
-  transform-origin: 60% 60%;
-  transform: translate(-8px, -8px) rotate(0deg);
-  transition: color 0.3s;
+  font-size: 1.8rem;
+  transform-origin: 55% 55%;
+  transform: translate(-6px, -6px) rotate(0deg);
   will-change: transform;
   user-select: none;
+  filter: drop-shadow(1px 1px 0 #000);
 }
 
 #pickaxe-cursor.swing {
-  animation: pickaxe-swing 0.25s ease-out;
+  animation: pickaxe-swing 0.22s ease-out;
 }
 
 @keyframes pickaxe-swing {
-  0%   { transform: translate(-8px, -8px) rotate(-30deg) scale(1.2); }
-  60%  { transform: translate(-8px, -8px) rotate(15deg) scale(1.1); }
-  100% { transform: translate(-8px, -8px) rotate(0deg) scale(1); }
+  0%   { transform: translate(-6px, -6px) rotate(-35deg) scale(1.2); }
+  55%  { transform: translate(-6px, -6px) rotate(12deg) scale(1.1); }
+  100% { transform: translate(-6px, -6px) rotate(0deg) scale(1); }
 }
 
-/* ── Top HUD ── */
+/* ── HUD ── */
 #hud {
   position: sticky;
   top: 0;
@@ -53,53 +67,54 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(0, 0, 0, 0.75);
-  border-bottom: 3px solid #555;
-  backdrop-filter: blur(4px);
   flex-wrap: nowrap;
+  padding: 6px 10px;
+  /* Minecraft gray inventory bar */
+  background: #373737;
+  border-bottom: 3px solid #1a1a1a;
+  box-shadow: 0 3px 0 #555, 0 6px 0 #1a1a1a;
 }
 
 #hud-title {
-  font-size: 1.6rem;
+  font-size: 0.6rem;
   color: #fff;
-  letter-spacing: 2px;
-}
-
-#hud-tool {
-  font-size: 1.4rem;
-  color: #ffe88a;
+  text-shadow: 2px 2px #000;
+  white-space: nowrap;
 }
 
 #hud-hearts {
-  font-size: 1.6rem;
-  letter-spacing: 3px;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  line-height: 1;
 }
 
 #crownCounter {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 1.3rem;
+  font-size: 0.65rem;
   color: #ffd700;
-  letter-spacing: 1px;
+  text-shadow: 1px 1px #000;
+  white-space: nowrap;
 }
 
 #btn-back {
-  font-family: 'VT323', monospace;
-  font-size: 1.1rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
   color: #ccc;
-  background: none;
-  border: 2px solid #555;
-  border-radius: 4px;
-  padding: 0.2rem 0.8rem;
+  background: #555;
+  border: 2px solid #888;
+  border-bottom: 2px solid #333;
+  border-right: 2px solid #333;
+  padding: 4px 6px;
   cursor: none;
-  transition: background 0.2s, color 0.2s;
   text-decoration: none;
+  white-space: nowrap;
+  text-shadow: 1px 1px #000;
 }
 
 #btn-back:hover {
-  background: rgba(255,255,255,0.15);
+  background: #666;
   color: #fff;
 }
 
@@ -108,197 +123,81 @@ body {
   overflow-y: auto;
   height: calc(100vh - 56px);
   scroll-behavior: smooth;
-  padding: 1.5rem 0.5rem 4rem;
+  padding: 12px 20px 60px;
 }
 
 /* ── Grid ── */
 #mine-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  max-width: 640px;
+  gap: 4px;
+  max-width: 580px;
   margin: 0 auto;
 }
 
-/* ── Block Base ── */
+/* ── MC Block Base ── */
 .mc-block {
   position: relative;
   aspect-ratio: 1;
-  border-radius: 2px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: none;
-  transition: filter 0.2s, opacity 0.2s;
   user-select: none;
   overflow: hidden;
+  /* PIXELATED rendering so canvas textures stay crispy */
   image-rendering: pixelated;
-  /* Minecraft 3D bevel */
+  image-rendering: crisp-edges;
+  /* Background size covers full block */
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  /* Minecraft inventory slot bevel */
   box-shadow:
-    inset 4px 4px 0px rgba(255,255,255,0.35),
-    inset -4px -4px 0px rgba(0,0,0,0.35),
-    2px 2px 0px rgba(0,0,0,0.5);
+    inset 3px 3px 0 rgba(255,255,255,0.45),
+    inset -3px -3px 0 rgba(0,0,0,0.5),
+    0 0 0 2px #1a1a1a;
+  transition: filter 0.15s, transform 0.1s;
 }
 
 .mc-block:hover:not(.solved):not(.locked) {
-  filter: brightness(1.2);
-  transform: scale(1.04);
+  filter: brightness(1.25);
 }
 
 .mc-block.locked {
-  opacity: 0.45;
-  filter: grayscale(0.7);
+  filter: brightness(0.45) saturate(0.3);
   cursor: not-allowed;
 }
 
 .mc-block.solved {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.5s, transform 0.5s;
-  transform: scale(0.6);
+  transform: scale(0.5);
+  transition: opacity 0.35s, transform 0.35s;
 }
 
+/* ── Animations ── */
 .mc-block.shake {
-  animation: block-shake 0.35s ease-out;
+  animation: block-shake 0.3s ease-out;
 }
 
 @keyframes block-shake {
   0%, 100% { transform: translateX(0); }
-  20%  { transform: translateX(-8px) rotate(-2deg); }
-  40%  { transform: translateX(8px) rotate(2deg); }
-  60%  { transform: translateX(-6px); }
-  80%  { transform: translateX(6px); }
+  20%  { transform: translateX(-6px) rotate(-1deg); }
+  40%  { transform: translateX(7px) rotate(1deg); }
+  60%  { transform: translateX(-5px); }
+  80%  { transform: translateX(5px); }
 }
 
 .mc-block.breaking {
-  animation: block-break 0.4s ease-out forwards;
+  animation: block-break 0.38s ease-out forwards;
 }
 
 @keyframes block-break {
-  0%   { transform: scale(1); opacity: 1; filter: brightness(2); }
-  30%  { transform: scale(1.1) rotate(3deg); filter: brightness(2.5); }
-  70%  { transform: scale(0.8) rotate(-5deg); opacity: 0.6; }
-  100% { transform: scale(0.3); opacity: 0; }
-}
-
-/* ── Block Textures (CSS pixel-art) ── */
-
-/* Gras */
-.block-gras {
-  background-color: #7cb342;
-  background-image:
-    repeating-linear-gradient(90deg, transparent, transparent 14px, rgba(0,0,0,0.08) 14px, rgba(0,0,0,0.08) 16px),
-    repeating-linear-gradient(0deg, transparent, transparent 14px, rgba(0,0,0,0.08) 14px, rgba(0,0,0,0.08) 16px),
-    linear-gradient(180deg, #8bc34a 0%, #7cb342 40%, #795548 40%, #6d4c41 100%);
-}
-
-/* Erde */
-.block-erde {
-  background-color: #795548;
-  background-image:
-    repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(0,0,0,0.07) 10px, rgba(0,0,0,0.07) 12px),
-    repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(0,0,0,0.07) 10px, rgba(0,0,0,0.07) 12px),
-    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.06) 3px, transparent 3px),
-    radial-gradient(circle at 70% 60%, rgba(255,255,255,0.04) 2px, transparent 2px),
-    linear-gradient(135deg, #8d6e63 0%, #795548 50%, #6d4c41 100%);
-}
-
-/* Stein */
-.block-stein {
-  background-color: #9e9e9e;
-  background-image:
-    repeating-linear-gradient(90deg, transparent, transparent 18px, rgba(0,0,0,0.12) 18px, rgba(0,0,0,0.12) 20px),
-    repeating-linear-gradient(0deg, transparent, transparent 9px, rgba(0,0,0,0.12) 9px, rgba(0,0,0,0.12) 10px),
-    linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 50%, #757575 100%);
-}
-
-/* Kohle */
-.block-kohle {
-  background-color: #424242;
-  background-image:
-    repeating-linear-gradient(90deg, transparent, transparent 12px, rgba(255,255,255,0.04) 12px, rgba(255,255,255,0.04) 14px),
-    repeating-linear-gradient(0deg, transparent, transparent 12px, rgba(255,255,255,0.04) 12px, rgba(255,255,255,0.04) 14px),
-    radial-gradient(ellipse 8px 6px at 30% 40%, #1a1a1a 0%, transparent 100%),
-    radial-gradient(ellipse 6px 5px at 65% 65%, #1a1a1a 0%, transparent 100%),
-    linear-gradient(135deg, #616161 0%, #424242 50%, #212121 100%);
-}
-
-/* Eisen */
-.block-eisen {
-  background-color: #90a4ae;
-  background-image:
-    repeating-linear-gradient(90deg, transparent, transparent 16px, rgba(0,0,0,0.1) 16px, rgba(0,0,0,0.1) 18px),
-    repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(0,0,0,0.1) 8px, rgba(0,0,0,0.1) 10px),
-    radial-gradient(ellipse 10px 8px at 35% 45%, rgba(255,255,255,0.3) 0%, transparent 100%),
-    radial-gradient(ellipse 7px 6px at 70% 60%, rgba(255,255,255,0.2) 0%, transparent 100%),
-    linear-gradient(135deg, #b0bec5 0%, #90a4ae 50%, #607d8b 100%);
-}
-
-/* Gold */
-.block-gold {
-  background-color: #f9a825;
-  background-image:
-    repeating-linear-gradient(90deg, transparent, transparent 14px, rgba(0,0,0,0.08) 14px, rgba(0,0,0,0.08) 16px),
-    repeating-linear-gradient(0deg, transparent, transparent 7px, rgba(0,0,0,0.08) 7px, rgba(0,0,0,0.08) 8px),
-    radial-gradient(ellipse 12px 9px at 30% 40%, rgba(255,255,220,0.5) 0%, transparent 100%),
-    radial-gradient(ellipse 8px 7px at 70% 65%, rgba(255,200,0,0.6) 0%, transparent 100%),
-    linear-gradient(135deg, #ffca28 0%, #f9a825 50%, #e65100 100%);
-}
-
-/* Diamant */
-.block-diamant {
-  background-color: #00acc1;
-  background-image:
-    repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(255,255,255,0.08) 15px, rgba(255,255,255,0.08) 17px),
-    repeating-linear-gradient(0deg, transparent, transparent 7px, rgba(255,255,255,0.08) 7px, rgba(255,255,255,0.08) 8px),
-    radial-gradient(ellipse 14px 10px at 25% 35%, rgba(220,255,255,0.6) 0%, transparent 100%),
-    radial-gradient(ellipse 10px 8px at 68% 62%, rgba(180,255,255,0.5) 0%, transparent 100%),
-    linear-gradient(135deg, #26c6da 0%, #00acc1 50%, #006064 100%);
-}
-
-/* Chest flanking (same as stone) */
-.block-chest-gate {
-  background-color: #9e9e9e;
-  background-image:
-    repeating-linear-gradient(90deg, transparent, transparent 18px, rgba(0,0,0,0.12) 18px, rgba(0,0,0,0.12) 20px),
-    repeating-linear-gradient(0deg, transparent, transparent 9px, rgba(0,0,0,0.12) 9px, rgba(0,0,0,0.12) 10px),
-    linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 50%, #757575 100%);
-}
-
-/* Treasure Chest */
-.block-chest {
-  background: linear-gradient(180deg, #8d5524 0%, #6d3e0e 45%, #5d3311 46%, #7a4020 100%);
-  box-shadow:
-    inset 4px 4px 0px rgba(255,200,100,0.3),
-    inset -4px -4px 0px rgba(0,0,0,0.5),
-    2px 2px 0px rgba(0,0,0,0.5);
-  cursor: default !important;
-}
-
-.block-chest.chest-locked {
-  filter: grayscale(0.6) brightness(0.7);
-}
-
-.block-chest.chest-unlocked {
-  animation: chest-glow 1s ease-in-out infinite alternate;
-  cursor: none !important;
-}
-
-@keyframes chest-glow {
-  from { filter: brightness(1); box-shadow: inset 4px 4px 0px rgba(255,200,100,0.3), inset -4px -4px 0px rgba(0,0,0,0.5), 0 0 10px #ffd700, 2px 2px 0px rgba(0,0,0,0.5); }
-  to   { filter: brightness(1.3); box-shadow: inset 4px 4px 0px rgba(255,200,100,0.4), inset -4px -4px 0px rgba(0,0,0,0.4), 0 0 30px #ffd700, 2px 2px 0px rgba(0,0,0,0.5); }
-}
-
-.block-chest.chest-open {
-  animation: chest-open-anim 0.6s ease-out forwards;
-}
-
-@keyframes chest-open-anim {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.3) rotate(-5deg); filter: brightness(2); }
-  70%  { transform: scale(1.15) rotate(3deg); }
-  100% { transform: scale(1.1); filter: brightness(1.5); }
+  0%   { transform: scale(1); opacity: 1; filter: brightness(2.5); }
+  25%  { transform: scale(1.08) rotate(2deg); filter: brightness(3); }
+  65%  { transform: scale(0.75) rotate(-4deg); opacity: 0.5; }
+  100% { transform: scale(0.2); opacity: 0; }
 }
 
 /* ── Block Content ── */
@@ -311,29 +210,36 @@ body {
   height: 100%;
   padding: 4px;
   gap: 2px;
+  /* Semi-transparent overlay so text is readable on top of texture */
+  background: rgba(0, 0, 0, 0.28);
 }
 
 .block-label {
-  font-size: 0.65rem;
-  opacity: 0.7;
+  font-size: 0.35rem;
+  opacity: 0.85;
   line-height: 1;
   text-shadow: 1px 1px 0 #000;
+  letter-spacing: 0;
 }
 
 .block-calc {
-  font-size: clamp(0.9rem, 2.5vw, 1.4rem);
-  font-weight: bold;
+  font-size: clamp(0.55rem, 1.8vw, 0.85rem);
   color: #fff;
-  text-shadow: 2px 2px 0 #000, -1px -1px 0 #000;
-  line-height: 1.1;
+  text-shadow: 2px 2px 0 #000, 1px 0 0 #000;
+  line-height: 1.3;
   text-align: center;
+  letter-spacing: 1px;
 }
 
 .block-input-wrap {
   display: none;
-  width: 80%;
+  width: 85%;
   flex-direction: column;
   align-items: center;
+}
+
+.block-input-wrap.active {
+  display: flex;
 }
 
 /* hide number spin arrows */
@@ -342,61 +248,86 @@ body {
   -webkit-appearance: none;
   margin: 0;
 }
-.block-input[type=number] {
-  -moz-appearance: textfield;
-}
-
-.block-input-wrap.active {
-  display: flex;
-}
+.block-input[type=number] { -moz-appearance: textfield; }
 
 .block-input {
-  font-family: 'VT323', monospace;
-  font-size: clamp(1rem, 3vw, 1.5rem);
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.6rem, 2vw, 0.85rem);
   width: 100%;
   text-align: center;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.85);
   border: 2px solid #ffd700;
-  border-radius: 2px;
+  border-bottom: 2px solid #b8960c;
+  border-right: 2px solid #b8960c;
   color: #ffd700;
   outline: none;
-  padding: 1px 4px;
+  padding: 2px 4px;
 }
 
 .block-submit-btn {
   display: block;
   width: 100%;
   margin-top: 3px;
-  font-family: 'VT323', monospace;
-  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
-  background: rgba(255, 215, 0, 0.2);
-  border: 1px solid #ffd700;
-  border-radius: 2px;
-  color: #ffd700;
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.5rem, 1.5vw, 0.65rem);
+  background: #5a8a20;
+  border: 2px solid #8fcc44;
+  border-bottom: 2px solid #2d5010;
+  border-right: 2px solid #2d5010;
+  border-radius: 0;
+  color: #fff;
   cursor: none;
-  padding: 1px 0;
-  line-height: 1.2;
+  padding: 2px 0;
+  line-height: 1.4;
+  text-shadow: 1px 1px 0 #000;
 }
 
-.block-emoji {
-  font-size: 1.5rem;
-  line-height: 1;
+.block-submit-btn:hover { background: #6ba025; }
+
+/* ── Chest Specific ── */
+.block-chest {
+  cursor: default !important;
+}
+
+.block-chest.chest-locked .block-content {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.block-chest.chest-unlocked {
+  animation: chest-glow 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes chest-glow {
+  from { box-shadow: inset 3px 3px 0 rgba(255,255,255,0.45), inset -3px -3px 0 rgba(0,0,0,0.5), 0 0 0 2px #1a1a1a, 0 0 8px #ffd700; }
+  to   { box-shadow: inset 3px 3px 0 rgba(255,255,255,0.45), inset -3px -3px 0 rgba(0,0,0,0.5), 0 0 0 2px #1a1a1a, 0 0 24px #ffd700; }
+}
+
+.block-chest.chest-open {
+  animation: chest-open-anim 0.5s ease-out forwards;
+}
+
+@keyframes chest-open-anim {
+  0%   { transform: scale(1); filter: brightness(1); }
+  35%  { transform: scale(1.25) rotate(-4deg); filter: brightness(2.5); }
+  65%  { transform: scale(1.12) rotate(2deg); }
+  100% { transform: scale(1.05); filter: brightness(1.4); }
 }
 
 .chest-lock-icon {
-  font-size: clamp(1.5rem, 5vw, 2.8rem);
+  font-size: clamp(1.2rem, 4vw, 2.2rem);
   line-height: 1;
-  text-shadow: 2px 2px 0 #000;
+  filter: drop-shadow(2px 2px 0 #000);
 }
 
-/* ── Layer Divider Labels ── */
+/* ── Layer Divider ── */
 .layer-divider {
   grid-column: 1 / -1;
+  font-size: 0.5rem;
+  color: rgba(255,255,255,0.7);
   text-align: center;
-  font-size: 1.1rem;
-  color: rgba(255,255,255,0.6);
-  padding: 4px 0 2px;
-  letter-spacing: 2px;
+  padding: 6px 0 3px;
+  letter-spacing: 3px;
+  text-shadow: 1px 1px 0 #000;
 }
 
 /* ── Overlays ── */
@@ -411,67 +342,58 @@ body {
   gap: 1.5rem;
   text-align: center;
   padding: 2rem;
+  background: rgba(0, 0, 0, 0.9);
 }
 
 .overlay.hidden { display: none; }
 
-#overlay-gameover {
-  background: rgba(0, 0, 0, 0.88);
-}
-
-#overlay-win {
-  background: rgba(0, 0, 0, 0.88);
-}
-
 .overlay-title {
-  font-size: clamp(2.5rem, 10vw, 5rem);
+  font-size: clamp(1.2rem, 5vw, 2.5rem);
   color: #fff;
-  text-shadow: 3px 3px 0 #ff3300;
-  letter-spacing: 4px;
+  text-shadow: 3px 3px #000, -1px -1px #000;
+  letter-spacing: 3px;
 }
 
 #overlay-win .overlay-title {
-  text-shadow: 3px 3px 0 #ffd700;
-  color: #fff200;
+  color: #ffd700;
+  text-shadow: 3px 3px #b8960c, -1px -1px #000;
 }
 
 .overlay-sub {
-  font-size: clamp(1.2rem, 4vw, 2rem);
+  font-size: clamp(0.5rem, 2vw, 0.75rem);
   color: #ccc;
-  max-width: 480px;
+  max-width: 420px;
+  line-height: 2;
+  text-shadow: 1px 1px #000;
 }
 
 .overlay-btn {
-  font-family: 'VT323', monospace;
-  font-size: 1.8rem;
-  padding: 0.5rem 2.5rem;
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.6rem, 2vw, 0.85rem);
+  padding: 12px 24px;
+  background: #5a8a20;
   color: #fff;
-  border: 3px solid #81c784;
-  border-radius: 4px;
+  border: 3px solid #8fcc44;
+  border-bottom: 3px solid #2d5010;
+  border-right: 3px solid #2d5010;
+  border-radius: 0;
   cursor: none;
   letter-spacing: 2px;
-  box-shadow: 3px 3px 0 #1b5e20;
-  transition: transform 0.1s, box-shadow 0.1s;
+  text-shadow: 2px 2px 0 #000;
+  transition: filter 0.1s;
 }
 
-.overlay-btn:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 #1b5e20;
-}
-
-.overlay-btn:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 #1b5e20;
-}
+.overlay-btn:hover { filter: brightness(1.2); }
+.overlay-btn:active { filter: brightness(0.9); }
 
 .crown-reward {
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-size: clamp(0.7rem, 2.5vw, 1.1rem);
   color: #ffd700;
   text-shadow: 2px 2px 0 #000;
+  letter-spacing: 2px;
 }
 
-/* ── Fireworks Container ── */
+/* ── Fireworks ── */
 #fireworksContainer {
   position: fixed;
   inset: 0;
@@ -480,56 +402,40 @@ body {
   display: none;
 }
 
-#fireworksContainer.active {
-  display: block;
-}
+#fireworksContainer.active { display: block; }
 
-/* ── Milestone Celebration ── */
+/* ── Milestone Toast ── */
 #milestoneCelebration {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
-  background: linear-gradient(135deg, #ffd700, #ff8c00);
-  color: #000;
-  padding: 1rem 2.5rem;
-  border-radius: 8px;
-  font-size: 2rem;
-  font-weight: bold;
+  background: #373737;
+  color: #ffd700;
+  padding: 12px 24px;
+  border: 3px solid #ffd700;
+  border-bottom: 3px solid #b8960c;
+  border-right: 3px solid #b8960c;
+  font-size: 1rem;
   z-index: 300;
   pointer-events: none;
   text-align: center;
-  border: 4px solid #fff;
-  box-shadow: 0 0 30px rgba(255,215,0,0.7);
+  text-shadow: 2px 2px 0 #000;
 }
 
 #milestoneCelebration.show {
   animation: milestoneShow 1.5s ease-in-out forwards;
 }
 
-/* ── Scrollbar ── */
-#mine-viewport::-webkit-scrollbar {
-  width: 8px;
-}
-
-#mine-viewport::-webkit-scrollbar-track {
-  background: rgba(0,0,0,0.3);
-}
-
-#mine-viewport::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 4px;
-}
-
-/* ── Depth Indicator ── */
+/* ── Depth Bar ── */
 #depth-bar-wrap {
   position: fixed;
-  right: 8px;
-  top: 60px;
-  bottom: 8px;
-  width: 14px;
-  background: rgba(0,0,0,0.4);
-  border-radius: 7px;
+  right: 6px;
+  top: 58px;
+  bottom: 6px;
+  width: 12px;
+  background: #1a1a1a;
+  border: 2px solid #555;
   z-index: 50;
   overflow: hidden;
 }
@@ -540,22 +446,20 @@ body {
   left: 0;
   right: 0;
   height: 0%;
-  background: linear-gradient(180deg, #ffd700, #ff8c00);
-  border-radius: 7px;
+  background: linear-gradient(180deg, #ffd700, #e65100);
   transition: height 0.5s ease;
 }
 
+/* ── Scrollbar ── */
+#mine-viewport::-webkit-scrollbar { width: 8px; }
+#mine-viewport::-webkit-scrollbar-track { background: #1a1a1a; }
+#mine-viewport::-webkit-scrollbar-thumb { background: #555; border: 1px solid #1a1a1a; }
+
 /* ── Responsive ── */
-@media (max-width: 420px) {
-  #mine-grid {
-    gap: 4px;
-  }
-  .block-calc {
-    font-size: 0.85rem;
-  }
-  .block-label {
-    font-size: 0.55rem;
-  }
-  #hud-title { font-size: 1.1rem; }
-  #hud-hearts { font-size: 1.2rem; letter-spacing: 1px; }
+@media (max-width: 480px) {
+  #mine-grid { gap: 3px; }
+  #hud-title { display: none; }
+  .block-calc { font-size: 0.5rem; }
+  .block-label { font-size: 0.3rem; }
+  .layer-divider { font-size: 0.38rem; }
 }
