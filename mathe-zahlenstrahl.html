@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none';">
+    <title>Zahlenstrahl – Smarty Learn</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/theme-math.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
+    <style>
+        .level-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 18px;
+            background: #E8E8E8;
+            border-radius: 9px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--math-primary), var(--math-secondary));
+            border-radius: 9px;
+            transition: width 0.4s ease-out;
+        }
+
+        .progress-label {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        .instruction {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .number-line-wrap {
+            overflow-x: auto;
+            padding: 2.5rem 0.5rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .number-line {
+            position: relative;
+            height: 4px;
+            background: var(--math-secondary);
+            border-radius: 2px;
+            margin: 0 20px;
+            min-width: 480px;
+        }
+
+        .number-line::after {
+            content: '';
+            position: absolute;
+            right: -14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 7px solid transparent;
+            border-bottom: 7px solid transparent;
+            border-left: 14px solid var(--math-secondary);
+        }
+
+        .tick {
+            position: absolute;
+            top: -5px;
+            width: 2px;
+            height: 14px;
+            background: var(--math-secondary);
+            opacity: 0.5;
+        }
+
+        .tick.major {
+            height: 20px;
+            top: -8px;
+            opacity: 0.9;
+        }
+
+        .tick-box {
+            position: absolute;
+            top: -58px;
+            transform: translateX(-50%);
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            background: #FFF9F0;
+            border: 3px solid var(--math-secondary);
+            border-radius: 12px;
+            min-width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 0.3rem;
+            box-shadow: 0 3px 10px rgba(255,107,157,0.15);
+        }
+
+        .tick-box.blank {
+            background: linear-gradient(135deg, #FFF3D6, #FFE9B8);
+            border-color: #F5A623;
+            color: #F5A623;
+            cursor: default;
+        }
+
+        .tick-box.blank.correct {
+            background: #E8F8EF;
+            border-color: #27AE60;
+            color: #27AE60;
+        }
+
+        .tick-box.blank.incorrect {
+            background: #FDEDEC;
+            border-color: #E74C3C;
+            color: #E74C3C;
+        }
+
+        .answer-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .answer-display {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            background: #FFF9F0;
+            border: 3px solid var(--math-secondary);
+            border-radius: 16px;
+            min-width: 120px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 1rem;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 64px);
+            gap: 0.6rem;
+            justify-content: center;
+        }
+
+        .key {
+            width: 64px;
+            height: 56px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #FFF9F0, #FFE5F1);
+            color: var(--text-dark);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .key:active {
+            transform: scale(0.92);
+        }
+
+        .key-clear {
+            background: linear-gradient(135deg, #FDEDEC, #FADBD8);
+            color: #E74C3C;
+        }
+
+        .key-submit {
+            background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
+            color: white;
+            grid-column: span 1;
+        }
+
+        .key:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .feedback {
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            min-height: 2.4rem;
+            transition: color 0.2s;
+        }
+
+        .feedback.correct { color: #27AE60; }
+        .feedback.incorrect { color: #E74C3C; }
+
+        .completion-screen {
+            display: none;
+            text-align: center;
+            padding: 3rem 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .completion-emoji {
+            font-size: 6rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .completion-heading {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5rem;
+            color: var(--math-primary);
+            margin-bottom: 1rem;
+        }
+
+        .completion-crowns {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, var(--math-primary), #FF8CB4);
+            color: white;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255,107,157,0.4);
+            transition: transform 0.2s ease;
+            display: inline-block;
+            width: auto;
+            margin-top: 1rem;
+        }
+
+        .btn-restart:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 480px) {
+            .keypad {
+                grid-template-columns: repeat(3, 56px);
+            }
+            .key {
+                width: 56px;
+                height: 50px;
+                font-size: 1.4rem;
+            }
+            .tick-box {
+                min-width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+                top: -52px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
+
+    <div class="crown-counter" id="crownCounter" style="display: none;">
+        <span class="crown-icon">👑</span>
+        <span class="crown-count" id="crownCount">0</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>📏 Zahlenstrahl</h1>
+            <p class="subtitle">Welche Zahl gehört an die markierte Stelle?</p>
+        </header>
+
+        <div class="card">
+            <div style="text-align: center;">
+                <span class="level-badge" id="levelDisplay">Level 1</span>
+            </div>
+
+            <div class="progress-row">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-label" id="progressText">0 / 20</span>
+            </div>
+
+            <div id="taskArea">
+                <p class="instruction">Trage die fehlende Zahl ein!</p>
+
+                <div class="number-line-wrap">
+                    <div class="number-line" id="numberLine"></div>
+                </div>
+
+                <div class="answer-row">
+                    <div class="answer-display" id="answerDisplay">&nbsp;</div>
+                    <div class="keypad" id="keypad">
+                        <button class="key" data-digit="1">1</button>
+                        <button class="key" data-digit="2">2</button>
+                        <button class="key" data-digit="3">3</button>
+                        <button class="key" data-digit="4">4</button>
+                        <button class="key" data-digit="5">5</button>
+                        <button class="key" data-digit="6">6</button>
+                        <button class="key" data-digit="7">7</button>
+                        <button class="key" data-digit="8">8</button>
+                        <button class="key" data-digit="9">9</button>
+                        <button class="key key-clear" id="keyClear">⌫</button>
+                        <button class="key" data-digit="0">0</button>
+                        <button class="key key-submit" id="keySubmit">OK</button>
+                    </div>
+                </div>
+
+                <div class="feedback" id="feedback"></div>
+            </div>
+
+            <div class="completion-screen" id="completionScreen">
+                <span class="completion-emoji">🎉</span>
+                <h2 class="completion-heading">Super gemacht!</h2>
+                <p style="font-size: 1.2rem; color: #666; margin-bottom: 0.5rem;">Du hast alle 20 Aufgaben geschafft!</p>
+                <div class="completion-crowns" id="completionCrowns">👑 0 Kronen</div>
+                <br>
+                <button class="btn-restart" id="restartBtn">🔄 Nochmal spielen</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="milestone-celebration" id="milestoneCelebration"></div>
+
+    <script src="js/audio-manager.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/zahlenstrahl-app.js"></script>
+
+    <footer>
+        <p>© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p>
+            <a href="impressum.html">Impressum</a> |
+            <a href="nutzungsbedingungen.html">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html">Datenschutz</a>
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.7;">
+            Die unerlaubte Vervielfältigung oder Verbreitung dieser Software ist untersagt.
+        </p>
+    </footer>
+</body>
+</html>
