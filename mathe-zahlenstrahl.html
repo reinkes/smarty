@@ -68,7 +68,8 @@
 
         .number-line-wrap {
             overflow-x: auto;
-            padding: 2.5rem 0.5rem 1.5rem;
+            overflow-y: hidden;
+            padding: 4.5rem 0.5rem 1.5rem;
             margin-bottom: 1.5rem;
         }
 
@@ -156,60 +157,30 @@
             margin-bottom: 1rem;
         }
 
-        .answer-display {
+        .answer-input {
+            width: 140px;
+            text-align: center;
             font-family: 'Fredoka', sans-serif;
-            font-size: 2.4rem;
+            font-size: 2rem;
             font-weight: 700;
-            color: var(--text-dark);
-            background: #FFF9F0;
-            border: 3px solid var(--math-secondary);
-            border-radius: 16px;
-            min-width: 120px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 1rem;
+            padding: 0.6rem;
+            -moz-appearance: textfield;
         }
 
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 64px);
-            gap: 0.6rem;
-            justify-content: center;
+        .answer-input::-webkit-outer-spin-button,
+        .answer-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
-        .key {
-            width: 64px;
-            height: 56px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 700;
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #FFF9F0, #FFE5F1);
-            color: var(--text-dark);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: transform 0.1s ease;
+        .btn-submit {
+            width: auto;
+            padding: 0.8rem 2rem;
+            margin-top: 0;
         }
 
-        .key:active {
-            transform: scale(0.92);
-        }
-
-        .key-clear {
-            background: linear-gradient(135deg, #FDEDEC, #FADBD8);
-            color: #E74C3C;
-        }
-
-        .key-submit {
-            background: linear-gradient(135deg, var(--math-primary), var(--math-secondary));
-            color: white;
-            grid-column: span 1;
-        }
-
-        .key:disabled {
+        .answer-input:disabled,
+        .btn-submit:disabled {
             opacity: 0.5;
             cursor: default;
         }
@@ -333,21 +304,8 @@
                 </div>
 
                 <div class="answer-row">
-                    <div class="answer-display" id="answerDisplay">&nbsp;</div>
-                    <div class="keypad" id="keypad">
-                        <button class="key" data-digit="1">1</button>
-                        <button class="key" data-digit="2">2</button>
-                        <button class="key" data-digit="3">3</button>
-                        <button class="key" data-digit="4">4</button>
-                        <button class="key" data-digit="5">5</button>
-                        <button class="key" data-digit="6">6</button>
-                        <button class="key" data-digit="7">7</button>
-                        <button class="key" data-digit="8">8</button>
-                        <button class="key" data-digit="9">9</button>
-                        <button class="key key-clear" id="keyClear">⌫</button>
-                        <button class="key" data-digit="0">0</button>
-                        <button class="key key-submit" id="keySubmit">OK</button>
-                    </div>
+                    <input type="number" inputmode="numeric" autocomplete="off" class="answer-input" id="answerInput">
+                    <button class="btn-submit" id="submitBtn">✓ Prüfen</button>
                 </div>
 
                 <div class="feedback" id="feedback"></div>

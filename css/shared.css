@@ -417,7 +417,7 @@ input[type="range"]::-moz-range-thumb {
     }
 
     header {
-        margin-top: 3rem; /* Extra space on mobile for back button */
+        margin-top: 4.5rem; /* Extra space on mobile for back button + crown counter */
     }
 }
 
@@ -428,6 +428,10 @@ input[type="range"]::-moz-range-thumb {
 
     .subtitle {
         font-size: 1rem;
+    }
+
+    header {
+        margin-top: 5.5rem; /* Back button text can wrap to 2 lines on narrow phones */
     }
 
     .milestone-celebration {

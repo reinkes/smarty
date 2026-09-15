@@ -7,7 +7,6 @@ class ZahlenstrahlApp {
     static MIN_LEVEL = 1;
     static MAX_LEVEL = 10;
     static FEEDBACK_DELAY = 900;
-    static MAX_DIGITS = 3;
 
     static LEVELS = [
         { max: 20, tickEvery: 1, labelEvery: 5, blankMode: 'multiple' },
@@ -29,17 +28,14 @@ class ZahlenstrahlApp {
         this.incorrectCount = 0;
         this.currentTask = null;
         this.answered = false;
-        this.inputValue = '';
 
         this.dom = {
             levelDisplay: null,
             progressFill: null,
             progressText: null,
             numberLine: null,
-            answerDisplay: null,
-            keypad: null,
-            keyClear: null,
-            keySubmit: null,
+            answerInput: null,
+            submitBtn: null,
             feedback: null,
             crownCounter: null,
             crownCount: null,
@@ -62,10 +58,8 @@ class ZahlenstrahlApp {
         this.dom.progressFill = document.getElementById('progressFill');
         this.dom.progressText = document.getElementById('progressText');
         this.dom.numberLine = document.getElementById('numberLine');
-        this.dom.answerDisplay = document.getElementById('answerDisplay');
-        this.dom.keypad = document.getElementById('keypad');
-        this.dom.keyClear = document.getElementById('keyClear');
-        this.dom.keySubmit = document.getElementById('keySubmit');
+        this.dom.answerInput = document.getElementById('answerInput');
+        this.dom.submitBtn = document.getElementById('submitBtn');
         this.dom.feedback = document.getElementById('feedback');
         this.dom.crownCounter = document.getElementById('crownCounter');
         this.dom.crownCount = document.getElementById('crownCount');
@@ -76,18 +70,13 @@ class ZahlenstrahlApp {
     }
 
     attachEventListeners() {
-        this.dom.keypad.querySelectorAll('[data-digit]').forEach(btn => {
-            btn.addEventListener('click', () => this.appendDigit(btn.dataset.digit));
-        });
-        this.dom.keyClear.addEventListener('click', () => this.clearInput());
-        this.dom.keySubmit.addEventListener('click', () => this.submitAnswer());
+        this.dom.submitBtn.addEventListener('click', () => this.submitAnswer());
         this.dom.restartBtn.addEventListener('click', () => this.restart());
-
-        document.addEventListener('keydown', (e) => {
-            if (this.answered) return;
-            if (e.key >= '0' && e.key <= '9') this.appendDigit(e.key);
-            else if (e.key === 'Backspace') this.clearInput();
-            else if (e.key === 'Enter') this.submitAnswer();
+        this.dom.answerInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.submitAnswer();
+            }
         });
     }
 
@@ -159,49 +148,28 @@ class ZahlenstrahlApp {
 
     newTask() {
         this.answered = false;
-        this.inputValue = '';
         this.currentTask = this.generateTask();
         this.renderNumberLine(this.currentTask);
-        this.updateAnswerDisplay();
+        this.dom.answerInput.value = '';
+        this.dom.answerInput.disabled = false;
+        this.dom.submitBtn.disabled = false;
         this.dom.feedback.textContent = '';
         this.dom.feedback.className = 'feedback';
-        this.setKeypadEnabled(true);
+        this.dom.answerInput.focus();
         this.updateLevelDisplay();
         this.updateProgress();
     }
 
-    appendDigit(digit) {
-        if (this.answered) return;
-        if (this.inputValue.length >= ZahlenstrahlApp.MAX_DIGITS) return;
-        this.inputValue += digit;
-        this.updateAnswerDisplay();
-    }
-
-    clearInput() {
-        if (this.answered) return;
-        this.inputValue = '';
-        this.updateAnswerDisplay();
-    }
-
-    updateAnswerDisplay() {
-        this.dom.answerDisplay.textContent = this.inputValue || ' ';
-    }
-
-    setKeypadEnabled(enabled) {
-        this.dom.keypad.querySelectorAll('button').forEach(btn => {
-            btn.disabled = !enabled;
-        });
-    }
-
     submitAnswer() {
         if (this.answered) return;
-        if (this.inputValue === '') return;
+        if (this.dom.answerInput.value === '') return;
         this.answered = true;
 
-        const given = parseInt(this.inputValue, 10);
+        const given = parseInt(this.dom.answerInput.value, 10);
         const correct = given === this.currentTask.answer;
 
-        this.setKeypadEnabled(false);
+        this.dom.answerInput.disabled = true;
+        this.dom.submitBtn.disabled = true;
 
         if (this.dom.blankBox) {
             this.dom.blankBox.classList.add(correct ? 'correct' : 'incorrect');
