@@ -130,11 +130,26 @@
             box-shadow: 0 3px 10px rgba(255,107,157,0.15);
         }
 
+        .tick-box::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            width: 3px;
+            height: 12px;
+            background: var(--math-secondary);
+            transform: translateX(-50%);
+        }
+
         .tick-box.blank {
             background: linear-gradient(135deg, #FFF3D6, #FFE9B8);
             border-color: #F5A623;
             color: #F5A623;
             cursor: default;
+        }
+
+        .tick-box.blank::after {
+            background: #F5A623;
         }
 
         .tick-box.blank.correct {
@@ -143,10 +158,18 @@
             color: #27AE60;
         }
 
+        .tick-box.blank.correct::after {
+            background: #27AE60;
+        }
+
         .tick-box.blank.incorrect {
             background: #FDEDEC;
             border-color: #E74C3C;
             color: #E74C3C;
+        }
+
+        .tick-box.blank.incorrect::after {
+            background: #E74C3C;
         }
 
         .answer-row {
