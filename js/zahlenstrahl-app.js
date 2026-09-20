@@ -127,23 +127,81 @@ class ZahlenstrahlApp {
         const line = this.dom.numberLine;
         line.innerHTML = '';
         const { max, tickEvery, boxes } = task;
+        const lineWidth = Math.max(480, max * 8);
+        line.style.width = `${lineWidth}px`;
+        const pxOf = v => (v / max) * lineWidth;
 
         for (let v = 0; v <= max; v += tickEvery) {
             const tick = document.createElement('div');
             const isMajor = v % task.labelEvery === 0;
             tick.className = isMajor ? 'tick major' : 'tick';
-            tick.style.left = `${(v / max) * 100}%`;
+            tick.style.left = `${pxOf(v)}px`;
             line.appendChild(tick);
         }
 
+        // Boxes are sorted by value; keep the blank box legible by nudging it
+        // away from a neighboring anchor it would otherwise sit on top of,
+        // and draw a dogleg connector back down to its true tick position.
+        const blankIdx = boxes.findIndex(b => b.isBlank);
+        const blank = boxes[blankIdx];
+        const leftNeighbor = boxes[blankIdx - 1];
+        const rightNeighbor = boxes[blankIdx + 1];
+        const MIN_GAP = 32;
+
+        let blankDisplayPx = pxOf(blank.value);
+        const minAllowed = leftNeighbor ? pxOf(leftNeighbor.value) + MIN_GAP : -Infinity;
+        const maxAllowed = rightNeighbor ? pxOf(rightNeighbor.value) - MIN_GAP : Infinity;
+        if (minAllowed > maxAllowed) {
+            blankDisplayPx = (pxOf(leftNeighbor ? leftNeighbor.value : 0) + pxOf(rightNeighbor ? rightNeighbor.value : max)) / 2;
+        } else {
+            blankDisplayPx = Math.min(Math.max(blankDisplayPx, minAllowed), maxAllowed);
+        }
+
+        this.dom.blankLeaders = [];
+
         boxes.forEach(box => {
+            const truePx = pxOf(box.value);
+            const displayPx = box.isBlank ? blankDisplayPx : truePx;
+
             const el = document.createElement('div');
             el.className = box.isBlank ? 'tick-box blank' : 'tick-box';
-            el.style.left = `${(box.value / max) * 100}%`;
+            el.style.left = `${displayPx}px`;
             el.textContent = box.isBlank ? '?' : String(box.value);
-            if (box.isBlank) this.dom.blankBox = el;
             line.appendChild(el);
+            if (box.isBlank) this.dom.blankBox = el;
+
+            const color = box.isBlank ? '#F5A623' : 'var(--math-secondary)';
+            const dx = displayPx - truePx;
+            const segs = [];
+            if (Math.abs(dx) < 1) {
+                segs.push(this.makeLeaderSeg(displayPx, -12, 12, color));
+            } else {
+                segs.push(this.makeLeaderSeg(displayPx, -12, 6, color));
+                segs.push(this.makeLeaderMid(Math.min(displayPx, truePx), Math.abs(dx) + 3, color));
+                segs.push(this.makeLeaderSeg(truePx, -6, 6, color));
+            }
+            segs.forEach(seg => line.appendChild(seg));
+            if (box.isBlank) this.dom.blankLeaders = segs;
         });
+    }
+
+    makeLeaderSeg(leftPx, topPx, heightPx, color) {
+        const seg = document.createElement('div');
+        seg.className = 'leader-seg';
+        seg.style.left = `${leftPx}px`;
+        seg.style.top = `${topPx}px`;
+        seg.style.height = `${heightPx}px`;
+        seg.style.background = color;
+        return seg;
+    }
+
+    makeLeaderMid(leftPx, widthPx, color) {
+        const seg = document.createElement('div');
+        seg.className = 'leader-mid';
+        seg.style.left = `${leftPx}px`;
+        seg.style.width = `${widthPx}px`;
+        seg.style.background = color;
+        return seg;
     }
 
     newTask() {
@@ -174,6 +232,10 @@ class ZahlenstrahlApp {
         if (this.dom.blankBox) {
             this.dom.blankBox.classList.add(correct ? 'correct' : 'incorrect');
             if (!correct) this.dom.blankBox.textContent = this.currentTask.answer;
+        }
+        if (this.dom.blankLeaders) {
+            const leaderColor = correct ? '#27AE60' : '#E74C3C';
+            this.dom.blankLeaders.forEach(seg => { seg.style.background = leaderColor; });
         }
 
         if (correct) {
