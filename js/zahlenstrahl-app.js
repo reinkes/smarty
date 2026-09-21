@@ -139,49 +139,22 @@ class ZahlenstrahlApp {
             line.appendChild(tick);
         }
 
-        // Boxes are sorted by value; keep the blank box legible by nudging it
-        // away from a neighboring anchor it would otherwise sit on top of,
-        // and draw a dogleg connector back down to its true tick position.
-        const blankIdx = boxes.findIndex(b => b.isBlank);
-        const blank = boxes[blankIdx];
-        const leftNeighbor = boxes[blankIdx - 1];
-        const rightNeighbor = boxes[blankIdx + 1];
-        const MIN_GAP = 32;
-
-        let blankDisplayPx = pxOf(blank.value);
-        const minAllowed = leftNeighbor ? pxOf(leftNeighbor.value) + MIN_GAP : -Infinity;
-        const maxAllowed = rightNeighbor ? pxOf(rightNeighbor.value) - MIN_GAP : Infinity;
-        if (minAllowed > maxAllowed) {
-            blankDisplayPx = (pxOf(leftNeighbor ? leftNeighbor.value : 0) + pxOf(rightNeighbor ? rightNeighbor.value : max)) / 2;
-        } else {
-            blankDisplayPx = Math.min(Math.max(blankDisplayPx, minAllowed), maxAllowed);
-        }
-
-        this.dom.blankLeaders = [];
-
+        // The blank sits below the line and anchors sit above it, so their
+        // boxes never collide regardless of how close their values are.
         boxes.forEach(box => {
-            const truePx = pxOf(box.value);
-            const displayPx = box.isBlank ? blankDisplayPx : truePx;
+            const px = pxOf(box.value);
 
             const el = document.createElement('div');
             el.className = box.isBlank ? 'tick-box blank' : 'tick-box';
-            el.style.left = `${displayPx}px`;
+            el.style.left = `${px}px`;
             el.textContent = box.isBlank ? '?' : String(box.value);
             line.appendChild(el);
             if (box.isBlank) this.dom.blankBox = el;
 
             const color = box.isBlank ? '#F5A623' : 'var(--math-secondary)';
-            const dx = displayPx - truePx;
-            const segs = [];
-            if (Math.abs(dx) < 1) {
-                segs.push(this.makeLeaderSeg(displayPx, -12, 12, color));
-            } else {
-                segs.push(this.makeLeaderSeg(displayPx, -12, 6, color));
-                segs.push(this.makeLeaderMid(Math.min(displayPx, truePx), Math.abs(dx) + 3, color));
-                segs.push(this.makeLeaderSeg(truePx, -6, 6, color));
-            }
-            segs.forEach(seg => line.appendChild(seg));
-            if (box.isBlank) this.dom.blankLeaders = segs;
+            const seg = this.makeLeaderSeg(px, box.isBlank ? 4 : -12, 12, color);
+            line.appendChild(seg);
+            if (box.isBlank) this.dom.blankLeaders = [seg];
         });
     }
 
@@ -191,15 +164,6 @@ class ZahlenstrahlApp {
         seg.style.left = `${leftPx}px`;
         seg.style.top = `${topPx}px`;
         seg.style.height = `${heightPx}px`;
-        seg.style.background = color;
-        return seg;
-    }
-
-    makeLeaderMid(leftPx, widthPx, color) {
-        const seg = document.createElement('div');
-        seg.className = 'leader-mid';
-        seg.style.left = `${leftPx}px`;
-        seg.style.width = `${widthPx}px`;
         seg.style.background = color;
         return seg;
     }
