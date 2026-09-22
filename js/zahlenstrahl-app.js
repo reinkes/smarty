@@ -9,16 +9,16 @@ class ZahlenstrahlApp {
     static FEEDBACK_DELAY = 900;
 
     static LEVELS = [
-        { max: 20, tickEvery: 1, labelEvery: 5, blankMode: 'multiple' },
-        { max: 20, tickEvery: 1, labelEvery: 5, blankMode: 'any' },
-        { max: 30, tickEvery: 1, labelEvery: 5, blankMode: 'any' },
-        { max: 60, tickEvery: 1, labelEvery: 10, blankMode: 'multiple5' },
-        { max: 60, tickEvery: 1, labelEvery: 10, blankMode: 'any' },
-        { max: 60, tickEvery: 2, labelEvery: 10, blankMode: 'any' },
-        { max: 100, tickEvery: 1, labelEvery: 10, blankMode: 'multiple5' },
-        { max: 100, tickEvery: 2, labelEvery: 10, blankMode: 'any' },
-        { max: 100, tickEvery: 5, labelEvery: 10, blankMode: 'any' },
-        { max: 100, tickEvery: 5, labelEvery: 20, blankMode: 'any' }
+        { max: 20, tickEvery: 1, labelEvery: 5 },
+        { max: 20, tickEvery: 1, labelEvery: 5 },
+        { max: 30, tickEvery: 1, labelEvery: 5 },
+        { max: 60, tickEvery: 1, labelEvery: 10 },
+        { max: 60, tickEvery: 1, labelEvery: 10 },
+        { max: 60, tickEvery: 2, labelEvery: 10 },
+        { max: 100, tickEvery: 1, labelEvery: 10 },
+        { max: 100, tickEvery: 2, labelEvery: 10 },
+        { max: 100, tickEvery: 5, labelEvery: 10 },
+        { max: 100, tickEvery: 5, labelEvery: 20 }
     ];
 
     constructor() {
@@ -93,18 +93,16 @@ class ZahlenstrahlApp {
 
     generateTask() {
         const cfg = this.getLevelConfig();
-        const { max, tickEvery, labelEvery, blankMode } = cfg;
+        const { max, tickEvery, labelEvery } = cfg;
 
         const anchors = new Set();
         for (let v = 0; v <= max; v += labelEvery) anchors.add(v);
 
+        // Mix easy anchor numbers (10, 20, ...) with arbitrary ones (13, 17, ...)
+        // at every level so kids don't just see round numbers.
         let blankValue;
-        if (blankMode === 'multiple') {
+        if (Math.random() < 0.5) {
             const candidates = [...anchors].filter(v => v !== 0 && v !== max);
-            blankValue = candidates[Math.floor(Math.random() * candidates.length)];
-        } else if (blankMode === 'multiple5') {
-            const candidates = [];
-            for (let v = 5; v < max; v += 5) candidates.push(v);
             blankValue = candidates[Math.floor(Math.random() * candidates.length)];
         } else {
             let v;
