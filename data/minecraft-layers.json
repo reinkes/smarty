@@ -49,7 +49,7 @@
     "rows": 2,
     "math": { "operators": ["-"], "min": 1, "max": 20 },
     "tool": { "id": "gold", "name": "Gold-Spitzhacke" },
-    "items": { "checkpoint": 1 }
+    "items": { "checkpoint": 1, "apple": 1 }
   },
   {
     "id": "diamant",

@@ -1,0 +1,71 @@
+[
+  {
+    "id": "gras",
+    "name": "Gras",
+    "emoji": "🌿",
+    "rows": 1,
+    "math": { "operators": ["+", "-"], "min": 10, "max": 100, "step": 10 },
+    "tool": { "id": "holz", "name": "Holz-Spitzhacke" }
+  },
+  {
+    "id": "erde",
+    "name": "Erde",
+    "emoji": "🪱",
+    "rows": 1,
+    "math": { "operators": ["+", "-"], "min": 11, "max": 100, "bMin": 1, "bMax": 9, "cross": false },
+    "tool": { "id": "holz", "name": "Holz-Spitzhacke" }
+  },
+  {
+    "id": "stein",
+    "name": "Stein",
+    "emoji": "🪨",
+    "rows": 2,
+    "math": { "operators": ["+", "-"], "min": 11, "max": 100, "bMin": 3, "bMax": 9, "cross": true },
+    "tool": { "id": "stein", "name": "Stein-Spitzhacke" },
+    "items": { "apple": 1 }
+  },
+  {
+    "id": "kohle",
+    "name": "Kohle",
+    "emoji": "⚫",
+    "rows": 2,
+    "math": { "operators": ["+", "-"], "min": 11, "max": 100, "bMin": 11, "bMax": 60, "cross": true },
+    "tool": { "id": "stein", "name": "Stein-Spitzhacke" },
+    "items": { "checkpoint": 1 }
+  },
+  {
+    "id": "eisen",
+    "name": "Eisen",
+    "emoji": "🔩",
+    "rows": 2,
+    "math": { "operators": ["double", "half"], "min": 2, "max": 49 },
+    "tool": { "id": "eisen", "name": "Eisen-Spitzhacke" },
+    "items": { "apple": 1 }
+  },
+  {
+    "id": "gold",
+    "name": "Gold",
+    "emoji": "✨",
+    "rows": 2,
+    "math": { "operators": ["*", ":"], "tables": [2, 5, 10] },
+    "tool": { "id": "gold", "name": "Gold-Spitzhacke" },
+    "items": { "checkpoint": 1, "apple": 1 }
+  },
+  {
+    "id": "diamant",
+    "name": "Diamant",
+    "emoji": "💎",
+    "rows": 2,
+    "math": { "operators": ["*", ":"], "tables": [3, 4, 6, 7, 8, 9] },
+    "tool": { "id": "diamant", "name": "Diamant-Spitzhacke" },
+    "items": { "apple": 1 }
+  },
+  {
+    "id": "chest",
+    "name": "Schatztruhe",
+    "emoji": "💰",
+    "rows": 1,
+    "math": { "operators": ["+", "-", "*", ":"], "min": 10, "max": 100, "bMin": 5, "bMax": 30, "tables": [2, 3, 4, 5, 10] },
+    "tool": { "id": "diamant", "name": "Diamant-Spitzhacke" }
+  }
+]

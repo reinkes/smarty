@@ -3,7 +3,12 @@
 class MinecraftApp {
     constructor() {
         this.LIVES = 5;
-        this.CROWN_LEVEL = 8;
+        this.MAX_APPLES = 3;
+        // Klasse → layer set and crown level (8 → 3 crowns, 10 → 5 crowns)
+        this.CLASSES = {
+            1: { file: 'data/minecraft-layers.json', crownLevel: 8 },
+            2: { file: 'data/minecraft-layers-k2.json', crownLevel: 10 }
+        };
 
         this.lives = this.LIVES;
         this.layers = [];
@@ -12,6 +17,10 @@ class MinecraftApp {
         this.solvedBlocks = 0;
         this.activeBlock = null;
         this.isOver = false;
+        this.started = false;
+        this.klasse = 1;
+        this.apples = 0;
+        this._layerCache = {};
         this.checkpointRow = null;
         this.currentToolId = null;
 
@@ -35,10 +44,12 @@ class MinecraftApp {
         this._setupOverlays();
         CrownManager.updateDisplay(document.getElementById('crownCount'));
 
+        this.klasse = this._loadKlasse();
+        this._setupClassToggle();
+        this._setupAppleButton();
+
         try {
-            const resp = await fetch('data/minecraft-layers.json');
-            if (!resp.ok) throw new Error(resp.status);
-            this.layers = await resp.json();
+            this.layers = await this._loadLayers(this.klasse);
         } catch (e) {
             document.getElementById('mine-grid').textContent = '⚠️ Die Mine konnte nicht geladen werden.';
             return;
@@ -47,6 +58,59 @@ class MinecraftApp {
         this._generateTextures();
         this._buildGrid(0);
         this._updateHUD();
+        this._updateApples();
+    }
+
+    async _loadLayers(klasse) {
+        if (!this._layerCache[klasse]) {
+            const resp = await fetch(this.CLASSES[klasse].file);
+            if (!resp.ok) throw new Error(resp.status);
+            this._layerCache[klasse] = await resp.json();
+        }
+        return this._layerCache[klasse];
+    }
+
+    // ── Klasse Toggle ────────────────────────────────────────
+
+    _loadKlasse() {
+        try { return localStorage.getItem('smarty-minecraft-klasse') === '2' ? 2 : 1; } catch (e) { return 1; }
+    }
+
+    _setupClassToggle() {
+        document.querySelectorAll('.class-btn').forEach(btn => {
+            btn.addEventListener('click', () => this._selectKlasse(Number(btn.dataset.klasse)));
+        });
+        this._renderClassToggle();
+    }
+
+    _renderClassToggle() {
+        document.querySelectorAll('.class-btn').forEach(btn => {
+            btn.classList.toggle('active', Number(btn.dataset.klasse) === this.klasse);
+            btn.disabled = this.started;
+        });
+        document.getElementById('hud-class').title = this.started ? 'Klasse wechseln: erst nach einem Neustart' : 'Klasse wählen';
+    }
+
+    /** Only possible before the first answer; afterwards the toggle is locked until a restart. */
+    async _selectKlasse(klasse) {
+        if (this.started || klasse === this.klasse) return;
+        try {
+            this.layers = await this._loadLayers(klasse);
+        } catch (e) {
+            showMilestoneCelebration('⚠️ Konnte nicht laden');
+            return;
+        }
+        this.klasse = klasse;
+        try { localStorage.setItem('smarty-minecraft-klasse', String(klasse)); } catch (e) { /* ignore */ }
+        this.checkpointRow = null;
+        this._buildGrid(0);
+        this._renderClassToggle();
+    }
+
+    _markStarted() {
+        if (this.started) return;
+        this.started = true;
+        this._renderClassToggle();
     }
 
     // ── Pixel-Art Block Textures ──────────────────────────────
@@ -299,17 +363,58 @@ class MinecraftApp {
         });
     }
 
-    /** Numbers stay within the layer's range: sums never exceed max, differences never go below 0. */
+    /**
+     * Layer math options: operators (+ - * : double half), min/max (operand range, sums stay <= max,
+     * differences >= 0), bMin/bMax (second operand), step (multiples of), cross (true/false: with/without
+     * crossing a ten), tables (for * and :).
+     */
     _generateCalc(math) {
         const op = math.operators[Math.floor(Math.random() * math.operators.length)];
-        if (op === '+') {
-            const a = this._rand(math.min, math.max - math.min);
-            const b = this._rand(math.min, math.max - a);
-            return { text: `${a} + ${b} = ?`, answer: a + b };
+        for (let i = 0; i < 100; i++) {
+            const calc = this._tryCalc(op, math);
+            // Longer texts (e.g. "100 - 100 = ?") would be clipped inside a block
+            if (calc && calc.text.length <= 12) return calc;
         }
-        const a = this._rand(math.min, math.max);
-        const b = this._rand(Math.min(math.min, a), a);
-        return { text: `${a} - ${b} = ?`, answer: a - b };
+        return { text: '1 + 1 = ?', answer: 2 };
+    }
+
+    /** Random multiple of step in [lo, hi], or null if there is none. */
+    _pick(lo, hi, step = 1) {
+        const from = Math.ceil(lo / step);
+        const to = Math.floor(hi / step);
+        return from > to ? null : step * this._rand(from, to);
+    }
+
+    _tryCalc(op, m) {
+        if (op === '+' || op === '-') {
+            const step = m.step || 1;
+            const bMin = m.bMin ?? m.min;
+            const bMax = m.bMax ?? m.max;
+            const a = this._pick(m.min, op === '+' ? m.max - bMin : m.max, step);
+            if (a === null) return null;
+            const b = op === '+'
+                ? this._pick(bMin, Math.min(bMax, m.max - a), step)
+                : this._pick(Math.min(bMin, a), Math.min(bMax, a), step);
+            if (b === null) return null;
+            if (m.cross !== undefined) {
+                const crosses = op === '+' ? (a % 10) + (b % 10) >= 10 : (a % 10) < (b % 10);
+                if (crosses !== m.cross) return null;
+            }
+            return { text: `${a} ${op} ${b} = ?`, answer: op === '+' ? a + b : a - b };
+        }
+
+        if (op === '*' || op === ':') {
+            const table = m.tables[Math.floor(Math.random() * m.tables.length)];
+            const factor = this._rand(1, 10);
+            if (op === ':') return { text: `${table * factor} : ${table} = ?`, answer: factor };
+            const text = Math.random() < 0.5 ? `${table} · ${factor}` : `${factor} · ${table}`;
+            return { text: `${text} = ?`, answer: table * factor };
+        }
+
+        // Verdoppeln / Halbieren
+        const n = this._rand(m.min, m.max);
+        if (op === 'double') return { text: `${n} + ${n} = ?`, answer: 2 * n };
+        return { text: `½ von ${2 * n} = ?`, answer: n };
     }
 
     _applyTexture(el, textureKey) {
@@ -415,6 +520,7 @@ class MinecraftApp {
     }
 
     async _solveBlock(data) {
+        this._markStarted();
         this._clearAutoTimer(data);
         data.solved = true;
         data.input.blur();
@@ -507,6 +613,7 @@ class MinecraftApp {
     }
 
     _wrongAnswer(data) {
+        this._markStarted();
         this._clearAutoTimer(data);
         this.lives = Math.max(0, this.lives - 1);
         data.input.value = '';
@@ -580,15 +687,21 @@ class MinecraftApp {
         this._swingPickaxe();
 
         if (data.item === 'apple') {
-            if (this.lives >= this.LIVES) {
-                showMilestoneCelebration('❤️ Herzen sind voll!');
+            if (this.lives < this.LIVES) {
+                this.lives++;
+                this._updateHUD('heal');
+                showMilestoneCelebration('🍏 +1 Herz!');
+            } else if (this.apples < this.MAX_APPLES) {
+                // Hearts are full: keep the apple in the bag for later
+                this.apples++;
+                this._updateApples(true);
+                showMilestoneCelebration(`🍏 Im Beutel (${this.apples}/${this.MAX_APPLES})`);
+            } else {
+                showMilestoneCelebration(`🍏 Beutel voll (${this.MAX_APPLES}/${this.MAX_APPLES})`);
                 btn.classList.add('wobble');
                 setTimeout(() => btn.classList.remove('wobble'), 400);
                 return;
             }
-            this.lives++;
-            this._updateHUD('heal');
-            showMilestoneCelebration('🍏 +1 Herz!');
         } else {
             this.checkpointRow = this.rows.indexOf(data.rowRef);
             document.getElementById('hud-checkpoint').classList.remove('hidden');
@@ -610,6 +723,35 @@ class MinecraftApp {
             void el.offsetWidth;
             el.classList.add(effect);
         }
+    }
+
+    _updateApples(pop) {
+        const btn = document.getElementById('hud-apples');
+        btn.textContent = `🍏 ${this.apples}/${this.MAX_APPLES}`;
+        btn.classList.toggle('empty', this.apples === 0);
+        if (pop) {
+            btn.classList.remove('pop');
+            void btn.offsetWidth;
+            btn.classList.add('pop');
+        }
+    }
+
+    _setupAppleButton() {
+        document.getElementById('hud-apples').addEventListener('click', () => this._eatStoredApple());
+    }
+
+    /** Eat an apple from the bag: +1 heart. */
+    _eatStoredApple() {
+        if (this.isOver || this.apples === 0) return;
+        if (this.lives >= this.LIVES) {
+            showMilestoneCelebration('❤️ Herzen sind voll!');
+            return;
+        }
+        this.apples--;
+        this.lives++;
+        this._updateHUD('heal');
+        this._updateApples();
+        showMilestoneCelebration('🍏 +1 Herz!');
     }
 
     _updateDepthBar() {
@@ -663,7 +805,7 @@ class MinecraftApp {
 
     _win() {
         const { reward, total } = CrownManager.earnAndDisplay(
-            this.CROWN_LEVEL,
+            this.CLASSES[this.klasse].crownLevel,
             document.getElementById('crownCount'),
             document.getElementById('crownCounter')
         );
@@ -675,7 +817,11 @@ class MinecraftApp {
     _restart(fromCheckpoint) {
         if (!fromCheckpoint) {
             this.checkpointRow = null;
+            this.apples = 0;
+            this.started = false;
             document.getElementById('hud-checkpoint').classList.add('hidden');
+            this._renderClassToggle();
+            this._updateApples();
         }
         this.lives = this.LIVES;
         this.activeBlock = null;

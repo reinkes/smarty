@@ -23,9 +23,14 @@
 <!-- HUD -->
 <div id="hud">
     <a href="index.html" id="btn-back">⬅ Zurück</a>
+    <span id="hud-class" role="group" aria-label="Klasse">
+        <button type="button" class="class-btn active" data-klasse="1">Kl.1</button>
+        <button type="button" class="class-btn" data-klasse="2">Kl.2</button>
+    </span>
     <span id="hud-title">⛏️ Minen-Mathe</span>
     <span id="hud-status">
         <span id="hud-tool" data-tool="holz" title="Holz-Spitzhacke">⛏️</span>
+        <button type="button" id="hud-apples" class="empty" title="Goldenen Apfel essen">🍏 0/3</button>
         <span id="hud-checkpoint" class="hidden" title="Checkpoint gespeichert">🛏️</span>
         <span id="hud-hearts">❤️❤️❤️❤️❤️</span>
     </span>

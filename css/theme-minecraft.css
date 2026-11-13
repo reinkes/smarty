@@ -107,6 +107,50 @@ body.custom-cursor #pickaxe-cursor { display: block; }
 
 #hud-checkpoint.hidden { display: none; }
 
+/* ── Klasse toggle (locked after the first answer) ── */
+#hud-class {
+  display: flex;
+  gap: 2px;
+}
+
+.class-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  padding: 4px 5px;
+  color: #ccc;
+  background: #555;
+  border: 2px solid #888;
+  border-bottom-color: #333;
+  border-right-color: #333;
+  text-shadow: 1px 1px #000;
+  cursor: pointer;
+}
+
+.class-btn.active {
+  color: #fff;
+  background: #5a8a20;
+  border-color: #8fcc44 #2d5010 #2d5010 #8fcc44;
+}
+
+.class-btn:disabled { cursor: default; }
+.class-btn:disabled:not(.active) { opacity: 0.4; }
+
+/* ── Golden apple bag ── */
+#hud-apples {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  padding: 3px 4px;
+  color: #ffd700;
+  background: #373737;
+  border: 2px solid #ffd700;
+  text-shadow: 1px 1px #000;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#hud-apples.empty { opacity: 0.45; border-color: #777; color: #aaa; cursor: default; }
+#hud-apples.pop { animation: hearts-heal 0.6s ease-out; }
+
 #hud-hearts {
   font-size: 1rem;
   letter-spacing: 2px;
@@ -630,7 +674,9 @@ body.striking #pickaxe-cursor { opacity: 0; }
 @media (max-width: 480px) {
   #mine-grid { gap: 3px; }
   #hud-title { display: none; }
-  .block-calc { font-size: 0.5rem; }
+  .block-calc { font-size: 0.5rem; letter-spacing: 0; }
+  #hud { flex-wrap: wrap; row-gap: 4px; }
+  #hud-apples { font-size: 0.42rem; }
   .block-label { font-size: 0.3rem; }
   .item-label { font-size: 0.28rem; }
   #hud-hearts { font-size: 0.8rem; letter-spacing: 0; }
