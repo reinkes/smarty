@@ -2,15 +2,11 @@
    Minen-Mathe — Minecraft Visual Theme
    ═══════════════════════════════════════════════ */
 
-/* ── Fonts ── */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
 /* ── Body: Minecraft World Cross-Section ── */
 body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  cursor: none;
   font-family: 'Press Start 2P', monospace;
   /* Sky to deep underground gradient */
   background:
@@ -35,8 +31,14 @@ body {
   min-height: 100vh;
 }
 
-/* ── Pickaxe Cursor ── */
+/* ── Pickaxe Cursor (mouse only, see body.custom-cursor) ── */
+body.custom-cursor,
+body.custom-cursor * {
+  cursor: none !important;
+}
+
 #pickaxe-cursor {
+  display: none;
   position: fixed;
   pointer-events: none;
   z-index: 9999;
@@ -47,6 +49,15 @@ body {
   user-select: none;
   filter: drop-shadow(1px 1px 0 #000);
 }
+
+body.custom-cursor #pickaxe-cursor { display: block; }
+
+/* Tint the pickaxe emoji to match the current tool tier */
+[data-tool="holz"]    { filter: drop-shadow(1px 1px 0 #000) sepia(0.6) saturate(1.4); }
+[data-tool="stein"]   { filter: drop-shadow(1px 1px 0 #000) grayscale(1) brightness(0.9); }
+[data-tool="eisen"]   { filter: drop-shadow(1px 1px 0 #000) grayscale(1) brightness(1.5); }
+[data-tool="gold"]    { filter: drop-shadow(1px 1px 0 #000) sepia(1) saturate(4) hue-rotate(5deg) brightness(1.2); }
+[data-tool="diamant"] { filter: drop-shadow(1px 1px 0 #000) sepia(1) saturate(3) hue-rotate(140deg) brightness(1.2); }
 
 #pickaxe-cursor.swing {
   animation: pickaxe-swing 0.22s ease-out;
@@ -82,10 +93,39 @@ body {
   white-space: nowrap;
 }
 
+#hud-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#hud-tool,
+#hud-checkpoint {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+#hud-checkpoint.hidden { display: none; }
+
 #hud-hearts {
   font-size: 1rem;
   letter-spacing: 2px;
   line-height: 1;
+}
+
+#hud-hearts.hurt { animation: hearts-hurt 0.4s ease-out; }
+#hud-hearts.heal { animation: hearts-heal 0.6s ease-out; }
+
+@keyframes hearts-hurt {
+  0%, 100% { transform: translateX(0); filter: none; }
+  25% { transform: translateX(-4px); filter: brightness(2) saturate(0); }
+  75% { transform: translateX(4px); }
+}
+
+@keyframes hearts-heal {
+  0%   { transform: scale(1); filter: none; }
+  40%  { transform: scale(1.25); filter: drop-shadow(0 0 6px #ffd700) brightness(1.4); }
+  100% { transform: scale(1); filter: none; }
 }
 
 #crownCounter {
@@ -107,7 +147,6 @@ body {
   border-bottom: 2px solid #333;
   border-right: 2px solid #333;
   padding: 4px 6px;
-  cursor: none;
   text-decoration: none;
   white-space: nowrap;
   text-shadow: 1px 1px #000;
@@ -123,7 +162,8 @@ body {
   overflow-y: auto;
   height: calc(100vh - 56px);
   scroll-behavior: smooth;
-  padding: 12px 20px 60px;
+  /* extra right padding keeps the grid clear of the depth bar */
+  padding: 12px 28px 60px 20px;
 }
 
 /* ── Grid ── */
@@ -143,7 +183,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: none;
+  cursor: pointer;
   user-select: none;
   overflow: hidden;
   /* PIXELATED rendering so canvas textures stay crispy */
@@ -164,16 +204,42 @@ body {
   filter: brightness(1.25);
 }
 
-.mc-block.locked {
-  filter: brightness(0.45) saturate(0.3);
-  cursor: not-allowed;
+.mc-block.active {
+  box-shadow:
+    inset 3px 3px 0 rgba(255,255,255,0.45),
+    inset -3px -3px 0 rgba(0,0,0,0.5),
+    0 0 0 2px #fff,
+    0 0 10px 2px rgba(255,255,255,0.6);
+  z-index: 1;
 }
 
+.mc-block.locked {
+  filter: brightness(0.45) saturate(0.3);
+  cursor: default;
+}
+
+/* Mined-out block: a dark cave hole that keeps a hint of the layer texture */
 .mc-block.solved {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.5);
-  transition: opacity 0.35s, transform 0.35s;
+  cursor: default;
+  box-shadow:
+    inset 6px 6px 0 rgba(0,0,0,0.6),
+    inset -2px -2px 0 rgba(255,255,255,0.08),
+    0 0 0 2px #1a1a1a;
+  animation: hole-in 0.3s ease-out;
+}
+
+.mc-block.solved::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 9, 6, 0.82);
+}
+
+.mc-block.solved .block-content { display: none; }
+
+@keyframes hole-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ── Animations ── */
@@ -276,9 +342,65 @@ body {
   100% { border-color: #ffffff; box-shadow: 0 0 18px #fff; }
 }
 
+/* ── Items (golden apple, checkpoint bed) ── */
+.mc-item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 80%;
+  padding: 4px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  animation: item-bob 1.2s ease-in-out infinite;
+}
+
+.mc-item img {
+  width: 55%;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.8));
+}
+
+.item-checkpoint img { filter: drop-shadow(0 0 6px rgba(255, 90, 90, 0.8)); }
+
+.item-label {
+  font-size: 0.35rem;
+  line-height: 1.4;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.mc-item:hover img { transform: scale(1.1); }
+
+.mc-item.wobble { animation: item-wobble 0.4s ease-in-out; }
+
+.mc-item.picked {
+  animation: item-pick 0.35s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes item-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+@keyframes item-wobble {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-12deg); }
+  75% { transform: rotate(12deg); }
+}
+
+@keyframes item-pick {
+  to { transform: translateY(-30px) scale(1.4); opacity: 0; }
+}
+
 /* ── Chest Specific ── */
 .block-chest {
-  cursor: default !important;
+  cursor: default;
 }
 
 .block-chest.chest-locked .block-content {
@@ -369,10 +491,17 @@ body {
   border-bottom: 3px solid #2d5010;
   border-right: 3px solid #2d5010;
   border-radius: 0;
-  cursor: none;
+  cursor: pointer;
   letter-spacing: 2px;
   text-shadow: 2px 2px 0 #000;
   transition: filter 0.1s;
+}
+
+.overlay-btn.hidden { display: none; }
+
+.overlay-btn-secondary {
+  background: #555;
+  border-color: #888 #333 #333 #888;
 }
 
 .overlay-btn:hover { filter: brightness(1.2); }
@@ -453,5 +582,7 @@ body {
   #hud-title { display: none; }
   .block-calc { font-size: 0.5rem; }
   .block-label { font-size: 0.3rem; }
+  .item-label { font-size: 0.28rem; }
+  #hud-hearts { font-size: 0.8rem; letter-spacing: 0; }
   .layer-divider { font-size: 0.38rem; }
 }

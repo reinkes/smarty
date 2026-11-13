@@ -6,6 +6,26 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ---
 
+## [Unreleased]
+
+### ⛏️ Minen-Mathe (NEW)
+
+#### Added
+- **minecraft-mathe.html** + **js/minecraft-app.js** — dig through 7 Minecraft layers (Gras → Diamant) down to a treasure chest by solving + / − tasks (Zahlenraum bis 20)
+- **Golden apples** 🍏 hidden in Stein, Eisen and Diamant blocks — tap to heal one heart (stays in place when hearts are full)
+- **Checkpoints** 🛏️ (beds) hidden in Kohle and Gold blocks — tap to save; after Game Over you can continue from the checkpoint
+- Mined blocks leave dark cave holes; pickaxe tint and HUD icon change with each new tool tier
+- Next row scrolls into view automatically; active block is highlighted
+
+#### Fixed
+- Sums could exceed 20 (e.g. 18 + 17) — results now stay within each layer's range
+- Hearts display crashed when lives went below zero after quick wrong answers
+- Custom pickaxe cursor reappeared on touch devices; it is now shown for mouse users only
+- Mobile keyboard did not open because the input was focused inside a timeout
+- Win screen placeholder showed "+10 Kronen" while the actual reward is 3
+
+---
+
 ## [3.1.0] - 2026-05-15
 
 ### 😊 Smiley-Rechner (NEW)

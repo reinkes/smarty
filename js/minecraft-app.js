@@ -3,6 +3,7 @@
 class MinecraftApp {
     constructor() {
         this.LIVES = 5;
+        this.CROWN_LEVEL = 8;
 
         this.lives = this.LIVES;
         this.layers = [];
@@ -10,6 +11,9 @@ class MinecraftApp {
         this.totalBlocks = 0;
         this.solvedBlocks = 0;
         this.activeBlock = null;
+        this.isOver = false;
+        this.checkpointRow = null;
+        this.currentToolId = null;
 
         this._pickaxeEl = null;
         this._swingTimeout = null;
@@ -19,19 +23,28 @@ class MinecraftApp {
     }
 
     async _init() {
-        const resp = await fetch('data/minecraft-layers.json');
-        this.layers = await resp.json();
-        this._generateTextures();
-        this._buildGrid();
         this._setupCursor();
         this._setupOverlays();
+        CrownManager.updateDisplay(document.getElementById('crownCount'));
+
+        try {
+            const resp = await fetch('data/minecraft-layers.json');
+            if (!resp.ok) throw new Error(resp.status);
+            this.layers = await resp.json();
+        } catch (e) {
+            document.getElementById('mine-grid').textContent = '⚠️ Die Mine konnte nicht geladen werden.';
+            return;
+        }
+
+        this._generateTextures();
+        this._buildGrid(0);
         this._updateHUD();
     }
 
     // ── Pixel-Art Block Textures ──────────────────────────────
 
     _generateTextures() {
-        ['gras', 'erde', 'stein', 'kohle', 'eisen', 'gold', 'diamant', 'chest', 'chest-gate']
+        ['gras', 'erde', 'stein', 'kohle', 'eisen', 'gold', 'diamant', 'chest', 'chest-gate', 'apple', 'bed']
             .forEach(id => { this._textures[id] = this._drawTexture(id); });
     }
 
@@ -137,6 +150,33 @@ class MinecraftApp {
                 f(9, 9, 4, 1, '#4A4A4A');
                 f(13, 9, 1, 4, '#4A4A4A');
                 break;
+
+            case 'apple':
+                // Golden apple on transparent background
+                f(7, 1, 2, 3, '#6B4226');                       // stem
+                f(9, 2, 3, 1, '#4CAF50'); f(10, 3, 2, 1, '#2E7D32'); // leaf
+                f(4, 4, 3, 1, '#F9D71C'); f(9, 4, 3, 1, '#F9D71C');
+                f(3, 5, 10, 1, '#F9D71C');
+                f(2, 6, 12, 6, '#F9D71C');
+                f(3, 12, 10, 1, '#F9D71C');
+                f(4, 13, 8, 1, '#F9D71C');
+                f(5, 14, 2, 1, '#D4A017'); f(9, 14, 2, 1, '#D4A017');
+                // Shading (right / bottom)
+                f(12, 6, 2, 6, '#D4A017'); f(10, 12, 3, 1, '#D4A017'); f(8, 13, 4, 1, '#D4A017');
+                // Highlight
+                f(4, 6, 2, 2, '#FFF6A8'); f(4, 8, 1, 1, '#FFF6A8');
+                break;
+
+            case 'bed':
+                // Red bed (side view) — Minecraft respawn point
+                f(1, 3, 2, 10, '#8B5A2B');                      // headboard
+                f(3, 6, 4, 3, '#F0F0F0'); f(3, 8, 4, 1, '#C8C8C8'); // pillow
+                f(7, 5, 8, 4, '#C62828'); f(7, 5, 8, 1, '#E53935'); // blanket
+                f(7, 8, 8, 1, '#8E0000');
+                f(1, 9, 14, 2, '#A0522D');                      // frame
+                f(1, 11, 14, 1, '#6B3A1E');
+                f(1, 12, 2, 2, '#6B3A1E'); f(13, 12, 2, 2, '#6B3A1E'); // legs
+                break;
         }
 
         return c.toDataURL();
@@ -144,11 +184,13 @@ class MinecraftApp {
 
     // ── Grid Construction ────────────────────────────────────
 
-    _buildGrid() {
+    /** Builds the mine. Rows before startRow are already mined (respawn at a checkpoint). */
+    _buildGrid(startRow) {
         const grid = document.getElementById('mine-grid');
         grid.innerHTML = '';
         this.rows = [];
         this.totalBlocks = 0;
+        this.solvedBlocks = 0;
 
         this.layers.forEach((layer) => {
             const divider = document.createElement('div');
@@ -156,8 +198,10 @@ class MinecraftApp {
             divider.textContent = `── ${layer.emoji} ${layer.name.toUpperCase()} ──`;
             grid.appendChild(divider);
 
+            const layerRows = [];
+
             if (layer.id === 'chest') {
-                const chestRow = { layerId: 'chest', rowIndex: 0, blocks: [], isChestRow: true };
+                const chestRow = { layer, blocks: [], isChestRow: true };
 
                 const leftGate = this._createCalcBlock(layer, 'left');
                 const chestBlock = this._createChestBlock();
@@ -175,7 +219,7 @@ class MinecraftApp {
                 this.totalBlocks += 2;
             } else {
                 for (let r = 0; r < layer.rows; r++) {
-                    const row = { layerId: layer.id, rowIndex: r, blocks: [] };
+                    const row = { layer, blocks: [] };
                     for (let c = 0; c < 3; c++) {
                         const { el, data } = this._createCalcBlock(layer, null);
                         data.rowRef = row;
@@ -184,30 +228,69 @@ class MinecraftApp {
                         this.totalBlocks++;
                     }
                     this.rows.push(row);
+                    layerRows.push(row);
                 }
             }
+
+            this._placeItems(layer, layerRows, startRow);
         });
 
         this.rows.forEach((row, i) => {
-            if (i === 0) this._unlockRow(row); else this._lockRow(row);
+            if (i < startRow) {
+                row.blocks.forEach(b => {
+                    if (b.isChest) return;
+                    b.solved = true;
+                    b.el.classList.add('solved');
+                    this.solvedBlocks++;
+                });
+            } else if (i === startRow) {
+                this._unlockRow(row);
+            } else {
+                this._lockRow(row);
+            }
+        });
+
+        this._updateDepthBar();
+        this._setTool(this.rows[startRow].layer.tool, false);
+        if (startRow > 0) this._scrollToRow(this.rows[startRow]);
+    }
+
+    /** Hides golden apples / checkpoints inside random blocks of a layer. */
+    _placeItems(layer, layerRows, startRow) {
+        if (!layer.items) return;
+        const candidates = [];
+        layerRows.forEach(row => {
+            const rowIdx = this.rows.indexOf(row);
+            if (rowIdx < startRow) return;
+            row.blocks.forEach(b => candidates.push({ b, rowIdx }));
+        });
+
+        Object.entries(layer.items).forEach(([type, count]) => {
+            for (let i = 0; i < count && candidates.length; i++) {
+                const pick = candidates.splice(Math.floor(Math.random() * candidates.length), 1)[0];
+                // A checkpoint we already respawned from must not show up again
+                if (type === 'checkpoint' && this.checkpointRow !== null && pick.rowIdx <= this.checkpointRow) continue;
+                pick.b.item = type;
+            }
         });
     }
 
+    /** Numbers stay within the layer's range: sums never exceed max, differences never go below 0. */
     _generateCalc(math) {
         const op = math.operators[Math.floor(Math.random() * math.operators.length)];
-        let a = this._rand(math.min, math.max);
-        let b = this._rand(math.min, math.max);
-        if (op === '-' && b > a) [a, b] = [b, a];
-        if (op === '-' && a - b < 0) b = a;
-        return { text: `${a} ${op} ${b} = ?`, answer: op === '+' ? a + b : a - b };
+        if (op === '+') {
+            const a = this._rand(math.min, math.max - math.min);
+            const b = this._rand(math.min, math.max - a);
+            return { text: `${a} + ${b} = ?`, answer: a + b };
+        }
+        const a = this._rand(math.min, math.max);
+        const b = this._rand(Math.min(math.min, a), a);
+        return { text: `${a} - ${b} = ?`, answer: a - b };
     }
 
     _applyTexture(el, textureKey) {
         const url = this._textures[textureKey];
-        if (url) {
-            el.style.backgroundImage = `url(${url})`;
-            el.style.backgroundSize = '100% 100%';
-        }
+        if (url) el.style.backgroundImage = `url(${url})`;
     }
 
     _createCalcBlock(layer, gateRole) {
@@ -222,19 +305,17 @@ class MinecraftApp {
                 <span class="block-label">${layer.emoji} ${layer.name}</span>
                 <div class="block-calc">${calc.text}</div>
                 <div class="block-input-wrap">
-                    <input class="block-input" type="number" inputmode="numeric" autocomplete="off" />
+                    <input class="block-input" type="number" inputmode="numeric" autocomplete="off" aria-label="Ergebnis" />
                 </div>
             </div>`;
 
         const input = el.querySelector('.block-input');
-        const data = { el, calc, input, solved: false, rowRef: null, gateRole, _autoTimer: null };
+        const data = { el, calc, input, solved: false, rowRef: null, gateRole, item: null, _autoTimer: null };
 
         el.addEventListener('click', () => this._onBlockClick(data));
-        el.addEventListener('touchend', (e) => { e.preventDefault(); this._onBlockClick(data); }, { passive: false });
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { this._clearAutoTimer(data); this._onSubmit(data); }
         });
-        input.addEventListener('touchend', (e) => e.stopPropagation());
         // Auto-submit 1.5s after the user stops typing
         input.addEventListener('input', () => this._scheduleAutoSubmit(data));
 
@@ -260,15 +341,21 @@ class MinecraftApp {
     _lockRow(row) { row.blocks.forEach(b => { if (!b.isChest) b.el.classList.add('locked'); }); }
     _unlockRow(row) { row.blocks.forEach(b => { if (!b.isChest) b.el.classList.remove('locked'); }); }
 
+    _scrollToRow(row) {
+        row.blocks[0].el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     // ── Block Interaction ────────────────────────────────────
 
     _onBlockClick(data) {
-        if (data.solved || data.isChest || data.el.classList.contains('locked')) return;
+        if (this.isOver || data.solved || data.isChest || data.el.classList.contains('locked')) return;
         this._swingPickaxe();
         if (this.activeBlock && this.activeBlock !== data) this._deactivateBlock(this.activeBlock);
         this.activeBlock = data;
+        data.el.classList.add('active');
         data.el.querySelector('.block-input-wrap').classList.add('active');
-        setTimeout(() => data.input.focus(), 50);
+        // Focus synchronously so mobile browsers open the keyboard
+        data.input.focus();
     }
 
     _scheduleAutoSubmit(data) {
@@ -289,12 +376,14 @@ class MinecraftApp {
 
     _deactivateBlock(data) {
         this._clearAutoTimer(data);
+        data.el.classList.remove('active');
         data.el.querySelector('.block-input-wrap').classList.remove('active');
         data.input.value = '';
         if (this.activeBlock === data) this.activeBlock = null;
     }
 
     _onSubmit(data) {
+        if (this.isOver || data.solved) return;
         const val = parseInt(data.input.value.trim(), 10);
         if (isNaN(val)) return;
         if (val === data.calc.answer) this._solveBlock(data);
@@ -305,14 +394,16 @@ class MinecraftApp {
         this._clearAutoTimer(data);
         data.solved = true;
         data.input.blur();
+        data.el.classList.remove('active');
         data.el.classList.add('breaking');
+        this._swingPickaxe();
 
         setTimeout(() => {
             data.el.classList.add('solved');
             data.el.classList.remove('breaking');
+            if (data.item) this._revealItem(data);
             this.solvedBlocks++;
             this._updateDepthBar();
-            this._updatePickaxeForDepth();
 
             const row = data.rowRef;
             if (row.blocks.every(b => b.solved || b.isChest)) {
@@ -325,29 +416,33 @@ class MinecraftApp {
 
     _wrongAnswer(data) {
         this._clearAutoTimer(data);
-        this.lives--;
+        this.lives = Math.max(0, this.lives - 1);
         data.input.value = '';
         data.el.classList.add('shake');
         setTimeout(() => data.el.classList.remove('shake'), 320);
-        this._updateHUD();
-        if (this.lives <= 0) setTimeout(() => this._gameOver(), 400);
+        this._updateHUD('hurt');
+        if (this.lives === 0) {
+            this.isOver = true;
+            data.input.blur();
+            setTimeout(() => this._gameOver(), 400);
+        }
     }
 
     _onRowComplete(row) {
-        const rowIdx = this.rows.indexOf(row);
-        const nextRow = this.rows[rowIdx + 1];
-
         if (row.isChestRow) {
             this._openChest(row);
             return;
         }
 
-        if (nextRow) {
-            setTimeout(() => {
-                this._unlockRow(nextRow);
-                if (nextRow.isChestRow) this._revealChestGates(nextRow);
-            }, 300);
-        }
+        const nextRow = this.rows[this.rows.indexOf(row) + 1];
+        if (!nextRow) return;
+
+        setTimeout(() => {
+            this._unlockRow(nextRow);
+            if (nextRow.isChestRow) this._revealChestGates(nextRow);
+            if (nextRow.layer !== row.layer) this._setTool(nextRow.layer.tool, true);
+            this._scrollToRow(nextRow);
+        }, 300);
     }
 
     _revealChestGates(chestRow) {
@@ -360,6 +455,7 @@ class MinecraftApp {
     }
 
     _openChest(chestRow) {
+        this.isOver = true;
         const chest = chestRow.blocks.find(b => b.isChest);
         if (chest) {
             chest.el.classList.remove('chest-unlocked', 'chest-locked');
@@ -369,11 +465,59 @@ class MinecraftApp {
         setTimeout(() => this._win(), 700);
     }
 
+    // ── Items: Golden Apples & Checkpoints ───────────────────
+
+    _revealItem(data) {
+        const isApple = data.item === 'apple';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `mc-item item-${data.item}`;
+        btn.title = isApple ? 'Goldener Apfel: +1 Herz' : 'Bett: Checkpoint';
+        btn.innerHTML = `
+            <img src="${this._textures[isApple ? 'apple' : 'bed']}" alt="">
+            <span class="item-label">${isApple ? 'Goldener Apfel' : 'Checkpoint'}</span>`;
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this._pickUpItem(data, btn);
+        });
+        data.el.appendChild(btn);
+    }
+
+    _pickUpItem(data, btn) {
+        if (this.isOver) return;
+        this._swingPickaxe();
+
+        if (data.item === 'apple') {
+            if (this.lives >= this.LIVES) {
+                showMilestoneCelebration('❤️ Herzen sind voll!');
+                btn.classList.add('wobble');
+                setTimeout(() => btn.classList.remove('wobble'), 400);
+                return;
+            }
+            this.lives++;
+            this._updateHUD('heal');
+            showMilestoneCelebration('🍏 +1 Herz!');
+        } else {
+            this.checkpointRow = this.rows.indexOf(data.rowRef);
+            document.getElementById('hud-checkpoint').classList.remove('hidden');
+            showMilestoneCelebration('🛏️ Checkpoint!');
+        }
+
+        data.item = null;
+        btn.classList.add('picked');
+        setTimeout(() => btn.remove(), 350);
+    }
+
     // ── HUD ─────────────────────────────────────────────────
 
-    _updateHUD() {
+    _updateHUD(effect) {
         const el = document.getElementById('hud-hearts');
         el.textContent = '❤️'.repeat(this.lives) + '🖤'.repeat(this.LIVES - this.lives);
+        if (effect) {
+            el.classList.remove('hurt', 'heal');
+            void el.offsetWidth;
+            el.classList.add(effect);
+        }
     }
 
     _updateDepthBar() {
@@ -381,27 +525,32 @@ class MinecraftApp {
         if (bar) bar.style.height = Math.min((this.solvedBlocks / this.totalBlocks) * 100, 100) + '%';
     }
 
+    _setTool(tool, announce) {
+        if (tool.id === this.currentToolId) return;
+        this.currentToolId = tool.id;
+        if (this._pickaxeEl) this._pickaxeEl.dataset.tool = tool.id;
+        document.getElementById('hud-tool').dataset.tool = tool.id;
+        document.getElementById('hud-tool').title = tool.name;
+        if (announce) showMilestoneCelebration(`⛏️ ${tool.name}!`);
+    }
+
     // ── Cursor ───────────────────────────────────────────────
 
     _setupCursor() {
         this._pickaxeEl = document.getElementById('pickaxe-cursor');
 
-        document.addEventListener('mousemove', function show() {
-            this._pickaxeEl.style.display = 'block';
-            document.removeEventListener('mousemove', show);
-        }.bind(this));
-
-        document.addEventListener('mousemove', (e) => {
+        // Custom pickaxe only for real mice; touch keeps the native behaviour
+        document.addEventListener('pointermove', (e) => {
+            if (e.pointerType !== 'mouse') return;
+            document.body.classList.add('custom-cursor');
             this._pickaxeEl.style.left = e.clientX + 'px';
             this._pickaxeEl.style.top = e.clientY + 'px';
         });
 
-        document.addEventListener('mousedown', () => this._swingPickaxe());
-
-        document.addEventListener('touchstart', () => {
-            this._pickaxeEl.style.display = 'none';
-            document.body.style.cursor = 'auto';
-        }, { once: true });
+        document.addEventListener('pointerdown', (e) => {
+            if (e.pointerType === 'mouse') this._swingPickaxe();
+            else document.body.classList.remove('custom-cursor');
+        });
     }
 
     _swingPickaxe() {
@@ -413,42 +562,43 @@ class MinecraftApp {
         this._swingTimeout = setTimeout(() => this._pickaxeEl.classList.remove('swing'), 240);
     }
 
-    _updatePickaxeForDepth() {
-        if (!this._pickaxeEl) return;
-        const pct = this.solvedBlocks / this.totalBlocks;
-        this._pickaxeEl.textContent = pct >= 0.88 ? '👑' : pct >= 0.62 ? '💎' : pct >= 0.42 ? '⚒️' : '⛏️';
-    }
-
     // ── Game Over / Win ──────────────────────────────────────
 
     _gameOver() {
+        document.getElementById('btn-respawn').classList.toggle('hidden', this.checkpointRow === null);
         document.getElementById('overlay-gameover').classList.remove('hidden');
     }
 
     _win() {
-        const crownCountDispEl = document.getElementById('crownCount');
-        const crownCounterEl = document.getElementById('crownCounter');
-        const { reward, total } = CrownManager.earnAndDisplay(8, crownCountDispEl, crownCounterEl);
+        const { reward, total } = CrownManager.earnAndDisplay(
+            this.CROWN_LEVEL,
+            document.getElementById('crownCount'),
+            document.getElementById('crownCounter')
+        );
         document.getElementById('win-crowns').textContent = `+${reward} Kronen! (Gesamt: ${total})`;
         launchFireworks();
         document.getElementById('overlay-win').classList.remove('hidden');
     }
 
-    _restart() {
+    _restart(fromCheckpoint) {
+        if (!fromCheckpoint) {
+            this.checkpointRow = null;
+            document.getElementById('hud-checkpoint').classList.add('hidden');
+        }
         this.lives = this.LIVES;
-        this.solvedBlocks = 0;
         this.activeBlock = null;
+        this.isOver = false;
         this._updateHUD();
-        this._updateDepthBar();
-        if (this._pickaxeEl) this._pickaxeEl.textContent = '⛏️';
         document.getElementById('overlay-gameover').classList.add('hidden');
         document.getElementById('overlay-win').classList.add('hidden');
-        this._buildGrid();
+        if (!fromCheckpoint) document.getElementById('mine-viewport').scrollTop = 0;
+        this._buildGrid(fromCheckpoint ? this.checkpointRow : 0);
     }
 
     _setupOverlays() {
-        document.getElementById('btn-restart-gameover').addEventListener('click', () => this._restart());
-        document.getElementById('btn-restart-win').addEventListener('click', () => this._restart());
+        document.getElementById('btn-respawn').addEventListener('click', () => this._restart(true));
+        document.getElementById('btn-restart-gameover').addEventListener('click', () => this._restart(false));
+        document.getElementById('btn-restart-win').addEventListener('click', () => this._restart(false));
     }
 
     // ── Util ─────────────────────────────────────────────────
