@@ -15,6 +15,14 @@ class MinecraftApp {
         this.checkpointRow = null;
         this.currentToolId = null;
 
+        // Debris colours per block type (base + accent)
+        this.PARTICLE_COLORS = {
+            gras: ['#5D9B3C', '#8B6040'], erde: ['#8B6040', '#7A5030'],
+            stein: ['#808080', '#6B6B6B'], kohle: ['#808080', '#1A1A1A'],
+            eisen: ['#808080', '#D4B483'], gold: ['#808080', '#F9C81B'],
+            diamant: ['#808080', '#5CD9D0'], gate: ['#5A5A5A', '#4A4A4A']
+        };
+
         this._pickaxeEl = null;
         this._swingTimeout = null;
         this._textures = {};
@@ -44,7 +52,7 @@ class MinecraftApp {
     // ── Pixel-Art Block Textures ──────────────────────────────
 
     _generateTextures() {
-        ['gras', 'erde', 'stein', 'kohle', 'eisen', 'gold', 'diamant', 'chest', 'chest-gate', 'apple', 'bed']
+        ['gras', 'erde', 'stein', 'kohle', 'eisen', 'gold', 'diamant', 'chest', 'chest-gate', 'apple', 'bed', 'crack1', 'crack2', 'crack3']
             .forEach(id => { this._textures[id] = this._drawTexture(id); });
     }
 
@@ -53,6 +61,22 @@ class MinecraftApp {
         c.width = 16; c.height = 16;
         const g = c.getContext('2d');
         const f = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x, y, w, h); };
+
+        // Crack overlays (transparent), each stage adds to the previous one
+        if (type.startsWith('crack')) {
+            const stage = Number(type.slice(5));
+            const col = 'rgba(0, 0, 0, 0.75)';
+            f(7, 5, 1, 4, col); f(8, 8, 3, 1, col); f(6, 9, 1, 2, col);
+            if (stage >= 2) {
+                f(4, 3, 3, 1, col); f(3, 4, 1, 3, col); f(11, 8, 1, 4, col);
+                f(9, 12, 2, 1, col); f(5, 11, 1, 3, col);
+            }
+            if (stage >= 3) {
+                f(1, 1, 3, 1, col); f(12, 2, 3, 1, col); f(13, 3, 1, 3, col);
+                f(1, 13, 2, 1, col); f(13, 13, 2, 2, col); f(2, 7, 2, 1, col); f(10, 4, 2, 1, col);
+            }
+            return c.toDataURL();
+        }
 
         // Reusable stone base (used by all ore types)
         const stone = () => {
@@ -390,17 +414,22 @@ class MinecraftApp {
         else this._wrongAnswer(data);
     }
 
-    _solveBlock(data) {
+    async _solveBlock(data) {
         this._clearAutoTimer(data);
         data.solved = true;
         data.input.blur();
         data.el.classList.remove('active');
+        data.el.querySelector('.block-input-wrap').classList.remove('active');
+        if (this.activeBlock === data) this.activeBlock = null;
+
+        await this._strikeBlock(data);
+        this._spawnParticles(data, 10);
         data.el.classList.add('breaking');
-        this._swingPickaxe();
 
         setTimeout(() => {
             data.el.classList.add('solved');
             data.el.classList.remove('breaking');
+            data.el.style.removeProperty('--crack');
             if (data.item) this._revealItem(data);
             this.solvedBlocks++;
             this._updateDepthBar();
@@ -410,8 +439,71 @@ class MinecraftApp {
                 this._onRowComplete(row);
             }
         }, 400);
+    }
 
-        if (this.activeBlock === data) this.activeBlock = null;
+    /** The current tool flies to the block and hits it three times, cracking it further each hit. */
+    async _strikeBlock(data) {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const sleep = ms => new Promise(res => setTimeout(res, ms));
+        const r = data.el.getBoundingClientRect();
+        const size = r.width * 0.5;
+
+        const tool = document.createElement('div');
+        tool.className = 'strike-tool';
+        tool.textContent = '⛏️';
+        tool.dataset.tool = this.currentToolId;
+        tool.style.fontSize = size + 'px';
+        const from = this._toolOrigin();
+        tool.style.left = from.x + 'px';
+        tool.style.top = from.y + 'px';
+        document.body.appendChild(tool);
+        document.body.classList.add('striking');
+
+        await sleep(20);
+        tool.style.left = (r.right - size * 1.1) + 'px';
+        tool.style.top = (r.top - size * 0.15) + 'px';
+        await sleep(260);
+
+        for (let stage = 1; stage <= 3; stage++) {
+            tool.classList.remove('hit');
+            void tool.offsetWidth;
+            tool.classList.add('hit');
+            await sleep(90);
+            data.el.style.setProperty('--crack', `url(${this._textures['crack' + stage]})`);
+            this._spawnParticles(data, 3);
+            await sleep(90);
+        }
+
+        tool.classList.add('leave');
+        setTimeout(() => {
+            tool.remove();
+            if (!document.querySelector('.strike-tool')) document.body.classList.remove('striking');
+        }, 250);
+    }
+
+    /** Where the flying tool starts: the mouse pickaxe if visible, otherwise the HUD tool icon. */
+    _toolOrigin() {
+        const src = document.body.classList.contains('custom-cursor')
+            ? this._pickaxeEl
+            : document.getElementById('hud-tool');
+        const r = src.getBoundingClientRect();
+        return { x: r.left, y: r.top };
+    }
+
+    _spawnParticles(data, count) {
+        const r = data.el.getBoundingClientRect();
+        const colors = this.PARTICLE_COLORS[data.gateRole ? 'gate' : data.rowRef.layer.id];
+        for (let i = 0; i < count; i++) {
+            const p = document.createElement('div');
+            p.className = 'mc-particle';
+            p.style.left = (r.left + r.width * (0.3 + Math.random() * 0.4)) + 'px';
+            p.style.top = (r.top + r.height * (0.3 + Math.random() * 0.4)) + 'px';
+            p.style.background = colors[i % colors.length];
+            p.style.setProperty('--dx', ((Math.random() * 2 - 1) * r.width * 0.6) + 'px');
+            p.style.setProperty('--dy', (-Math.random() * r.height * 0.5) + 'px');
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 700);
+        }
     }
 
     _wrongAnswer(data) {
