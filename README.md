@@ -28,6 +28,18 @@ Interaktive Rechenübungen mit automatischer Korrektur und Motivations-Features.
 - 📱 Mobile-optimiert — Tastatur bleibt offen beim Tippen
 - 💾 Progress-Tracking (LocalStorage)
 
+### 📝 Mathetest (Klasse 2)
+Der große Test: 9 Themen hintereinander oder ein einzelnes Thema üben.
+
+**Themen:**
+- ➕ Plus/Minus bis 20 · 🏠 Nachbarzehner · 💯 Plus/Minus bis 100 · 🚀 Plusaufgaben über den Zehner
+- 📋 Tabellenrechnen · 🧱 Zahlenmauer · 🌸 Blumenaufgaben · 🔍 Finde den Fehler · 📏 Rechenstrich
+
+**Features:**
+- 10 Schwierigkeitsstufen
+- Bis zu 3 Sterne ⭐ und Kronen 👑 pro Test
+- Auswertung pro Thema
+
 ### ⚖️ Größer / Kleiner
 Zahlen vergleichen mit >, < und = — spielerisch und schnell.
 

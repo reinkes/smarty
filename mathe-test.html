@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none';">
+    <title>Mathetest – Smarty Learn</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/theme-math.css">
+    <link rel="stylesheet" href="css/theme-tabelle.css">
+    <link rel="stylesheet" href="css/theme-mathetest.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    >
+</head>
+<body>
+    <a href="index.html" class="btn-back">⬅ Zurück zur Startseite</a>
+
+    <div class="crown-counter" id="crownCounter" style="display: none;">
+        <span class="crown-icon">👑</span>
+        <span class="crown-count" id="crownCount">0</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>📝 Mathetest</h1>
+            <p class="subtitle">Zeig, was du in Klasse 2 schon kannst!</p>
+        </header>
+
+        <div class="card" id="setupCard">
+            <div class="form-group">
+                <label for="difficultySlider">
+                    🎯 Schwierigkeitsgrad:
+                    <span class="slider-value" id="difficultyValue">Level 1 (Einfach) 😊</span>
+                </label>
+                <div class="slider-container">
+                    <input type="range" id="difficultySlider" min="1" max="10" value="1" step="1">
+                    <div class="slider-labels">
+                        <span>😊 Einfach</span>
+                        <span>🤔 Mittel</span>
+                        <span>🔥 Schwer</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="startTestBtn">📝 Ganzen Test starten</button>
+
+            <h2 class="mt-subheading">…oder ein Thema üben:</h2>
+            <div class="mt-topic-grid" id="topicGrid"></div>
+        </div>
+
+        <div class="card" id="taskCard" hidden>
+            <div class="mt-task-header">
+                <h2 class="preview-title" id="sectionTitle"></h2>
+                <button type="button" class="mt-quit" id="quitBtn" aria-label="Test abbrechen">✕</button>
+            </div>
+
+            <div class="mt-progress-row">
+                <div class="mt-progress-track">
+                    <div class="mt-progress-fill" id="progressFill"></div>
+                </div>
+                <span class="mt-progress-label" id="progressText">1 / 1</span>
+            </div>
+
+            <div class="mt-task-body" id="taskBody"></div>
+
+            <div class="feedback" id="feedback" aria-live="polite"></div>
+
+            <div class="mt-actions">
+                <button class="btn-check" id="checkBtn">✓ Prüfen</button>
+                <button class="btn-new" id="nextBtn" hidden>Weiter ➜</button>
+            </div>
+        </div>
+
+        <div class="card mt-result" id="resultCard" hidden>
+            <div class="mt-result-stars" id="resultStars"></div>
+            <h2 class="mt-result-heading">Test geschafft!</h2>
+            <p class="mt-result-summary" id="resultSummary"></p>
+            <div class="mt-result-crowns" id="resultCrowns" hidden></div>
+            <ul class="mt-result-list" id="resultList"></ul>
+            <div class="mt-actions">
+                <button class="btn-new" id="againBtn">🔄 Nochmal</button>
+                <button id="menuBtn">📋 Zur Auswahl</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="milestone-celebration" id="milestoneCelebration"></div>
+
+    <script src="js/audio-manager.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/mathetest-app.js"></script>
+
+    <footer>
+        <p>© 2024 Smarty Learn. Alle Rechte vorbehalten.</p>
+        <p>
+            <a href="impressum.html">Impressum</a> |
+            <a href="nutzungsbedingungen.html">Nutzungsbedingungen</a> |
+            <a href="datenschutz.html">Datenschutz</a>
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.7;">
+            Die unerlaubte Vervielfältigung oder Verbreitung dieser Software ist untersagt.
+        </p>
+    </footer>
+</body>
+</html>

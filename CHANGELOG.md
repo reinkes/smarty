@@ -8,6 +8,17 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ## [Unreleased]
 
+### 📝 Mathetest (NEW)
+
+#### Added
+- **mathe-test.html** + **js/mathetest-app.js** + **css/theme-mathetest.css** — Klasse-2 test with 9 sections (3 tasks each) or practice mode for a single topic (6 tasks)
+  - Plus/Minus bis 20, Nachbarzehner, Plus/Minus bis 100 (ohne Übergang), Plusaufgaben über den Zehner
+  - Tabellenrechnen (reuses the Additions-Tabelle grid styles), Zahlenmauer (3–4 rows, solvable from any given stones), Blumenaufgaben (reverse petals from level 7)
+  - Finde den Fehler (typical mistakes: ±10 / ±1), Aufgaben am Rechenstrich (tens jump, then ones; jump sizes to fill from level 7)
+- Up to 3 stars per run (≥50 / 70 / 90 % correct), crowns = stars + level bonus, per-section summary
+- Enter jumps to the next empty field and checks once all are filled; wrong fields show the solution in red
+- Card on the start page
+
 ### ⛏️ Minen-Mathe (NEW)
 
 #### Added

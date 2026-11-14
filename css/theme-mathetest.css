@@ -1,0 +1,496 @@
+/* === Mathetest — extends theme-math.css and theme-tabelle.css === */
+
+[hidden] { display: none !important; }
+
+.card::before { content: '📝'; }
+
+.mt-subheading {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin: 2rem 0 1rem;
+    text-align: center;
+}
+
+/* --- Topic picker --- */
+.mt-topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 0.75rem;
+}
+
+.mt-topic {
+    margin-top: 0;
+    padding: 0.9rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: left;
+    font-size: 1rem;
+    background: white;
+    color: var(--text-dark);
+    border: 3px solid var(--math-secondary);
+    box-shadow: none;
+}
+
+.mt-topic:hover { border-color: var(--math-primary); }
+.mt-topic-icon { font-size: 1.4rem; }
+
+/* --- Task card --- */
+.mt-task-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-right: 2.5rem;
+}
+
+.mt-quit {
+    width: auto;
+    margin-top: 0;
+    padding: 0.4rem 0.9rem;
+    font-size: 1rem;
+    background: #EEE;
+    color: #888;
+    box-shadow: none;
+}
+
+.mt-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.mt-progress-track {
+    flex: 1;
+    height: 14px;
+    background: #E8E8E8;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.mt-progress-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--math-primary), var(--math-secondary));
+    transition: width 0.4s ease-out;
+}
+
+.mt-progress-label {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.mt-task-body {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.mt-instruction {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #888;
+}
+
+.feedback {
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    min-height: 2.2rem;
+    margin-top: 1rem;
+}
+
+.feedback.correct { color: #27AE60; }
+.feedback.incorrect { color: #E74C3C; }
+.feedback.warn { color: #F5A623; }
+
+.mt-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.mt-actions button {
+    width: auto;
+    min-width: 180px;
+    padding: 0.9rem 2rem;
+    font-size: 1.2rem;
+}
+
+/* --- Shared input & cell states ---
+   input.mt-input outranks shared.css input[type="number"] (width: 100%) */
+input.mt-input {
+    width: 72px;
+    padding: 0.4rem;
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border: 3px solid var(--math-tertiary);
+    border-radius: 12px;
+    background: white;
+    -moz-appearance: textfield;
+}
+
+.mt-input::-webkit-outer-spin-button,
+.mt-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.mt-input:disabled { opacity: 1; color: var(--text-dark); }
+
+.mt-cell.correct .mt-input,
+.mt-cell.correct > .mt-input { border-color: #27AE60; background: #E8F8EF; color: #27AE60; }
+.mt-cell.incorrect .mt-input { border-color: #E74C3C; background: #FDEDEC; color: #E74C3C; }
+
+/* --- Equations --- */
+.mt-equation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.mt-term {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    white-space: nowrap;
+}
+
+/* --- Tabellenrechnen (grid from theme-tabelle.css) --- */
+.mt-task-body .grid-cell { width: 72px; }
+.mt-task-body .grid-cell .mt-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    font-size: 1.3rem;
+    padding: 0;
+}
+.mt-task-body .result-cell.correct .mt-input,
+.mt-task-body .result-cell.incorrect .mt-input { background: transparent; border: none; }
+
+/* --- Zahlenmauer --- */
+.mt-wall {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.mt-wall-row {
+    display: flex;
+    gap: 4px;
+}
+
+.mt-stone {
+    width: 76px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: #F6D7B0;
+    border: 3px solid #C0763A;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.mt-stone .mt-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 3px;
+    padding: 0;
+    font-size: 1.4rem;
+}
+
+.mt-stone.correct { border-color: #27AE60; }
+.mt-stone.incorrect { border-color: #E74C3C; }
+.mt-stone.correct .mt-input,
+.mt-stone.incorrect .mt-input { border: none; }
+
+/* --- Blumenaufgaben --- */
+.mt-flower {
+    --size: 340px;
+    position: relative;
+    width: var(--size);
+    height: var(--size);
+}
+
+.mt-flower-center,
+.mt-petal {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+}
+
+.mt-flower-center {
+    width: 76px;
+    height: 76px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFD54F, #FFB300);
+    color: white;
+    font-size: 1.6rem;
+    z-index: 2;
+}
+
+.mt-petal {
+    width: 60px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--radius)) rotate(calc(-1 * var(--angle)));
+}
+
+.mt-petal.inner {
+    --radius: 76px;
+    background: #FFE5F1;
+    border: 3px solid var(--math-primary);
+}
+
+.mt-petal.outer {
+    --radius: 130px;
+    width: 66px;
+    border-radius: 14px;
+    background: #E8F5E9;
+    border: 3px solid #66BB6A;
+}
+
+.mt-petal .mt-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: inherit;
+    padding: 0;
+    font-size: 1.3rem;
+}
+
+.mt-petal.correct { border-color: #27AE60; }
+.mt-petal.incorrect { border-color: #E74C3C; }
+
+/* --- Finde den Fehler --- */
+.mt-error-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.mt-error-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 64px;
+    padding: 0.5rem 1rem;
+    border-radius: 16px;
+    border: 3px solid var(--math-secondary);
+    background: #FFF9F0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.mt-error-row .mt-term { font-size: 1.5rem; }
+.mt-error-row .mt-fix { display: none; }
+.mt-error-row.marked .mt-fix { display: inline-flex; }
+.mt-error-row.marked .mt-term {
+    text-decoration: line-through;
+    text-decoration-color: #E74C3C;
+    text-decoration-thickness: 3px;
+}
+.mt-error-row.marked { border-color: var(--math-primary); background: #FFE5F1; }
+.mt-error-row.correct { border-color: #27AE60; background: #E8F8EF; }
+.mt-error-row.incorrect { border-color: #E74C3C; background: #FDEDEC; }
+.mt-error-row.false-alarm .mt-term { text-decoration: none; }
+.mt-error-row.false-alarm .mt-fix { display: none; }
+.mt-error-row.locked { cursor: default; }
+.mt-error-row .mt-input { width: 64px; font-size: 1.3rem; }
+
+/* --- Rechenstrich --- */
+.mt-strich {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    padding: 0 40px;
+    box-sizing: border-box;
+    margin-top: 0.5rem;
+}
+
+.mt-arcs {
+    display: flex;
+    height: 90px;
+    align-items: flex-end;
+}
+
+.mt-arc {
+    position: relative;
+    height: 56px;
+    border: 3px solid var(--math-primary);
+    border-bottom: none;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    box-sizing: border-box;
+}
+
+/* Arrow head at the landing end of the jump */
+.mt-arc::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 12px solid var(--math-primary);
+}
+.mt-arc.forward::after { right: -8.5px; }
+.mt-arc.backward::after { left: -8.5px; }
+
+.mt-arc-label {
+    position: absolute;
+    left: 50%;
+    top: -44px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--math-primary);
+    white-space: nowrap;
+}
+
+.mt-arc-label .mt-input { width: 56px; font-size: 1.2rem; padding: 0.2rem; }
+
+.mt-line {
+    position: relative;
+    height: 4px;
+    background: var(--text-dark);
+    border-radius: 2px;
+}
+
+.mt-line-tick {
+    position: absolute;
+    top: -8px;
+    width: 3px;
+    height: 20px;
+    background: var(--text-dark);
+    transform: translateX(-50%);
+}
+
+.mt-stops {
+    position: relative;
+    height: 70px;
+}
+
+.mt-stop {
+    position: absolute;
+    top: 16px;
+    transform: translateX(-50%);
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.mt-stop.given {
+    padding: 0.3rem 0.6rem;
+    border: 3px solid var(--math-secondary);
+    border-radius: 12px;
+    background: #FFF9F0;
+}
+
+/* --- Result --- */
+.mt-result { text-align: center; }
+
+.mt-result-stars {
+    font-size: 4rem;
+    letter-spacing: 0.5rem;
+    animation: bounceIn 0.8s ease-out;
+}
+
+.mt-result-heading {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 2.2rem;
+    color: var(--math-primary);
+}
+
+.mt-result-summary {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0.5rem 0 1rem;
+}
+
+.mt-result-crowns {
+    display: inline-block;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: white;
+    padding: 0.7rem 1.8rem;
+    border-radius: 20px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.mt-result-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 1rem;
+    max-width: 460px;
+    text-align: left;
+}
+
+.mt-result-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 10px;
+    margin-bottom: 0.4rem;
+    background: #FFF9F0;
+}
+
+.mt-result-list li.perfect { background: #E8F8EF; }
+.mt-result-list li.none { background: #FDEDEC; }
+.mt-result-list strong { white-space: nowrap; }
+
+/* --- Mobile --- */
+@media (max-width: 600px) {
+    .card { padding: 1.5rem 1rem; }
+    .mt-term { font-size: 1.6rem; }
+    input.mt-input { width: 60px; font-size: 1.3rem; }
+    .mt-task-body .grid-cell { width: 56px; }
+    .mt-stone { width: 62px; height: 46px; font-size: 1.25rem; }
+    .mt-flower { --size: 300px; }
+    .mt-petal.inner { --radius: 70px; width: 54px; height: 46px; }
+    .mt-petal.outer { --radius: 120px; width: 56px; height: 44px; }
+    .mt-strich { padding: 0 30px; }
+    .mt-actions button { min-width: 140px; }
+}
+
+@media (max-width: 360px) {
+    .mt-stone { width: 54px; }
+    .mt-flower { --size: 260px; }
+    .mt-petal.inner { --radius: 60px; width: 52px; height: 44px; }
+    .mt-petal.outer { --radius: 102px; width: 52px; height: 44px; }
+    .mt-flower-center { width: 62px; height: 62px; font-size: 1.3rem; }
+}
