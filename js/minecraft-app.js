@@ -7,7 +7,8 @@ class MinecraftApp {
         // Klasse → layer set and crown level (8 → 3 crowns, 10 → 5 crowns)
         this.CLASSES = {
             1: { file: 'data/minecraft-layers.json', crownLevel: 8 },
-            2: { file: 'data/minecraft-layers-k2.json', crownLevel: 10 }
+            2: { file: 'data/minecraft-layers-k2.json', crownLevel: 10 },
+            3: { file: 'data/minecraft-layers-k3.json', crownLevel: 10 }
         };
 
         this.lives = this.LIVES;
@@ -73,7 +74,10 @@ class MinecraftApp {
     // ── Klasse Toggle ────────────────────────────────────────
 
     _loadKlasse() {
-        try { return localStorage.getItem('smarty-minecraft-klasse') === '2' ? 2 : 1; } catch (e) { return 1; }
+        try {
+            const k = Number(localStorage.getItem('smarty-minecraft-klasse'));
+            return this.CLASSES[k] ? k : 1;
+        } catch (e) { return 1; }
     }
 
     _setupClassToggle() {

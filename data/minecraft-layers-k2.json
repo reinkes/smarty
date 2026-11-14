@@ -29,7 +29,7 @@
     "name": "Kohle",
     "emoji": "⚫",
     "rows": 2,
-    "math": { "operators": ["+", "-"], "min": 11, "max": 100, "bMin": 11, "bMax": 60, "cross": true },
+    "math": { "operators": ["+", "-"], "min": 11, "max": 100, "bMin": 11, "bMax": 60, "cross": false },
     "tool": { "id": "stein", "name": "Stein-Spitzhacke" },
     "items": { "checkpoint": 1 }
   },
@@ -38,7 +38,7 @@
     "name": "Eisen",
     "emoji": "🔩",
     "rows": 2,
-    "math": { "operators": ["double", "half"], "min": 2, "max": 49 },
+    "math": { "operators": ["+"], "min": 11, "max": 100, "bMin": 11, "bMax": 60, "cross": true },
     "tool": { "id": "eisen", "name": "Eisen-Spitzhacke" },
     "items": { "apple": 1 }
   },
@@ -47,7 +47,7 @@
     "name": "Gold",
     "emoji": "✨",
     "rows": 2,
-    "math": { "operators": ["*", ":"], "tables": [2, 5, 10] },
+    "math": { "operators": ["-"], "min": 21, "max": 100, "bMin": 11, "bMax": 60, "cross": true },
     "tool": { "id": "gold", "name": "Gold-Spitzhacke" },
     "items": { "checkpoint": 1, "apple": 1 }
   },
@@ -56,7 +56,7 @@
     "name": "Diamant",
     "emoji": "💎",
     "rows": 2,
-    "math": { "operators": ["*", ":"], "tables": [3, 4, 6, 7, 8, 9] },
+    "math": { "operators": ["+", "-"], "min": 11, "max": 100, "bMin": 11, "bMax": 80, "cross": true },
     "tool": { "id": "diamant", "name": "Diamant-Spitzhacke" },
     "items": { "apple": 1 }
   },
@@ -65,7 +65,7 @@
     "name": "Schatztruhe",
     "emoji": "💰",
     "rows": 1,
-    "math": { "operators": ["+", "-", "*", ":"], "min": 10, "max": 100, "bMin": 5, "bMax": 30, "tables": [2, 3, 4, 5, 10] },
+    "math": { "operators": ["+", "-"], "min": 11, "max": 100, "bMin": 11, "bMax": 50 },
     "tool": { "id": "diamant", "name": "Diamant-Spitzhacke" }
   }
 ]

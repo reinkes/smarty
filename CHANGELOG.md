@@ -16,7 +16,10 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 - **Checkpoints** 🛏️ (beds) hidden in Kohle and Gold blocks — tap to save; after Game Over you can continue from the checkpoint
 - Mined blocks leave dark cave holes; pickaxe tint and HUD icon change with each new tool tier
 - Next row scrolls into view automatically; active block is highlighted
-- **Klasse 1 / Klasse 2 toggle** in the HUD (selectable until the first answer, remembered in `localStorage`). Klasse 2 uses `data/minecraft-layers-k2.json`: Zahlenraum bis 100 — tens, plus/minus without and with crossing a ten, doubling/halving, Einmaleins (2·5·10, then 3·4·6·7·8·9), mixed chest; pays 5 crowns instead of 3
+- **Klasse 1 / 2 / 3 toggle** in the HUD (selectable until the first answer, remembered in `localStorage`); each class has its own layer file in `data/`
+  - Klasse 2: plus/minus up to 100 — tens, ones without / with crossing a ten, two-digit numbers
+  - Klasse 3: Einmaleins and division (2·5·10 → 3·4 → 6–9 → all), doubling/halving, plus/minus up to 1000 (tens and two-digit)
+  - Klasse 2 and 3 pay 5 crowns instead of 3
 - Layer math options (`step`, `bMin`/`bMax`, `cross`, `tables`, operators `* : double half`) drive the task generator
 - Golden apples are kept in a bag (max 3) when hearts are full; tap the 🍏 counter in the HUD to eat one
 - Tool flies to a correctly answered block and breaks it with three hits, cracks and debris
