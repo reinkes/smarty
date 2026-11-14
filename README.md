@@ -37,7 +37,8 @@ Der große Test: 9 Themen hintereinander oder ein einzelnes Thema üben.
 
 **Features:**
 - 10 Schwierigkeitsstufen
-- Bis zu 3 Sterne ⭐ und Kronen 👑 pro Test
+- Bis zu 3 Sterne ⭐ pro Test
+- Bis zu 10 Kronen 👑 bei 100 %, je weniger richtig, desto weniger Kronen
 - Auswertung pro Thema
 
 ### ⚖️ Größer / Kleiner

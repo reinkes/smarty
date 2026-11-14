@@ -15,7 +15,8 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
   - Plus/Minus bis 20, Nachbarzehner, Plus/Minus bis 100 (ohne Übergang), Plusaufgaben über den Zehner
   - Tabellenrechnen (reuses the Additions-Tabelle grid styles), Zahlenmauer (3–4 rows, solvable from any given stones), Blumenaufgaben (reverse petals from level 7)
   - Finde den Fehler (typical mistakes: ±10 / ±1), Aufgaben am Rechenstrich (tens jump, then ones; jump sizes to fill from level 7)
-- Up to 3 stars per run (≥50 / 70 / 90 % correct), crowns = stars + level bonus, per-section summary
+- Up to 3 stars per run (≥50 / 70 / 90 % correct) and a per-section summary
+- Crowns: full test pays 10 at 100 % and linearly fewer below (rounded down: 26/27 → 9, 20/27 → 7); practice pays stars + level bonus
 - Enter jumps to the next empty field and checks once all are filled; wrong fields show the solution in red
 - Card on the start page
 

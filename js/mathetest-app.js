@@ -543,6 +543,7 @@ const TASK_TYPES = [
 class MathetestApp {
     static TASKS_PER_SECTION = 3;
     static PRACTICE_TASKS = 6;
+    static TEST_MAX_CROWNS = 10;
 
     constructor() {
         this.level = 1;
@@ -705,18 +706,21 @@ class MathetestApp {
         this.dom.resultStars.textContent = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
         this.dom.resultSummary.textContent = `${correct} von ${total} Aufgaben richtig`;
 
-        // One crown per star, plus the usual level bonus once at least one star is earned
-        if (stars > 0) {
-            const reward = stars + CrownManager.calculateReward(this.level) - 1;
+        // Full test: 10 crowns at 100 %, linearly fewer below.
+        // Practice: one crown per star plus the usual level bonus.
+        const reward = this.isTest
+            ? Math.floor(MathetestApp.TEST_MAX_CROWNS * correct / total)
+            : stars > 0 ? stars + CrownManager.calculateReward(this.level) - 1 : 0;
+        if (reward > 0) {
             const sum = CrownManager.earn(reward);
             CrownManager.updateDisplay(this.dom.crownCount);
             CrownManager.animateEarn(this.dom.crownCounter);
             this.dom.resultCrowns.textContent = `👑 +${reward} = ${sum} Kronen`;
             this.dom.resultCrowns.hidden = false;
-            launchFireworks();
         } else {
             this.dom.resultCrowns.hidden = true;
         }
+        if (stars > 0) launchFireworks();
 
         this.dom.resultList.innerHTML = '';
         this.lastTypes.forEach(type => {
